@@ -183,7 +183,8 @@ class RevenueListForm extends Component {
     q: "",
     originalData: null,
     selectedDate: new Date(),
-    csvData: []
+    csvData: [],
+    actionType: ""
   };
 
   Transition = React.forwardRef(function Transition(props, ref) {
@@ -321,10 +322,6 @@ class RevenueListForm extends Component {
       loading: false,
       filteredData: addPropsToObject(arrangeL, this.arrProps)
     });
-
-    console.log(dataL);
-    console.log(arrangeL);
-
     this.setDataExportCsv();
   }
 
@@ -408,9 +405,12 @@ class RevenueListForm extends Component {
   /**
    * On Delete
    */
-  onDelete(data) {
+  async onDelete(data) {
+    await this.setState({
+      selectedData: data,
+      actionType: "Delete"
+    });
     this.refs.deleteConfirmationDialog.open();
-    this.setState({ selectedData: data });
   }
 
   /**
@@ -439,15 +439,80 @@ class RevenueListForm extends Component {
   opnAddNewDataModal(e) {
     e.preventDefault();
     this.setState({
+      actionType: "Add",
       showAttach: true,
       addNewDataDetail: {
-        Id: "",
-        Description: "",
-        Invoice_No: "",
-        CreateDate: parseDateString(Date.now()),
-        Total: "",
-        Fk_Branch: "",
-        checked: false
+        BillDate: parseDateString(Date.now()),
+        FK_Branch: 0,
+        Approve: false,
+
+        petrol_attach: null,
+        petrol_b20diesal_total: 0,
+        petrol_b20diesal_quantity: 0,
+        petrol_b20diesal_price: 0,
+        petrol_b20diesal_paymentType: 1,
+
+        petrol_e20gsh_total: 0,
+        petrol_e20gsh_quantity: 0,
+        petrol_e20gsh_price: 0,
+        petrol_e20gsh_paymentType: 1,
+
+        petrol_fsdiesal_total: 0,
+        petrol_fsdiesal_quantity: 0,
+        petrol_fsdiesal_price: 0,
+        petrol_fsdiesal_paymentType: 1,
+
+        petrol_fsgsh91_total: 0,
+        petrol_fsgsh91_quantity: 0,
+        petrol_fsgsh91_price: 0,
+        petrol_fsgsh91_paymentType: 1,
+
+        petrol_vpdiesal_total: 0,
+        petrol_vpdiesal_quantity: 0,
+        petrol_vpdiesal_price: 0,
+        petrol_vpdiesal_paymentType: 1,
+
+        petrol_vpgsh95_total: 0,
+        petrol_vpgsh95_quantity: 0,
+        petrol_vpgsh95_price: 0,
+        petrol_vpgsh95_paymentType: 1,
+
+        engineoil_attach: null,
+        engineoil_b20diesal_total: 0,
+        engineoil_b20diesal_price: 0,
+
+        engineoil_e20gsh_total: 0,
+        engineoil_e20gsh_price: 0,
+
+        engineoil_fsdiesal_total: 0,
+        engineoil_fsdiesal_price: 0,
+
+        carcare_attach: null,
+        carcare_size_s_washcar_total: 0,
+        carcare_size_s_washcar_price: 0,
+        carcare_size_s_wax_total: 0,
+        carcare_size_s_wax_price: 0,
+
+        carcare_size_m_washcar_total: 0,
+        carcare_size_m_washcar_price: 0,
+        carcare_size_m_wax_total: 0,
+        carcare_size_m_wax_price: 0,
+
+        carcare_size_l_washcar_total: 0,
+        carcare_size_l_washcar_price: 0,
+        carcare_size_l_wax_total: 0,
+        carcare_size_l_wax_price: 0,
+
+        conveniencestore_attach: null,
+        conveniencestore_food_total: 0,
+        conveniencestore_food_price: 0,
+
+        conveniencestore_nonfood_total: 0,
+        conveniencestore_nonfood_price: 0,
+
+        cafe_attach: null,
+        cafe_revenuecafe_total: 0,
+        cafe_revenuecafe_price: 0
       }
     });
   }
@@ -507,8 +572,92 @@ class RevenueListForm extends Component {
   /**
    * On Edit Data
    */
-  onEditData(data) {
-    this.setState({ addNewDataModal: true, editData: data });
+  async onEditData(element) {
+    let resultL = {
+      Id: element.Id,
+      BillDate: parseDateString(element.BillDate),
+      FK_Branch: element.FK_Branch,
+      Description: element.Description,
+
+      petrol_attach: element.petrol_attach,
+      petrol_b20diesal_total: element.petrol_b20diesal_total,
+      petrol_b20diesal_quantity: element.petrol_b20diesal_quantity,
+      petrol_b20diesal_price: element.petrol_b20diesal_price,
+      petrol_b20diesal_paymentType: element.petrol_b20diesal_paymentType,
+
+      petrol_e20gsh_total: element.petrol_e20gsh_total,
+      petrol_e20gsh_quantity: element.petrol_e20gsh_quantity,
+      petrol_e20gsh_price: element.petrol_e20gsh_price,
+      petrol_e20gsh_paymentType: element.petrol_e20gsh_paymentType,
+
+      petrol_fsdiesal_total: element.petrol_fsdiesal_total,
+      petrol_fsdiesal_quantity: element.petrol_fsdiesal_quantity,
+      petrol_fsdiesal_price: element.petrol_fsdiesal_price,
+      petrol_fsdiesal_paymentType: element.petrol_fsdiesal_paymentType,
+
+      petrol_fsgsh91_total: element.petrol_fsgsh91_total,
+      petrol_fsgsh91_quantity: element.petrol_fsgsh91_quantity,
+      petrol_fsgsh91_price: element.petrol_fsgsh91_price,
+      petrol_fsgsh91_paymentType: element.petrol_fsgsh91_paymentType,
+
+      petrol_vpdiesal_total: element.petrol_vpdiesal_total,
+      petrol_vpdiesal_quantity: element.petrol_vpdiesal_quantity,
+      petrol_vpdiesal_price: element.petrol_vpdiesal_price,
+      petrol_vpdiesal_paymentType: element.petrol_vpdiesal_paymentType,
+
+      petrol_vpgsh95_total: element.petrol_vpgsh95_total,
+      petrol_vpgsh95_quantity: element.petrol_vpgsh95_quantity,
+      petrol_vpgsh95_price: element.petrol_vpgsh95_price,
+      petrol_vpgsh95_paymentType: element.petrol_vpgsh95_paymentType,
+
+      engineoil_attach: element.engineoil_attach,
+      engineoil_b20diesal_total: element.engineoil_b20diesal_total,
+      engineoil_b20diesal_price: element.engineoil_b20diesal_price,
+
+      engineoil_e20gsh_total: element.engineoil_e20gsh_total,
+      engineoil_e20gsh_price: element.engineoil_e20gsh_price,
+
+      engineoil_fsdiesal_total: element.engineoil_fsdiesal_total,
+      engineoil_fsdiesal_price: element.engineoil_fsdiesal_price,
+
+      carcare_attach: element.carcare_attach,
+      carcare_size_s_washcar_total: element.carcare_size_s_washcar_total,
+      carcare_size_s_washcar_price: element.carcare_size_s_washcar_price,
+      carcare_size_s_wax_total: element.carcare_size_s_wax_total,
+      carcare_size_s_wax_price: element.carcare_size_s_wax_price,
+
+      carcare_size_m_washcar_total: element.carcare_size_m_washcar_total,
+      carcare_size_m_washcar_price: element.carcare_size_m_washcar_price,
+      carcare_size_m_wax_total: element.carcare_size_m_wax_total,
+      carcare_size_m_wax_price: element.carcare_size_m_wax_price,
+
+      carcare_size_l_washcar_total: element.carcare_size_l_washcar_total,
+      carcare_size_l_washcar_price: element.carcare_size_l_washcar_price,
+      carcare_size_l_wax_total: element.carcare_size_l_wax_total,
+      carcare_size_l_wax_price: element.carcare_size_l_wax_price,
+
+      conveniencestore_attach: element.conveniencestore_attach,
+      conveniencestore_food_total: element.conveniencestore_food_total,
+      conveniencestore_food_price: element.conveniencestore_food_price,
+
+      conveniencestore_nonfood_total: element.conveniencestore_nonfood_total,
+      conveniencestore_nonfood_price: element.conveniencestore_nonfood_price,
+
+      cafe_attach: element.cafe_attach,
+      cafe_revenuecafe_total: element.cafe_revenuecafe_total,
+      cafe_revenuecafe_price: element.cafe_revenuecafe_price,
+      Approve: element.Approve,
+      Send: element.Send,
+      CreateBy: element.CreateBy,
+      Time_Diff: element.Time_Diff
+    };
+
+    await this.setState({
+      showAttach: true,
+      addNewDataModal: true,
+      editData: resultL,
+      actionType: "Edit"
+    });
   }
 
   /**
@@ -755,7 +904,7 @@ class RevenueListForm extends Component {
                 color="primary"
                 className="caret btn-sm mr-10"
               >
-                Add Expense List
+                Add Revenue List
                 <i className="zmdi zmdi-plus"></i>
               </a>
             </div>
@@ -867,7 +1016,7 @@ class RevenueListForm extends Component {
                 color="primary"
                 className="caret btn-sm mr-10"
               >
-                Add Expense List
+                Add Revenue List
                 <i className="zmdi zmdi-plus"></i>
               </a>
             </div>
@@ -932,11 +1081,13 @@ class RevenueListForm extends Component {
               )
               .map((item, key) => (
                 <tr key={key}>
+                  <td>{this.filterBranch(item.FK_Branch)}</td>
                   <td>
-                    <h5 className="mb-5 fw-bold">{item.Description}</h5>
+                    {" "}
+                    <h5 className="mb-5 fw-bold">
+                      <a href="#">{item.Description}</a>
+                    </h5>
                   </td>
-                  <td>{item.Invoice_No}</td>
-                  <td>{roundN(item.Total, 2)}</td>
                   <td className="d-flex justify-content-start">
                     <span
                       className={`badge badge-xs ${
@@ -952,22 +1103,7 @@ class RevenueListForm extends Component {
                       <span className="small">{item.Time_Diff}</span>
                     </div>
                   </td>
-                  <td className="list-action">
-                    <button
-                      type="button"
-                      className="rct-link-btn"
-                      onClick={() => this.onEditData(item)}
-                    >
-                      <i className="ti-pencil"></i>
-                    </button>
-                    <button
-                      type="button"
-                      className="rct-link-btn"
-                      onClick={() => this.onDelete(item)}
-                    >
-                      <i className="ti-close"></i>
-                    </button>
-                  </td>
+                  <td>{item.CreateBy}</td>
                 </tr>
               ))}
         </tbody>
@@ -1018,7 +1154,7 @@ class RevenueListForm extends Component {
                   </td>
                   <td>{item.CreateBy}</td>
                   {!isMobile ? (
-                    <td>{moment(item.CreateDate).format("DD/MM/YYYY")}</td>
+                    <td>{moment(item.BillDate).format("DD/MM/YYYY")}</td>
                   ) : (
                     ""
                   )}
@@ -1182,7 +1318,7 @@ class RevenueListForm extends Component {
         {this.state.showAttach ? (
           <Dialog
             fullWidth={true}
-            maxWidth={"lg"}
+            maxWidth={"xl"}
             open={this.state.showAttach}
             TransitionComponent={this.Transition}
             keepMounted
@@ -1195,7 +1331,10 @@ class RevenueListForm extends Component {
                 id="alert-dialog-slide-description"
                 style={{ display: "flex", justifyContent: "center" }}
               >
-                <RevenueCardForm></RevenueCardForm>
+                <RevenueCardForm
+                  dataInit={this.state.editData}
+                  switchMode={this.state.actionType}
+                ></RevenueCardForm>
               </DialogContentText>
             </DialogContent>
           </Dialog>

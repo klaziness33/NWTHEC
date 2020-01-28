@@ -18,7 +18,6 @@ import IntlMessages from "Util/IntlMessages";
 // rct card box
 import RctCollapsibleCard from "Components/RctCollapsibleCard/RctCollapsibleCard";
 
-
 import Grid from "@material-ui/core/Grid";
 import {
   MuiPickersUtilsProvider,
@@ -264,6 +263,8 @@ class RevenueCardForm extends Component {
   async setProductByType() {}
 
   async showAttactImage(actionFromP) {
+    if ((actionFromP === "") | (actionFromP === undefined)) return;
+
     await this.setState({
       showAttach: true,
       imageUrl: actionFromP
@@ -285,7 +286,16 @@ class RevenueCardForm extends Component {
 
   componentDidMount() {
     this.setState({ branch: this.props.masterReducer.data });
-    this.setState({ paymentType: this.props.masterReducer.paymentType });
+    this.setState({
+      paymentType: this.props.masterReducer.paymentType
+    });
+    if (this.props.switchMode !== "Add") {
+      this.setState({ addNewDataDetail: this.props.dataInit });
+      this.setState({
+        readOnly: true,
+        showAttach: false
+      });
+    }
   }
 
   render() {
@@ -309,7 +319,7 @@ class RevenueCardForm extends Component {
                     <Grid container>
                       <KeyboardDatePicker
                         style={{
-                          height: 53.63,
+                          height: 56,
                           width: 251
                         }}
                         inputVariant="outlined"
@@ -1030,9 +1040,20 @@ class RevenueCardForm extends Component {
                   type="file"
                 />
                 {readOnly ? (
-                  <label>
+                  <label
+                    style={{
+                      visibility:
+                        addNewDataDetail.petrol_attach === null
+                          ? "hidden"
+                          : "visible"
+                    }}
+                  >
                     <Button
-                      onClick={() => this.showAttactImage("Petrol")}
+                      onClick={() =>
+                        this.showAttactImage(
+                          addNewDataDetail.petrol_attach
+                        )
+                      }
                       variant="contained"
                       color="primary"
                       component="span"
@@ -1047,21 +1068,20 @@ class RevenueCardForm extends Component {
                 ) : (
                   <label htmlFor="contained-button-file-petrol">
                     {addNewDataDetail.petrol_attach ? (
-                      ""
-                      // <p>
-                      //   <span className="material-icons mr-10">attachment</span>
-                      //   <a
-                      //     href="#"
-                      //     onClick={() =>
-                      //       this.showAttactImage(
-                      //         addNewDataDetail.petrol_attach.base64
-                      //       )
-                      //     }
-                      //   >
-                      //     {addNewDataDetail.petrol_attach &&
-                      //       addNewDataDetail.petrol_attach.name}
-                      //   </a>
-                      // </p>
+                      <p>
+                        <span className="material-icons mr-10">attachment</span>
+                        <a
+                          href="#"
+                          onClick={() =>
+                            this.showAttactImage(
+                              addNewDataDetail.petrol_attach.base64
+                            )
+                          }
+                        >
+                          {addNewDataDetail.petrol_attach &&
+                            addNewDataDetail.petrol_attach.name}
+                        </a>
+                      </p>
                     ) : (
                       ""
                     )}
@@ -1384,9 +1404,18 @@ class RevenueCardForm extends Component {
                   type="file"
                 />
                 {readOnly ? (
-                  <label>
+                  <label
+                    style={{
+                      visibility:
+                        addNewDataDetail.engineoil_attach === null
+                          ? "hidden"
+                          : "visible"
+                    }}
+                  >
                     <Button
-                      onClick={() => this.showAttactImage("Engine Oil")}
+                      onClick={() =>
+                        this.showAttactImage(addNewDataDetail.engineoil_attach)
+                      }
                       variant="contained"
                       color="primary"
                       component="span"
@@ -1887,9 +1916,20 @@ class RevenueCardForm extends Component {
                   type="file"
                 />
                 {readOnly ? (
-                  <label>
+                  <label
+                    style={{
+                      visibility:
+                        addNewDataDetail.carcare_attach === null
+                          ? "hidden"
+                          : "visible"
+                    }}
+                  >
                     <Button
-                      onClick={() => this.showAttactImage("Car Care")}
+                      onClick={() =>
+                        this.showAttactImage(
+                          addNewDataDetail.carcare_attach
+                        )
+                      }
                       variant="contained"
                       color="primary"
                       component="span"
@@ -2159,9 +2199,20 @@ class RevenueCardForm extends Component {
                   type="file"
                 />
                 {readOnly ? (
-                  <label>
+                  <label
+                    style={{
+                      visibility:
+                        addNewDataDetail.conveniencestore_attach === null
+                          ? "hidden"
+                          : "visible"
+                    }}
+                  >
                     <Button
-                      onClick={() => this.showAttactImage("Convenience Store")}
+                      onClick={() =>
+                        this.showAttactImage(
+                          addNewDataDetail.conveniencestore_attach
+                        )
+                      }
                       variant="contained"
                       color="primary"
                       component="span"
@@ -2329,9 +2380,18 @@ class RevenueCardForm extends Component {
                   type="file"
                 />
                 {readOnly ? (
-                  <label>
+                  <label
+                    style={{
+                      visibility:
+                        addNewDataDetail.cafe_attach !== null
+                          ? "hidden"
+                          : "visible"
+                    }}
+                  >
                     <Button
-                      onClick={() => this.showAttactImage("Cafe")}
+                      onClick={() =>
+                        this.showAttactImage(addNewDataDetail.cafe_attach)
+                      }
                       variant="contained"
                       color="primary"
                       component="span"
@@ -2429,7 +2489,14 @@ class RevenueCardForm extends Component {
                   id="alert-dialog-slide-description"
                   style={{ display: "flex", justifyContent: "center" }}
                 >
-                  <img src={this.state.imageUrl}></img>
+                  {this.props.switchMode === "Add" ? (
+                    <img src={this.state.imageUrl}></img>
+                  ) : (
+                    <img
+                      src={require("../../../assets/data/revenue/" +
+                        this.state.imageUrl)}
+                    ></img>
+                  )}
                 </DialogContentText>
               </DialogContent>
             </Dialog>

@@ -3,7 +3,7 @@
 import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import { Form, FormGroup, Label, Input } from "reactstrap";
-
+import MatButton from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
@@ -318,6 +318,7 @@ class RevenueCardForm extends Component {
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
                       <KeyboardDatePicker
+                        readOnly={readOnly}
                         style={{
                           height: 56,
                           width: 251
@@ -1050,9 +1051,7 @@ class RevenueCardForm extends Component {
                   >
                     <Button
                       onClick={() =>
-                        this.showAttactImage(
-                          addNewDataDetail.petrol_attach
-                        )
+                        this.showAttactImage(addNewDataDetail.petrol_attach)
                       }
                       variant="contained"
                       color="primary"
@@ -1090,6 +1089,10 @@ class RevenueCardForm extends Component {
                       color="primary"
                       component="span"
                     >
+                      <i
+                        style={{ paddingRight: 7 }}
+                        className="zmdi zmdi-attachment zmdi-hc-lg"
+                      ></i>
                       Attach Document
                     </Button>
                   </label>
@@ -1452,6 +1455,10 @@ class RevenueCardForm extends Component {
                       color="primary"
                       component="span"
                     >
+                      <i
+                        style={{ paddingRight: 7 }}
+                        className="zmdi zmdi-attachment zmdi-hc-lg"
+                      ></i>
                       Attach Document
                     </Button>
                   </label>
@@ -1926,9 +1933,7 @@ class RevenueCardForm extends Component {
                   >
                     <Button
                       onClick={() =>
-                        this.showAttactImage(
-                          addNewDataDetail.carcare_attach
-                        )
+                        this.showAttactImage(addNewDataDetail.carcare_attach)
                       }
                       variant="contained"
                       color="primary"
@@ -1966,6 +1971,10 @@ class RevenueCardForm extends Component {
                       color="primary"
                       component="span"
                     >
+                      <i
+                        style={{ paddingRight: 7 }}
+                        className="zmdi zmdi-attachment zmdi-hc-lg"
+                      ></i>
                       Attach Document
                     </Button>
                   </label>
@@ -2249,6 +2258,10 @@ class RevenueCardForm extends Component {
                       color="primary"
                       component="span"
                     >
+                      <i
+                        style={{ paddingRight: 7 }}
+                        className="zmdi zmdi-attachment zmdi-hc-lg"
+                      ></i>
                       Attach Document
                     </Button>
                   </label>
@@ -2428,6 +2441,10 @@ class RevenueCardForm extends Component {
                       color="primary"
                       component="span"
                     >
+                      <i
+                        style={{ paddingRight: 7 }}
+                        className="zmdi zmdi-attachment zmdi-hc-lg"
+                      ></i>
                       Attach Document
                     </Button>
                   </label>
@@ -2439,35 +2456,46 @@ class RevenueCardForm extends Component {
                 style={{ display: "flex", justifyContent: "center" }}
                 className="table-responsive"
               >
-                <label>
-                  <Button
-                    onClick={() => this.onClear()}
-                    variant="contained"
-                    color="primary"
-                    component="span"
-                  >
-                    <i
-                      style={{ paddingRight: 5 }}
-                      className="zmdi zmdi-mail-send"
-                    ></i>{" "}
-                    Clear
-                  </Button>
-                </label>
+                <MatButton
+                  onClick={() => this.onClear()}
+                  variant="contained"
+                  className="btn-secondary mr-10 mb-10 text-white"
+                >
+                  Clear
+                </MatButton>
 
-                <label style={{ paddingLeft: 10 }}>
-                  <Button
-                    onClick={() => this.onSend()}
-                    variant="contained"
-                    color="primary"
-                    component="span"
-                  >
-                    <i
-                      style={{ paddingRight: 5 }}
-                      className="zmdi zmdi-mail-send"
-                    ></i>{" "}
-                    Send
-                  </Button>
-                </label>
+                <MatButton
+                  onClick={() => this.onSend()}
+                  variant="contained"
+                  className="btn-info mr-10 mb-10 text-white"
+                >
+                  <i
+                    style={{ paddingRight: 7 }}
+                    className="zmdi zmdi-mail-send zmdi-hc-lg"
+                  ></i>
+                  Send
+                </MatButton>
+
+                <MatButton
+                  variant="contained"
+                  className="btn-success mr-10 mb-10 text-white"
+                >
+                  <i
+                    style={{ paddingRight: 7 }}
+                    className="zmdi zmdi-check zmdi-hc-lg"
+                  ></i>
+                  Approve
+                </MatButton>
+                <MatButton
+                  variant="contained"
+                  className="btn-danger mr-10 mb-10 text-white"
+                >
+                  <i
+                    style={{ paddingRight: 7 }}
+                    className="zmdi zmdi-close zmdi-hc-lg"
+                  ></i>
+                  Disapprove
+                </MatButton>
               </div>
             </RctCollapsibleCard>
           </div>

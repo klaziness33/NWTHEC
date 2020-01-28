@@ -7,9 +7,12 @@ import MatButton from "@material-ui/core/Button";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Slide from "@material-ui/core/Slide";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import {
@@ -1031,11 +1034,11 @@ class RevenueListForm extends Component {
     if (isMobile) {
       return (
         <tr>
-          <th style={{ width: "35%" }}>Branch</th>
-          <th style={{ width: "35%" }}>Description</th>
-          <th style={{ width: "10%" }}>Status</th>
+          <th style={{ width: "50%" }}>Description</th>
+          <th style={{ width: "20%" }}>Branch</th>
           <th style={{ width: "10%" }}>CreateBy</th>
           <th style={{ width: "10%" }}>CreateDate</th>
+          <th style={{ width: "10%" }}>Status</th>
         </tr>
       );
     } else {
@@ -1057,11 +1060,11 @@ class RevenueListForm extends Component {
             />
           </th>
           <th style={{ width: "3%" }}>No.</th>
-          <th style={{ width: "20%" }}>Branch</th>
-          <th style={{ width: "35%" }}>Description</th>
-          <th style={{ width: "10%" }}>Status</th>
+          <th style={{ width: "45%" }}>Description</th>
+          <th style={{ width: "10%" }}>Branch</th>
           <th style={{ width: "10%" }}>CreateBy</th>
           <th style={{ width: "10%" }}>CreateDate</th>
+          <th style={{ width: "10%" }}>Status</th>
           <th style={{ width: "10%" }}>Action</th>
         </tr>
       );
@@ -1081,13 +1084,17 @@ class RevenueListForm extends Component {
               )
               .map((item, key) => (
                 <tr key={key}>
-                  <td>{this.filterBranch(item.FK_Branch)}</td>
                   <td>
                     {" "}
                     <h5 className="mb-5 fw-bold">
-                      <a href="#">{item.Description}</a>
+                      <a href="#" onClick={() => this.onEditData(item)}>
+                        {item.Description}
+                      </a>
                     </h5>
                   </td>
+                  <td>{this.filterBranch(item.FK_Branch)}</td>
+                  <td>{item.CreateBy}</td>
+                  <td>{item.BillDate}</td>
                   <td className="d-flex justify-content-start">
                     <span
                       className={`badge badge-xs ${
@@ -1103,7 +1110,6 @@ class RevenueListForm extends Component {
                       <span className="small">{item.Time_Diff}</span>
                     </div>
                   </td>
-                  <td>{item.CreateBy}</td>
                 </tr>
               ))}
         </tbody>
@@ -1131,12 +1137,20 @@ class RevenueListForm extends Component {
                     />
                   </td>
                   {!isMobile ? <td>{item.No}</td> : ""}
-                  <td>{this.filterBranch(item.FK_Branch)}</td>
                   <td>
                     <h5 className="mb-5 fw-bold">
-                      <a href="#">{item.Description}</a>
+                      <a href="#" onClick={() => this.onEditData(item)}>
+                        {item.Description}
+                      </a>
                     </h5>
                   </td>
+                  <td>{this.filterBranch(item.FK_Branch)}</td>
+                  <td>{item.CreateBy}</td>
+                  {!isMobile ? (
+                    <td>{moment(item.BillDate).format("DD/MM/YYYY")}</td>
+                  ) : (
+                    ""
+                  )}
                   <td className="d-flex justify-content-start">
                     <span
                       className={`badge badge-xs ${
@@ -1152,12 +1166,6 @@ class RevenueListForm extends Component {
                       <span className="small">{item.Time_Diff}</span>
                     </div>
                   </td>
-                  <td>{item.CreateBy}</td>
-                  {!isMobile ? (
-                    <td>{moment(item.BillDate).format("DD/MM/YYYY")}</td>
-                  ) : (
-                    ""
-                  )}
                   <td className="list-action">
                     <button
                       type="button"
@@ -1322,11 +1330,27 @@ class RevenueListForm extends Component {
             open={this.state.showAttach}
             TransitionComponent={this.Transition}
             keepMounted
-            onClose={this.handleClose}
             aria-labelledby="alert-dialog-slide-title"
             aria-describedby="alert-dialog-slide-description"
           >
             <DialogContent>
+              <div className="row justify-content-between">
+                <DialogTitle id="form-dialog-title">
+                  {this.state.actionType === "Add"
+                    ? this.state.actionType
+                    : this.state.actionType +
+                      " : " +
+                      this.state.editData.Description}
+                </DialogTitle>
+                <IconButton
+                  style={{ justifyContent: "flex-end" }}
+                  color="inherit"
+                  onClick={this.handleClose}
+                  aria-label="Close"
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
               <DialogContentText
                 id="alert-dialog-slide-description"
                 style={{ display: "flex", justifyContent: "center" }}

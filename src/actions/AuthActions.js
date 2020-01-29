@@ -41,6 +41,11 @@ import axios from "axios";
 import { encryptData, decryptData } from "../helpers/helpers";
 const querystring = require("querystring");
 
+export const clearUser = () => async dispatch => {
+  localStorage.removeItem(STORAGE_USERMODELS);
+  dispatch({ type: LOGIN_USER_SUCCESS, payload: null });
+};
+
 export const activeSession = (userP, TokenP) => async dispatch => {
   dispatch({ type: ACTIVESESSION_START });
   await axios

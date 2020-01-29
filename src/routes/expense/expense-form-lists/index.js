@@ -58,7 +58,9 @@ import {
   updateDataExpense,
   addDataExpense,
   deleteDataExpense,
-  sendDataExpense
+  sendDataExpense,
+  activeSession,
+  clearUser
 } from "Actions";
 
 import { isMobile } from "react-device-detect";
@@ -70,9 +72,20 @@ import {
   parseDateInt,
   parseDateString,
   convertDateToWebservice,
-  addPropsToObject
+  addPropsToObject,
+  decryptData
 } from "../../../helpers/helpers";
 import { CSVLink } from "react-csv";
+import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import Slide from "@material-ui/core/Slide";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+
+import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../../../store/storages";
 
 const moment = require("moment");
 class ExpenseForm extends Component {
@@ -82,6 +95,9 @@ class ExpenseForm extends Component {
 
   dataBranch = ["Petrol 001", "Petrol 002"];
   state = {
+    sessionTitle: "",
+    sessionContent: "",
+    sessionStatus: false,
     all: false,
     data: null,
     selectedData: null,
@@ -118,6 +134,11 @@ class ExpenseForm extends Component {
   searchData = this.searchData.bind(this);
   changeBranch = this.changeBranch.bind(this);
 
+  Transition = React.forwardRef(function Transition(props, ref) {
+    if (props === undefined || ref === undefined) return;
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
+
   handleClick(e, index) {
     e.preventDefault();
     this.setState({
@@ -125,7 +146,75 @@ class ExpenseForm extends Component {
     });
   }
 
+  getUserModels() {
+    let usermodelsL = localStorage.getItem(STORAGE_USERMODELS);
+    if (usermodelsL === null) return "";
+    return JSON.parse(decryptData(usermodelsL));
+  }
+
+  async activeSession() {
+    let usermodelsL = this.getUserModels();
+    let tokenL = localStorage.getItem(STORAGE_TOKEN);
+    await this.props.activeSession(usermodelsL.user_Name, tokenL);
+    if (this.props.authUser.session.description === "success") {
+      if (this.props.authUser.session.data === "Valid session") return;
+      if (this.props.authUser.session.data === "Session timeout")
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: "Session Timeout",
+          sessionContent:
+            "You are timed out due to inactivity you must push accept and login again."
+        });
+      if (this.props.authUser.session.data === "Invalid session")
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: "Invalid session",
+          sessionContent:
+            "Your session is Invalid. due to might have another person try to login with this account."
+        });
+    }
+  }
+
+  async onAccept() {
+    await this.props.clearUser();
+    this.props.history.push("/signin");
+  }
+
+  sessionDialog() {
+    const { sessionDialog, sessionTitle, sessionContent } = this.state;
+    return (
+      <div>
+        <Dialog
+          open={sessionDialog}
+          TransitionComponent={this.Transition}
+          keepMounted
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            {sessionTitle}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {sessionContent}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => this.onAccept()}
+              variant="contained"
+              className="btn-primary text-white mr-10"
+            >
+              Accept
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+
   componentDidMount() {
+    this.activeSession();
     this.loadData();
     this.shopMoreTap(true);
     this.tabArrange();
@@ -1202,6 +1291,8 @@ class ExpenseForm extends Component {
             </Button>
           </ModalFooter>
         </Modal>
+
+        {this.sessionDialog()}
       </div>
     );
   }
@@ -1218,5 +1309,7 @@ export default connect(mapStateToProps, {
   updateDataExpense,
   addDataExpense,
   deleteDataExpense,
-  sendDataExpense
+  sendDataExpense,
+  activeSession,
+  clearUser
 })(ExpenseForm);

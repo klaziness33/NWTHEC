@@ -33,6 +33,12 @@ class Signin extends Component {
     password: "P@ssw0rd"
   };
 
+  componentDidMount() {
+    if (this.props.user !== null)
+      this.props.history.push("/app/expense/expense-management");
+    else localStorage.clear();
+  }
+
   /**
    * On User Login
    */

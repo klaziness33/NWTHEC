@@ -69,7 +69,8 @@ import {
   addDataExpense,
   deleteDataExpense,
   sendDataExpense,
-  activeSession
+  activeSession,
+  clearUser
 } from "Actions";
 
 import { isMobile } from "react-device-detect";
@@ -198,6 +199,7 @@ class RevenueListForm extends Component {
   };
 
   Transition = React.forwardRef(function Transition(props, ref) {
+    if (props === undefined || ref === undefined) return;
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
@@ -242,11 +244,9 @@ class RevenueListForm extends Component {
     }
   }
 
-  onAccept() {
-    this.setState({ sessionDialog: false });
-    console.log(this.props.navigation);
-    
-    //this.props.navigation.navigate("/app/vendor/vendor-management");
+  async onAccept() {
+    await this.props.clearUser();
+    this.props.history.push("/signin");
   }
 
   sessionDialog() {
@@ -1469,5 +1469,6 @@ export default connect(mapStateToProps, {
   addDataExpense,
   deleteDataExpense,
   sendDataExpense,
-  activeSession
+  activeSession,
+  clearUser
 })(RevenueListForm);

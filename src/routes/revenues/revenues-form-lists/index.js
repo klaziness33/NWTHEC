@@ -68,22 +68,26 @@ import {
   updateDataExpense,
   addDataExpense,
   deleteDataExpense,
-  sendDataExpense
+  sendDataExpense,
+  activeSession
 } from "Actions";
 
 import { isMobile } from "react-device-detect";
+import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../../../store/storages";
 
 import "date-fns";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import {
-  roundN,
   parseDateInt,
   parseDateString,
   convertDateToWebservice,
-  addPropsToObject
+  addPropsToObject,
+  decryptData
 } from "../../../helpers/helpers";
 import { CSVLink } from "react-csv";
 import RevenueCardForm from "../revenues-form-card";
+
+import DialogActions from "@material-ui/core/DialogActions";
 
 const moment = require("moment");
 class RevenueListForm extends Component {
@@ -93,6 +97,9 @@ class RevenueListForm extends Component {
 
   dataBranch = ["Petrol 001", "Petrol 002"];
   state = {
+    sessionTitle: "",
+    sessionContent: "",
+    sessionStatus: false,
     showAttach: false,
     all: false,
     data: null,
@@ -206,7 +213,77 @@ class RevenueListForm extends Component {
     });
   }
 
+  getUserModels() {
+    let usermodelsL = localStorage.getItem(STORAGE_USERMODELS);
+    if (usermodelsL === null) return "";
+    return JSON.parse(decryptData(usermodelsL));
+  }
+
+  async activeSession() {
+    let usermodelsL = this.getUserModels();
+    let tokenL = localStorage.getItem(STORAGE_TOKEN);
+    await this.props.activeSession(usermodelsL.user_Name, tokenL);
+    if (this.props.authUser.session.description === "success") {
+      if (this.props.authUser.session.data === "Valid session") return;
+      if (this.props.authUser.session.data === "Session timeout")
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: "Session Timeout",
+          sessionContent:
+            "You are timed out due to inactivity you must push accept and login again."
+        });
+      if (this.props.authUser.session.data === "Invalid session")
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: "Invalid session",
+          sessionContent:
+            "Your session is Invalid. due to might have another person try to login with this account."
+        });
+    }
+  }
+
+  onAccept() {
+    this.setState({ sessionDialog: false });
+    console.log(this.props.navigation);
+    
+    //this.props.navigation.navigate("/app/vendor/vendor-management");
+  }
+
+  sessionDialog() {
+    const { sessionDialog, sessionTitle, sessionContent } = this.state;
+    return (
+      <div>
+        <Dialog
+          open={sessionDialog}
+          TransitionComponent={this.Transition}
+          keepMounted
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            {sessionTitle}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {sessionContent}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => this.onAccept()}
+              variant="contained"
+              className="btn-primary text-white mr-10"
+            >
+              Accept
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+
   componentDidMount() {
+    this.activeSession();
     this.loadData();
     this.shopMoreTap(true);
     this.tabArrange();
@@ -1323,6 +1400,15 @@ class RevenueListForm extends Component {
           onConfirm={() => this.onConfirmUpdateMultiple()}
         />
 
+        <DeleteConfirmationDialog
+          ref="sessionDialog"
+          title="Session Invalid!"
+          message="This will delete data permanently."
+          onConfirm={() => this.deleteDataPermanently()}
+        />
+
+        {this.sessionDialog()}
+
         {this.state.showAttach ? (
           <Dialog
             fullWidth={true}
@@ -1382,5 +1468,6 @@ export default connect(mapStateToProps, {
   updateDataExpense,
   addDataExpense,
   deleteDataExpense,
-  sendDataExpense
+  sendDataExpense,
+  activeSession
 })(RevenueListForm);

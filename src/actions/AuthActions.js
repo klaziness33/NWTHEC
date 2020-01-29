@@ -7,6 +7,12 @@ import "firebase/auth";
 
 import { NotificationManager } from "react-notifications";
 import {
+  ACTIVESESSION_START,
+  ACTIVESESSION_END,
+  ACTIVESESSION_ERROR,
+  GETIP_START,
+  GETIP_END,
+  GETIP_ERROR,
   LOGIN_USER,
   LOGIN_USER_SUCCESS,
   LOGIN_USER_FAILURE,
@@ -26,22 +32,75 @@ import {
   STORAGE_USERMODELS,
   STORAGE_TOKEN,
   STORAGE_BRANCH,
-  STORAGE_PAYMENTTYPE
+  STORAGE_PAYMENTTYPE,
+  STORAGE_SESSION
 } from "../store/storages";
 import { NOTIFY_NETWORKERROR } from "../notifications/notifications";
 import AppConfig from "../constants/AppConfig";
 import axios from "axios";
 import { encryptData, decryptData } from "../helpers/helpers";
-
 const querystring = require("querystring");
+
+export const activeSession = (userP, TokenP) => async dispatch => {
+  dispatch({ type: ACTIVESESSION_START });
+  await axios
+    .post(
+      AppConfig.serviceUrl + "api/accounts/activesession/",
+      {
+        User_Name: userP,
+        Token: TokenP
+      },
+      {
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+        }
+      }
+    )
+    .then(response => {
+      if (response.data.description !== RESPONSE_SUCCESS) {
+        dispatch({ type: ACTIVESESSION_ERROR });
+      } else {
+        dispatch({
+          type: ACTIVESESSION_END,
+          payload: response.data
+        });
+        localStorage.setItem(
+          STORAGE_SESSION,
+          encryptData(JSON.stringify(response.data))
+        );
+      }
+    })
+    .catch(error => catchError(error, dispatch, ACTIVESESSION_ERROR));
+};
 
 /**
  * Redux Action To Sigin User With Business central (navision)
  */
 export const signinUserInBC = (user, history) => async dispatch => {
   const { email, password } = user;
-  dispatch({ type: LOGIN_USER });
+  let countrycodeL = "";
+  let countrynameL = "";
+  let latitudeL = "";
+  let longitudeL = "";
+  let ipv4L = "";
 
+  dispatch({ type: GETIP_START });
+  await axios
+    .get("https://geoip-db.com/json/", {
+      headers: { "content-type": "application/json; charset=utf-8" }
+    })
+    .then(response => {
+      countrycodeL = response.data.country_code;
+      countrynameL = response.data.country_name;
+      latitudeL = response.data.latitude;
+      longitudeL = response.data.longitude;
+      ipv4L = response.data.IPv4;
+      dispatch({ type: GETIP_END });
+    })
+    .catch(error => catchError(error, dispatch, GETIP_ERROR));
+
+  dispatch({ type: LOGIN_USER });
   await axios
     .post(
       AppConfig.serviceUrl + "token",
@@ -65,6 +124,11 @@ export const signinUserInBC = (user, history) => async dispatch => {
     .post(
       AppConfig.serviceUrl + "api/accounts/signin",
       {
+        IPv4: ipv4L,
+        Country_Code: countrycodeL,
+        Country_Name: countrynameL,
+        Latitude: latitudeL,
+        Longitude: longitudeL,
         User_Name: email,
         Password: password,
         Token: localStorage.getItem(STORAGE_TOKEN)
@@ -89,7 +153,6 @@ export const signinUserInBC = (user, history) => async dispatch => {
       }
     })
     .catch(error => catchError(error, dispatch, LOGIN_USER_FAILURE));
-
 
   dispatch({ type: FETCH_START_PAYMENTTYPE });
   await axios
@@ -196,10 +259,37 @@ export const signinUserInFirebase = (user, history) => dispatch => {
 export const logoutUserFromFirebase = () => async dispatch => {
   let userL = JSON.parse(decryptData(localStorage.getItem(STORAGE_USERMODELS)));
   let tokenL = await localStorage.getItem(STORAGE_TOKEN);
+
+  let countrycodeL = "";
+  let countrynameL = "";
+  let latitudeL = "";
+  let longitudeL = "";
+  let ipv4L = "";
+
+  dispatch({ type: GETIP_START });
+  await axios
+    .get("https://geoip-db.com/json/", {
+      headers: { "content-type": "application/json; charset=utf-8" }
+    })
+    .then(response => {
+      countrycodeL = response.data.country_code;
+      countrynameL = response.data.country_name;
+      latitudeL = response.data.latitude;
+      longitudeL = response.data.longitude;
+      ipv4L = response.data.IPv4;
+      dispatch({ type: GETIP_END });
+    })
+    .catch(error => catchError(error, dispatch, GETIP_ERROR));
+
   await axios
     .post(
       AppConfig.serviceUrl + "api/accounts/signout",
       {
+        IPv4: ipv4L,
+        Country_Code: countrycodeL,
+        Country_Name: countrynameL,
+        Latitude: latitudeL,
+        Longitude: longitudeL,
         User_Name: userL.user_Name,
         Token: tokenL
       },

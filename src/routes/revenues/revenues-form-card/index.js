@@ -26,7 +26,7 @@ import {
 import DateFnsUtils from "@date-io/date-fns";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { connect } from "react-redux";
-import { sendRevenue } from "../../../actions";
+import { sendRevenue, activeSession } from "../../../actions";
 import {
   parseDateInt,
   parseDateString,
@@ -2543,4 +2543,6 @@ const mapStateToProps = state => {
   return { masterReducer, authUser };
 };
 
-export default connect(mapStateToProps, { sendRevenue })(RevenueCardForm);
+export default connect(mapStateToProps, { sendRevenue, activeSession })(
+  RevenueCardForm
+);

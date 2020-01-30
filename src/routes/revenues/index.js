@@ -16,7 +16,7 @@ const Forms = ({ match }) => (
       <Redirect
         exact
         from={`${match.url}/`}
-        to={`${match.url}/revenues-management-card`}
+        to={`${match.url}/revenues-management-list`}
       />
       <Route
         path={`${match.url}/revenues-management-card`}

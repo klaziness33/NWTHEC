@@ -11,9 +11,9 @@ import { AsyncExpenseComponent } from "Components/AsyncComponent/AsyncComponent"
 const Forms = ({ match }) => (
   <div className="content-wrapper">
     <Switch>
-      <Redirect exact from={`${match.url}/`} to={`${match.url}/expense-management`} />
+      <Redirect exact from={`${match.url}/`} to={`${match.url}/expense-management-list`} />
       <Route
-        path={`${match.url}/expense-management`}
+        path={`${match.url}/expense-management-list`}
         component={AsyncExpenseComponent}
       />
     </Switch>

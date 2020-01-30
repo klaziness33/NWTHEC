@@ -221,7 +221,7 @@ class RevenueListForm extends Component {
           sessionDialog: true,
           sessionTitle: "Invalid session",
           sessionContent:
-            "Your session is Invalid. due to might have another person try to login with this account."
+            "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again."
         });
     }
   }
@@ -264,7 +264,20 @@ class RevenueListForm extends Component {
     );
   }
 
+  errorDialog() {
+    setTimeout(async () => {
+      if (this.props.revenueReducer.error)
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: "Invalid Token",
+          sessionContent:
+            "Your Token is Invalid. you must push accept and login again."
+        });
+    }, 1000);
+  }
+
   componentDidMount() {
+    this.errorDialog();
     this.activeSession();
     this.loadData();
     this.shopMoreTap(true);
@@ -278,7 +291,7 @@ class RevenueListForm extends Component {
       arrangeL.push({
         No: index + 1,
         Id: element.Id,
-        BillDate: parseDateInt(element.BillDate),
+        BillDate: element.BillDate,
         FK_Branch: element.Fk_Branch,
         Description: element.Description,
 
@@ -686,8 +699,7 @@ class RevenueListForm extends Component {
           realname: element.petrol_attach
         };
       }
-      console.log(petrol_attachL);
-    
+
       let engineoil_attachL = null;
       if (element.engineoil_attach !== "") {
         engineoil_attachL = {
@@ -704,7 +716,6 @@ class RevenueListForm extends Component {
           realname: element.carcare_attach
         };
       }
-      console.log(carcare_attachL);
 
       let conveniencestore_attachL = null;
       if (element.conveniencestore_attach !== "") {
@@ -726,7 +737,7 @@ class RevenueListForm extends Component {
 
       let resultL = {
         Id: element.Id,
-        BillDate: parseDateString(element.BillDate),
+        BillDate: element.BillDate,
         FK_Branch: element.FK_Branch,
         Description: element.Description,
 
@@ -815,7 +826,7 @@ class RevenueListForm extends Component {
   async onPreviewData(element) {
     let resultL = {
       Id: element.Id,
-      BillDate: parseDateString(element.BillDate),
+      BillDate: element.BillDate,
       FK_Branch: element.FK_Branch,
       Description: element.Description,
 
@@ -1271,8 +1282,7 @@ class RevenueListForm extends Component {
     if (isMobile) {
       return (
         <tr>
-          <th style={{ width: "50%" }}>Description</th>
-          <th style={{ width: "20%" }}>Branch</th>
+          <th style={{ width: "70%" }}>Description</th>
           <th style={{ width: "10%" }}>CreateBy</th>
           <th style={{ width: "10%" }}>CreateDate</th>
           <th style={{ width: "10%" }}>Status</th>
@@ -1297,8 +1307,7 @@ class RevenueListForm extends Component {
             />
           </th>
           <th style={{ width: "3%" }}>No.</th>
-          <th style={{ width: "45%" }}>Description</th>
-          <th style={{ width: "10%" }}>Branch</th>
+          <th style={{ width: "55%" }}>Description</th>
           <th style={{ width: "10%" }}>CreateBy</th>
           <th style={{ width: "10%" }}>CreateDate</th>
           <th style={{ width: "10%" }}>Status</th>
@@ -1329,7 +1338,6 @@ class RevenueListForm extends Component {
                       </a>
                     </h5>
                   </td>
-                  <td>{this.filterBranch(item.FK_Branch)}</td>
                   <td>{item.CreateBy}</td>
                   <td>{item.BillDate}</td>
                   <td className="d-flex justify-content-start">
@@ -1381,7 +1389,6 @@ class RevenueListForm extends Component {
                       </a>
                     </h5>
                   </td>
-                  <td>{this.filterBranch(item.FK_Branch)}</td>
                   <td>{item.CreateBy}</td>
                   {!isMobile ? (
                     <td>{moment(item.BillDate).format("DD/MM/YYYY")}</td>
@@ -1430,13 +1437,9 @@ class RevenueListForm extends Component {
   filterList(arr, value) {
     return this._.filter(arr, function(object) {
       return (
-        object["Total"]
-          .toString()
-          .toLowerCase()
-          .indexOf(value.toLowerCase()) >= 0 ||
         object["Description"].toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
-        object["Invoice_No"].toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
-        moment(object["CreateDate"].toLowerCase())
+        object["CreateBy"].toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
+        moment(object["BillDate"])
           .format("DD/MM/YYYY")
           .indexOf(value.toLowerCase()) >= 0
       );
@@ -1595,6 +1598,7 @@ class RevenueListForm extends Component {
                 style={{ display: "flex", justifyContent: "center" }}
               >
                 <RevenueCardForm
+                  reloadData={this.loadData.bind(this)}
                   closeModal={this.handleClose.bind(this)}
                   dataInit={this.state.editData}
                   switchMode={this.state.actionType}

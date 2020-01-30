@@ -23,20 +23,24 @@ import {
   RESPONSE_NULL
 } from "../actions/response";
 import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../store/storages";
-import { NOTIFY_NETWORKERROR } from "../notifications/notifications";
+import {
+  NOTIFY_NETWORKERROR,
+  UNAUTHORIZED_NETWORKERROR
+} from "../notifications/notifications";
 import AppConfig from "../constants/AppConfig";
 import axios from "axios";
-import {
-  decryptData,
-  convertDateToWebservice,
-  parseDateString,
-  parseDateInt
-} from "../helpers/helpers";
+import { decryptData, convertDateToWebservice } from "../helpers/helpers";
 
 const moment = require("moment");
 
 export const sendRevenue = dataP => async dispatch => {
+  const userL =
+    localStorage.getItem(STORAGE_USERMODELS) === null
+      ? null
+      : JSON.parse(decryptData(localStorage.getItem(STORAGE_USERMODELS)));
+
   let dataObjL = {
+    CreateBy: userL.user_Name,
     BillDate: convertDateToWebservice(dataP.BillDate),
     FK_Branch: dataP.FK_Branch,
     petrol_attach: dataP.petrol_attach,
@@ -104,7 +108,7 @@ export const sendRevenue = dataP => async dispatch => {
     })
     .then(response => {
       if (response.data.description !== RESPONSE_SUCCESS) {
-        dispatch({ type: LOGIN_USER_FAILURE });
+        dispatch({ type: SEND_ERROR_REVENUE });
         localStorage.clear();
         NotificationManager.error(response.data.data);
       } else {
@@ -218,7 +222,7 @@ export const sendDataRevenue = dataP => async dispatch => {
   dispatch({ type: SEND_END_REVENUE });
 };
 
-export const updateDataRevenue = (dataP) => async dispatch => {
+export const updateDataRevenue = dataP => async dispatch => {
   const userL =
     localStorage.getItem(STORAGE_USERMODELS) === null
       ? null
@@ -372,6 +376,9 @@ const catchError = (error, dispatch, type) => {
   }
   if (error.response.status === 400) {
     NotificationManager.error(NOTIFY_NETWORKERROR);
+  }
+  if (error.response.status === 401) {
+    NotificationManager.error(UNAUTHORIZED_NETWORKERROR);
   }
   return Promise.reject(error);
 };

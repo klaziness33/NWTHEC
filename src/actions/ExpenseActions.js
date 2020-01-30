@@ -23,14 +23,15 @@ import {
   RESPONSE_NULL
 } from "../actions/response";
 import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../store/storages";
-import { NOTIFY_NETWORKERROR } from "../notifications/notifications";
+import {
+  NOTIFY_NETWORKERROR,
+  UNAUTHORIZED_NETWORKERROR
+} from "../notifications/notifications";
 import AppConfig from "../constants/AppConfig";
 import axios from "axios";
 import {
   decryptData,
-  convertDateToWebservice,
-  parseDateString,
-  parseDateInt
+  convertDateToWebservice
 } from "../helpers/helpers";
 
 const catchError = (error, dispatch, type) => {
@@ -43,6 +44,9 @@ const catchError = (error, dispatch, type) => {
   }
   if (error.response.status === 400) {
     NotificationManager.error(NOTIFY_NETWORKERROR);
+  }
+  if (error.response.status === 401) {
+    NotificationManager.error(UNAUTHORIZED_NETWORKERROR);
   }
   return Promise.reject(error);
 };

@@ -134,27 +134,8 @@ export function addPropsToObject(objectP, propsNewP) {
 
 export function getHttpBase64(nameImgP, cb) {
   var xhr = new XMLHttpRequest();
-  let extensionL = nameImgP.split(".")[1];
-  let specialPathL = "";
-  if (extensionL === "jpg") {
-    specialPathL = ".b1d4d5fc.";
-  }
-
-  if (extensionL === "png") {
-    specialPathL = ".de3e9317.";
-  }
-
-  // b1d4d5fc (.jpg)
-  // de3e9317 (.png)
-  xhr.open(
-    "GET",
-    AppConfig.projectUrl +
-      "/static/media/" +
-      nameImgP.split(".")[0] +
-      specialPathL +
-      extensionL,
-    true
-  );
+  let pathL = require("../assets/data/revenue/" + nameImgP);
+  xhr.open("GET", pathL, true);
   xhr.responseType = "blob";
   xhr.onload = function(e) {
     var reader = new FileReader();

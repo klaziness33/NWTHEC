@@ -274,9 +274,18 @@ class RevenueCardForm extends Component {
     this.setState({ showAttach: false });
   };
 
-  onSend = () => {
+  onSend = async () => {
+    await this.setState({
+      addNewDataDetail: {
+        ...this.state.addNewDataDetail,
+        ["FK_Branch"]: this.props.authUser.user.fk_Branch
+      }
+    });
     this.props.sendRevenue(this.state.addNewDataDetail);
-    //console.log(this.state.paymentType);
+    setTimeout(() => {
+      this.props.reloadData();
+      this.props.closeModal();
+    }, 500);
   };
 
   Transition = React.forwardRef(function Transition(props, ref) {
@@ -284,14 +293,13 @@ class RevenueCardForm extends Component {
   });
 
   componentDidMount() {
-    this.setState({ FK_Branch: this.props.authUser.user.fk_Role });
     this.setState({ branch: this.props.masterReducer.data });
     this.setState({
       paymentType: this.props.masterReducer.paymentType
     });
 
     if (this.props.switchMode === "Preview") {
-      this.setState({ addNewDataDetail: this.props.dataInit });
+      this.setState({ addNewDataDetail: this.props.dataInit });  
       this.setState({
         readOnly: true,
         showAttach: false
@@ -309,10 +317,15 @@ class RevenueCardForm extends Component {
         showAttach: false
       });
     }
+    console.log(this.state.addNewDataDetail.BillDate);
   }
 
   onUpdateData() {
     this.props.updateDataRevenue(this.state.addNewDataDetail);
+    setTimeout(() => {
+      this.props.reloadData();
+      this.props.closeModal();
+    }, 500);
   }
 
   dialogInfo(actionP) {
@@ -1157,7 +1170,7 @@ class RevenueCardForm extends Component {
                   <label
                     style={{
                       visibility:
-                        addNewDataDetail.petrol_attach === null
+                        addNewDataDetail.petrol_attach === ""
                           ? "hidden"
                           : "visible"
                     }}
@@ -1523,7 +1536,7 @@ class RevenueCardForm extends Component {
                   <label
                     style={{
                       visibility:
-                        addNewDataDetail.engineoil_attach === null
+                        addNewDataDetail.engineoil_attach === ""
                           ? "hidden"
                           : "visible"
                     }}
@@ -2039,7 +2052,7 @@ class RevenueCardForm extends Component {
                   <label
                     style={{
                       visibility:
-                        addNewDataDetail.carcare_attach === null
+                        addNewDataDetail.carcare_attach === ""
                           ? "hidden"
                           : "visible"
                     }}
@@ -2324,7 +2337,7 @@ class RevenueCardForm extends Component {
                   <label
                     style={{
                       visibility:
-                        addNewDataDetail.conveniencestore_attach === null
+                        addNewDataDetail.conveniencestore_attach === ""
                           ? "hidden"
                           : "visible"
                     }}
@@ -2509,7 +2522,7 @@ class RevenueCardForm extends Component {
                   <label
                     style={{
                       visibility:
-                        addNewDataDetail.cafe_attach !== null
+                        addNewDataDetail.cafe_attach == ""
                           ? "hidden"
                           : "visible"
                     }}

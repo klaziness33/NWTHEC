@@ -4,7 +4,7 @@ export default {
     {
       menu_title: "sidebar.expense",
       menu_icon: "zmdi zmdi-view-web",
-      path: "/app/expense/expense-management",
+      path: "/app/expense/expense-management-list",
       new_item: false,
       child_routes: null
     },

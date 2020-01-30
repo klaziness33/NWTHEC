@@ -213,7 +213,20 @@ class ExpenseForm extends Component {
     );
   }
 
+  errorDialog() {
+    setTimeout(async () => {
+      if (this.props.expenseReducer.error)
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: "Invalid Token",
+          sessionContent:
+            "Your Token is Invalid. you must push accept and login again."
+        });
+    }, 1000);
+  }
+
   componentDidMount() {
+    this.errorDialog();
     this.activeSession();
     this.loadData();
     this.shopMoreTap(true);

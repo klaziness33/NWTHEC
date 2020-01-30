@@ -15,7 +15,8 @@ import {
  */
 const INIT_STATE = {
   data: null,
-  loading: false
+  loading: false,
+  error: false
 };
 
 export default (state = INIT_STATE, action) => {
@@ -27,7 +28,7 @@ export default (state = INIT_STATE, action) => {
       return { ...state, data: action.payload, loading: false };
 
     case SEND_ERROR_REVENUE:
-      return { ...state, loading: true };
+      return { ...state, error: true, loading: true };
 
     case FETCH_START_REVENUE:
       return { ...state, data: null, loading: true };
@@ -36,7 +37,7 @@ export default (state = INIT_STATE, action) => {
       return { ...state, data: action.payload, loading: false };
 
     case FETCH_ERROR_REVENUE:
-      return { ...state, loading: true };
+      return { ...state, error: true, loading: true };
 
     default:
       return { ...state };

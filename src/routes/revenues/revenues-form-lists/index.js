@@ -20,32 +20,13 @@ import {
   Input,
   Pagination,
   PaginationItem,
-  PaginationLink,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Form,
-  FormGroup,
-  Label
+  PaginationLink
 } from "reactstrap";
 import { NotificationManager } from "react-notifications";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import Grid from "@material-ui/core/Grid";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
 
 // delete confirmation dialog
 import DeleteConfirmationDialog from "Components/DeleteConfirmationDialog/DeleteConfirmationDialog";
-
-// add new Data form
-//import ExpenseFormAdd from "./expense-form-add";
-
-// update Data form
-// import ExpenseFormUpdate from "./expense-form-update";
 
 // page title bar
 import PageTitleBar from "Components/PageTitleBar/PageTitleBar";
@@ -83,14 +64,15 @@ import {
   parseDateString,
   convertDateToWebservice,
   addPropsToObject,
-  decryptData
+  decryptData,
+  getHttpBase64
 } from "../../../helpers/helpers";
 import { CSVLink } from "react-csv";
 import RevenueCardForm from "../revenues-form-card";
 
 import DialogActions from "@material-ui/core/DialogActions";
-
 const moment = require("moment");
+
 class RevenueListForm extends Component {
   pageSize = 10;
   pageGrop = [10, 25, 50, 100];
@@ -402,6 +384,8 @@ class RevenueListForm extends Component {
       loading: false,
       filteredData: addPropsToObject(arrangeL, this.arrProps)
     });
+
+    await this.setState({ Fk_Role: this.props.authUser.user.fk_Role });
     this.setDataExportCsv();
   }
 
@@ -649,10 +633,186 @@ class RevenueListForm extends Component {
     this.setState({ openViewDataDialog: true, selectedData: data });
   }
 
+  base64Encode(file) {
+    var body = fs.readFileSync(file);
+    return body.toString("base64");
+  }
+
+  async prepareBase64(petrolP, engineoilP, carcareP, conveniencestoreP, cafeP) {
+    if (petrolP)
+      await getHttpBase64(petrolP, async resultL => {
+        await this.setState({ petrol_attach_base64: resultL });
+      });
+
+    if (engineoilP)
+      await getHttpBase64(engineoilP, async resultL => {
+        await this.setState({ engineoil_attach_base64: resultL });
+      });
+
+    if (carcareP)
+      await getHttpBase64(carcareP, async resultL => {
+        await this.setState({ carcare_attach_base64: resultL });
+      });
+
+    if (conveniencestoreP)
+      await getHttpBase64(conveniencestoreP, async resultL => {
+        await this.setState({ conveniencestore_attach_base64: resultL });
+      });
+
+    if (cafeP)
+      await getHttpBase64(cafeP, async resultL => {
+        await this.setState({ cafe_attach_base64: resultL });
+      });
+  }
+
   /**
    * On Edit Data
    */
   async onEditData(element) {
+    this.prepareBase64(
+      element.petrol_attach,
+      element.engineoil_attach,
+      element.carcare_attach,
+      element.conveniencestore_attach,
+      element.cafe_attach
+    );
+
+    setTimeout(async () => {
+      let petrol_attachL = null;
+      if (element.petrol_attach !== "") {
+        petrol_attachL = {
+          name: element.petrol_attach !== "" ? "Attach Doc.jpg" : "",
+          base64: this.state.petrol_attach_base64,
+          realname: element.petrol_attach
+        };
+      }
+      console.log(petrol_attachL);
+    
+      let engineoil_attachL = null;
+      if (element.engineoil_attach !== "") {
+        engineoil_attachL = {
+          name: element.engineoil_attach !== "" ? "Attach Doc.jpg" : "",
+          base64: this.state.engineoil_attach_base64,
+          realname: element.engineoil_attach
+        };
+      }
+      let carcare_attachL = null;
+      if (element.carcare_attach !== "") {
+        carcare_attachL = {
+          name: element.carcare_attach !== "" ? "Attach Doc.jpg" : "",
+          base64: this.state.carcare_attach_base64,
+          realname: element.carcare_attach
+        };
+      }
+      console.log(carcare_attachL);
+
+      let conveniencestore_attachL = null;
+      if (element.conveniencestore_attach !== "") {
+        conveniencestore_attachL = {
+          name: element.conveniencestore_attach !== "" ? "Attach Doc.jpg" : "",
+          base64: this.state.conveniencestore_attach_base64,
+          realname: element.conveniencestore_attach
+        };
+      }
+
+      let cafe_attachL = null;
+      if (element.cafe_attach !== "") {
+        cafe_attachL = {
+          name: element.cafe_attach !== "" ? "Attach Doc.jpg" : "",
+          base64: this.state.cafe_attach_base64,
+          realname: element.cafe_attach
+        };
+      }
+
+      let resultL = {
+        Id: element.Id,
+        BillDate: parseDateString(element.BillDate),
+        FK_Branch: element.FK_Branch,
+        Description: element.Description,
+
+        petrol_attach: petrol_attachL,
+        petrol_b20diesal_total: element.petrol_b20diesal_total,
+        petrol_b20diesal_quantity: element.petrol_b20diesal_quantity,
+        petrol_b20diesal_price: element.petrol_b20diesal_price,
+        petrol_b20diesal_paymentType: element.petrol_b20diesal_paymentType,
+
+        petrol_e20gsh_total: element.petrol_e20gsh_total,
+        petrol_e20gsh_quantity: element.petrol_e20gsh_quantity,
+        petrol_e20gsh_price: element.petrol_e20gsh_price,
+        petrol_e20gsh_paymentType: element.petrol_e20gsh_paymentType,
+
+        petrol_fsdiesal_total: element.petrol_fsdiesal_total,
+        petrol_fsdiesal_quantity: element.petrol_fsdiesal_quantity,
+        petrol_fsdiesal_price: element.petrol_fsdiesal_price,
+        petrol_fsdiesal_paymentType: element.petrol_fsdiesal_paymentType,
+
+        petrol_fsgsh91_total: element.petrol_fsgsh91_total,
+        petrol_fsgsh91_quantity: element.petrol_fsgsh91_quantity,
+        petrol_fsgsh91_price: element.petrol_fsgsh91_price,
+        petrol_fsgsh91_paymentType: element.petrol_fsgsh91_paymentType,
+
+        petrol_vpdiesal_total: element.petrol_vpdiesal_total,
+        petrol_vpdiesal_quantity: element.petrol_vpdiesal_quantity,
+        petrol_vpdiesal_price: element.petrol_vpdiesal_price,
+        petrol_vpdiesal_paymentType: element.petrol_vpdiesal_paymentType,
+
+        petrol_vpgsh95_total: element.petrol_vpgsh95_total,
+        petrol_vpgsh95_quantity: element.petrol_vpgsh95_quantity,
+        petrol_vpgsh95_price: element.petrol_vpgsh95_price,
+        petrol_vpgsh95_paymentType: element.petrol_vpgsh95_paymentType,
+
+        engineoil_attach: engineoil_attachL,
+        engineoil_b20diesal_total: element.engineoil_b20diesal_total,
+        engineoil_b20diesal_price: element.engineoil_b20diesal_price,
+
+        engineoil_e20gsh_total: element.engineoil_e20gsh_total,
+        engineoil_e20gsh_price: element.engineoil_e20gsh_price,
+
+        engineoil_fsdiesal_total: element.engineoil_fsdiesal_total,
+        engineoil_fsdiesal_price: element.engineoil_fsdiesal_price,
+
+        carcare_attach: carcare_attachL,
+        carcare_size_s_washcar_total: element.carcare_size_s_washcar_total,
+        carcare_size_s_washcar_price: element.carcare_size_s_washcar_price,
+        carcare_size_s_wax_total: element.carcare_size_s_wax_total,
+        carcare_size_s_wax_price: element.carcare_size_s_wax_price,
+
+        carcare_size_m_washcar_total: element.carcare_size_m_washcar_total,
+        carcare_size_m_washcar_price: element.carcare_size_m_washcar_price,
+        carcare_size_m_wax_total: element.carcare_size_m_wax_total,
+        carcare_size_m_wax_price: element.carcare_size_m_wax_price,
+
+        carcare_size_l_washcar_total: element.carcare_size_l_washcar_total,
+        carcare_size_l_washcar_price: element.carcare_size_l_washcar_price,
+        carcare_size_l_wax_total: element.carcare_size_l_wax_total,
+        carcare_size_l_wax_price: element.carcare_size_l_wax_price,
+
+        conveniencestore_attach: conveniencestore_attachL,
+        conveniencestore_food_total: element.conveniencestore_food_total,
+        conveniencestore_food_price: element.conveniencestore_food_price,
+
+        conveniencestore_nonfood_total: element.conveniencestore_nonfood_total,
+        conveniencestore_nonfood_price: element.conveniencestore_nonfood_price,
+
+        cafe_attach: cafe_attachL,
+        cafe_revenuecafe_total: element.cafe_revenuecafe_total,
+        cafe_revenuecafe_price: element.cafe_revenuecafe_price,
+        Approve: element.Approve,
+        Send: element.Send,
+        CreateBy: element.CreateBy,
+        Time_Diff: element.Time_Diff
+      };
+
+      await this.setState({
+        showAttach: true,
+        addNewDataModal: true,
+        editData: resultL,
+        actionType: "Update"
+      });
+    }, 500);
+  }
+
+  async onPreviewData(element) {
     let resultL = {
       Id: element.Id,
       BillDate: parseDateString(element.BillDate),
@@ -736,7 +896,7 @@ class RevenueListForm extends Component {
       showAttach: true,
       addNewDataModal: true,
       editData: resultL,
-      actionType: "Edit"
+      actionType: "Preview"
     });
   }
 
@@ -1164,7 +1324,7 @@ class RevenueListForm extends Component {
                   <td>
                     {" "}
                     <h5 className="mb-5 fw-bold">
-                      <a href="#" onClick={() => this.onEditData(item)}>
+                      <a href="#" onClick={() => this.onPreviewData(item)}>
                         {item.Description}
                       </a>
                     </h5>
@@ -1216,7 +1376,7 @@ class RevenueListForm extends Component {
                   {!isMobile ? <td>{item.No}</td> : ""}
                   <td>
                     <h5 className="mb-5 fw-bold">
-                      <a href="#" onClick={() => this.onEditData(item)}>
+                      <a href="#" onClick={() => this.onPreviewData(item)}>
                         {item.Description}
                       </a>
                     </h5>
@@ -1312,14 +1472,7 @@ class RevenueListForm extends Component {
   };
 
   render() {
-    const {
-      loading,
-      editData,
-      currentPage,
-      addNewDataDetail,
-      selectedDatas,
-      data
-    } = this.state;
+    const { loading, currentPage, selectedDatas, data } = this.state;
 
     return (
       <div className="data-management">
@@ -1442,6 +1595,7 @@ class RevenueListForm extends Component {
                 style={{ display: "flex", justifyContent: "center" }}
               >
                 <RevenueCardForm
+                  closeModal={this.handleClose.bind(this)}
                   dataInit={this.state.editData}
                   switchMode={this.state.actionType}
                 ></RevenueCardForm>

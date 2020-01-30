@@ -9,12 +9,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Slide from "@material-ui/core/Slide";
 
-// page title bar
-import PageTitleBar from "Components/PageTitleBar/PageTitleBar";
-
-// intl messages
-import IntlMessages from "Util/IntlMessages";
-
 // rct card box
 import RctCollapsibleCard from "Components/RctCollapsibleCard/RctCollapsibleCard";
 
@@ -26,7 +20,11 @@ import {
 import DateFnsUtils from "@date-io/date-fns";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { connect } from "react-redux";
-import { sendRevenue, activeSession } from "../../../actions";
+import {
+  sendRevenue,
+  activeSession,
+  updateDataRevenue
+} from "../../../actions";
 import {
   parseDateInt,
   parseDateString,
@@ -111,7 +109,8 @@ class RevenueCardForm extends Component {
     showAttach: false,
     imageUrl: "",
     paymentType: [],
-    branch: []
+    branch: [],
+    fk_Role: 0
   };
 
   onAttachFile(valueP, fromP) {
@@ -285,16 +284,130 @@ class RevenueCardForm extends Component {
   });
 
   componentDidMount() {
+    this.setState({ FK_Branch: this.props.authUser.user.fk_Role });
     this.setState({ branch: this.props.masterReducer.data });
     this.setState({
       paymentType: this.props.masterReducer.paymentType
     });
-    if (this.props.switchMode !== "Add") {
+
+    if (this.props.switchMode === "Preview") {
       this.setState({ addNewDataDetail: this.props.dataInit });
       this.setState({
         readOnly: true,
         showAttach: false
       });
+    } else if (this.props.switchMode === "Update") {
+      this.setState({ addNewDataDetail: this.props.dataInit });
+      this.setState({
+        readOnly: false,
+        showAttach: false
+      });
+    } else if (this.props.switchMode === "Add") {
+      this.onClear();
+      this.setState({
+        readOnly: false,
+        showAttach: false
+      });
+    }
+  }
+
+  onUpdateData() {
+    this.props.updateDataRevenue(this.state.addNewDataDetail);
+  }
+
+  dialogInfo(actionP) {
+    var closeModalL = this.props.closeModal;
+    if (actionP === "Add") {
+      return (
+        <RctCollapsibleCard>
+          <div
+            style={{ display: "flex", justifyContent: "center" }}
+            className="table-responsive"
+          >
+            <MatButton
+              onClick={() => this.onSend()}
+              variant="contained"
+              className="btn-primary mr-10 mb-10 text-white"
+            >
+              <i
+                style={{ paddingRight: 7 }}
+                className="zmdi zmdi-mail-send zmdi-hc-lg"
+              ></i>
+              Add
+            </MatButton>
+
+            <MatButton
+              onClick={() => this.onClear()}
+              variant="contained"
+              className="btn-secondary mr-10 mb-10 text-white"
+            >
+              Clear
+            </MatButton>
+          </div>
+        </RctCollapsibleCard>
+      );
+    } else if (actionP === "Preview") {
+      return (
+        <RctCollapsibleCard>
+          <div
+            style={{ display: "flex", justifyContent: "center" }}
+            className="table-responsive"
+          >
+            <MatButton
+              variant="contained"
+              className="btn-success mr-10 mb-10 text-white"
+            >
+              <i
+                style={{ paddingRight: 7 }}
+                className="zmdi zmdi-check zmdi-hc-lg"
+              ></i>
+              Approve
+            </MatButton>
+            <MatButton
+              variant="contained"
+              className="btn-danger mr-10 mb-10 text-white"
+            >
+              <i
+                style={{ paddingRight: 7 }}
+                className="zmdi zmdi-close zmdi-hc-lg"
+              ></i>
+              Disapprove
+            </MatButton>
+          </div>
+        </RctCollapsibleCard>
+      );
+    } else if (actionP === "Update") {
+      return (
+        <RctCollapsibleCard>
+          <div
+            style={{ display: "flex", justifyContent: "center" }}
+            className="table-responsive"
+          >
+            <MatButton
+              onClick={() => this.onUpdateData()}
+              variant="contained"
+              className="btn-success mr-10 mb-10 text-white"
+            >
+              <i
+                style={{ paddingRight: 7 }}
+                className="zmdi zmdi-check zmdi-hc-lg"
+              ></i>
+              Update
+            </MatButton>
+            <MatButton
+              onClick={closeModalL}
+              variant="contained"
+              className="btn-danger mr-10 mb-10 text-white"
+            >
+              <i
+                style={{ paddingRight: 7 }}
+                className="zmdi zmdi-close zmdi-hc-lg"
+              ></i>
+              Cancel
+            </MatButton>
+          </div>
+        </RctCollapsibleCard>
+      );
     }
   }
 
@@ -1035,7 +1148,7 @@ class RevenueCardForm extends Component {
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <input
                   onChange={e => this.onAttachFile(e, "Petrol")}
-                  accept="image/*"
+                  accept="image/png, image/jpeg"
                   style={{ display: "none" }}
                   id="contained-button-file-petrol"
                   type="file"
@@ -1401,7 +1514,7 @@ class RevenueCardForm extends Component {
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <input
                   onChange={e => this.onAttachFile(e, "Engine Oil")}
-                  accept="image/*"
+                  accept="image/png, image/jpeg"
                   style={{ display: "none" }}
                   id="contained-button-file-engineoil"
                   type="file"
@@ -1917,7 +2030,7 @@ class RevenueCardForm extends Component {
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <input
                   onChange={e => this.onAttachFile(e, "Car Care")}
-                  accept="image/*"
+                  accept="image/png, image/jpeg"
                   style={{ display: "none" }}
                   id="contained-button-file-carcare"
                   type="file"
@@ -2202,7 +2315,7 @@ class RevenueCardForm extends Component {
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <input
                   onChange={e => this.onAttachFile(e, "Convenience Store")}
-                  accept="image/*"
+                  accept="image/png, image/jpeg"
                   style={{ display: "none" }}
                   id="contained-button-file-conveniencestore"
                   type="file"
@@ -2387,7 +2500,7 @@ class RevenueCardForm extends Component {
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <input
                   onChange={e => this.onAttachFile(e, "Cafe")}
-                  accept="image/*"
+                  accept="image/png, image/jpeg"
                   style={{ display: "none" }}
                   id="contained-button-file-cafe"
                   type="file"
@@ -2451,53 +2564,7 @@ class RevenueCardForm extends Component {
                 )}
               </div>
             </RctCollapsibleCard>
-            <RctCollapsibleCard>
-              <div
-                style={{ display: "flex", justifyContent: "center" }}
-                className="table-responsive"
-              >
-                <MatButton
-                  onClick={() => this.onClear()}
-                  variant="contained"
-                  className="btn-secondary mr-10 mb-10 text-white"
-                >
-                  Clear
-                </MatButton>
-
-                <MatButton
-                  onClick={() => this.onSend()}
-                  variant="contained"
-                  className="btn-info mr-10 mb-10 text-white"
-                >
-                  <i
-                    style={{ paddingRight: 7 }}
-                    className="zmdi zmdi-mail-send zmdi-hc-lg"
-                  ></i>
-                  Send
-                </MatButton>
-
-                <MatButton
-                  variant="contained"
-                  className="btn-success mr-10 mb-10 text-white"
-                >
-                  <i
-                    style={{ paddingRight: 7 }}
-                    className="zmdi zmdi-check zmdi-hc-lg"
-                  ></i>
-                  Approve
-                </MatButton>
-                <MatButton
-                  variant="contained"
-                  className="btn-danger mr-10 mb-10 text-white"
-                >
-                  <i
-                    style={{ paddingRight: 7 }}
-                    className="zmdi zmdi-close zmdi-hc-lg"
-                  ></i>
-                  Disapprove
-                </MatButton>
-              </div>
-            </RctCollapsibleCard>
+            {this.dialogInfo(this.props.switchMode)}
           </div>
         </div>
         <div>
@@ -2517,7 +2584,8 @@ class RevenueCardForm extends Component {
                   id="alert-dialog-slide-description"
                   style={{ display: "flex", justifyContent: "center" }}
                 >
-                  {this.props.switchMode === "Add" ? (
+                  {(this.props.switchMode === "Add") |
+                  (this.props.switchMode === "Update") ? (
                     <img src={this.state.imageUrl}></img>
                   ) : (
                     <img
@@ -2543,6 +2611,8 @@ const mapStateToProps = state => {
   return { masterReducer, authUser };
 };
 
-export default connect(mapStateToProps, { sendRevenue, activeSession })(
-  RevenueCardForm
-);
+export default connect(mapStateToProps, {
+  sendRevenue,
+  activeSession,
+  updateDataRevenue
+})(RevenueCardForm);

@@ -7,6 +7,7 @@ const AppConfig = {
   passwordJWT: "P@ssw0rd.nch",
   grantType: "password",
   serviceUrl: "http://localhost:61347/",
+  projectUrl: "http://localhost:3000/",
   bannerLogo: require("Assets/img/shell 01.png"),
   cryptoKey: '1AE58EAD81B3C7C5182809A974BCF24D1C0FB69FB4A0D364939C8FA6C0C00D09',
   // end customize //

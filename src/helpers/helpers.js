@@ -4,6 +4,7 @@
 import moment from "moment";
 const CryptoJS = require("crypto-js");
 import AppConfig from "../constants/AppConfig";
+// const image2base64 = require('image-to-base64');
 
 /**
  * Function to convert hex to rgba
@@ -129,6 +130,41 @@ export function addPropsToObject(objectP, propsNewP) {
     arrayListsL.push(objectSubL);
   }
   return arrayListsL;
+}
+
+export function getHttpBase64(nameImgP, cb) {
+  var xhr = new XMLHttpRequest();
+  let extensionL = nameImgP.split(".")[1];
+  let specialPathL = "";
+  if (extensionL === "jpg") {
+    specialPathL = ".b1d4d5fc.";
+  }
+
+  if (extensionL === "png") {
+    specialPathL = ".de3e9317.";
+  }
+
+  // b1d4d5fc (.jpg)
+  // de3e9317 (.png)
+  xhr.open(
+    "GET",
+    AppConfig.projectUrl +
+      "/static/media/" +
+      nameImgP.split(".")[0] +
+      specialPathL +
+      extensionL,
+    true
+  );
+  xhr.responseType = "blob";
+  xhr.onload = function(e) {
+    var reader = new FileReader();
+    reader.onload = async function(event) {
+      return await cb(event.target.result);
+    };
+    var file = this.response;
+    reader.readAsDataURL(file);
+  };
+  xhr.send();
 }
 
 export function getBase64(file, cb) {

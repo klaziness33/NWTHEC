@@ -14,7 +14,10 @@ import {
   DEL_ERROR_REVENUE,
   SEND_START_REVENUE,
   SEND_END_REVENUE,
-  SEND_ERROR_REVENUE
+  SEND_ERROR_REVENUE,
+  APPROVE_START_REVENUE,
+  APPROVE_END_REVENUE,
+  APPROVE_ERROR_REVENUE
 } from "Actions/types";
 import {
   RESPONSE_SUCCESS,
@@ -366,13 +369,45 @@ export const addDataRevenue = (dataP, branchP) => async dispatch => {
   dispatch({ type: ADD_END_REVENUE });
 };
 
+export const approveRevenue = dataP => async dispatch => {
+  const userL =
+    localStorage.getItem(STORAGE_USERMODELS) === null
+      ? null
+      : JSON.parse(decryptData(localStorage.getItem(STORAGE_USERMODELS)));
+  dispatch({ type: APPROVE_START_REVENUE });
+  await axios
+    .post(
+      AppConfig.serviceUrl + "revenue/approve",
+      {
+        KeyLists: dataP,
+        UpdateBy: userL.user_Name
+      },
+      {
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+        }
+      }
+    )
+    .then(response => {
+      if (response.data.description !== RESPONSE_SUCCESS) {
+        dispatch({ type: APPROVE_ERROR_REVENUE });
+        NotificationManager.error(response.data.data);
+      } else {
+        dispatch({ type: APPROVE_END_REVENUE });
+        NotificationManager.success(response.data.data);
+      }
+    })
+    .catch(error => catchError(error, dispatch, APPROVE_ERROR_REVENUE));
+};
+
 const catchError = (error, dispatch, type) => {
   if (dispatch !== null) {
     dispatch({ type: type });
   }
 
   if (!error.response) {
-    NotificationManager.error('NOTIFY_NETWORKERROR');
+    NotificationManager.error("NOTIFY_NETWORKERROR");
   }
   if (error.response.status === 400) {
     NotificationManager.error(NOTIFY_NETWORKERROR);

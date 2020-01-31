@@ -28,8 +28,10 @@ import {
 import {
   parseDateInt,
   parseDateString,
-  getBase64
+  getBase64,
+  decryptData
 } from "../../../helpers/helpers";
+import { STORAGE_USERMODELS  } from "../../../store/storages";
 
 class RevenueCardForm extends Component {
   state = {
@@ -170,6 +172,18 @@ class RevenueCardForm extends Component {
     });
   }
 
+  onDisapprove() {
+    console.log("onDisapprove");
+  }
+
+  onApprove() {
+    const userL =
+      localStorage.getItem(STORAGE_USERMODELS) === null
+        ? null
+        : JSON.parse(decryptData(localStorage.getItem(STORAGE_USERMODELS)));
+    console.log(userL);
+  }
+
   async onClear() {
     await this.setState({
       addNewDataDetail: {
@@ -299,7 +313,7 @@ class RevenueCardForm extends Component {
     });
 
     if (this.props.switchMode === "Preview") {
-      this.setState({ addNewDataDetail: this.props.dataInit });  
+      this.setState({ addNewDataDetail: this.props.dataInit });
       this.setState({
         readOnly: true,
         showAttach: false
@@ -366,6 +380,7 @@ class RevenueCardForm extends Component {
             className="table-responsive"
           >
             <MatButton
+              onClick={() => this.onApprove()}
               variant="contained"
               className="btn-success mr-10 mb-10 text-white"
             >
@@ -376,6 +391,7 @@ class RevenueCardForm extends Component {
               Approve
             </MatButton>
             <MatButton
+              onClick={() => this.onDisapprove()}
               variant="contained"
               className="btn-danger mr-10 mb-10 text-white"
             >

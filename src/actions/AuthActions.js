@@ -25,13 +25,17 @@ import {
   FETCH_ERROR_BRANCH,
   FETCH_START_PAYMENTTYPE,
   FETCH_END_PAYMENTTYPE,
-  FETCH_ERROR_PAYMENTTYPE
+  FETCH_ERROR_PAYMENTTYPE,
+  FETCH_START_ROLE,
+  FETCH_ERROR_ROLE,
+  FETCH_END_ROLE
 } from "Actions/types";
 import { RESPONSE_SUCCESS, RESPONSE_NETWORKERROR } from "../actions/response";
 import {
   STORAGE_USERMODELS,
   STORAGE_TOKEN,
   STORAGE_BRANCH,
+  STORAGE_ROLE,
   STORAGE_PAYMENTTYPE,
   STORAGE_SESSION
 } from "../store/storages";
@@ -146,7 +150,6 @@ export const signinUserInBC = (user, history) => async dispatch => {
         localStorage.clear();
         NotificationManager.error(response.data.data);
       } else {
-        localStorage.setItem("user_id", "user-id");
         localStorage.setItem(
           STORAGE_USERMODELS,
           encryptData(JSON.stringify(response.data.data))
@@ -218,6 +221,33 @@ export const signinUserInBC = (user, history) => async dispatch => {
       }
     })
     .catch(error => catchError(error, dispatch, FETCH_ERROR_BRANCH));
+
+  dispatch({ type: FETCH_START_ROLE });
+  await axios
+    .get(AppConfig.serviceUrl + "role/read/Get?idP=" + "0", {
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+      }
+    })
+    .then(response => {
+      // check response
+      if (response.data.description !== RESPONSE_SUCCESS) {
+        dispatch({ type: FETCH_ERROR_ROLE });
+        NotificationManager.error(response.data.data);
+      } else {
+        dispatch({
+          type: FETCH_END_ROLE,
+          payload: response.data.data
+        });
+
+        localStorage.setItem(
+          STORAGE_ROLE,
+          encryptData(JSON.stringify(response.data.data))
+        );
+      }
+    })
+    .catch(error => catchError(error, dispatch, FETCH_ERROR_ROLE));
 };
 
 const catchError = (error, dispatch, type) => {

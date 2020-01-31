@@ -317,7 +317,6 @@ class RevenueCardForm extends Component {
         showAttach: false
       });
     }
-    console.log(this.state.addNewDataDetail.BillDate);
   }
 
   onUpdateData() {

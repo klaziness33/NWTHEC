@@ -212,7 +212,7 @@ export const signinUserInBC = (user, history) => async dispatch => {
         NotificationManager.success("User Login Successfully!", null, 1000);
 
         setTimeout(() => {
-          history.push("/");
+          history.push("/app/expense/expense-management-list");
         }, 1000);
         // after finished login //
       }

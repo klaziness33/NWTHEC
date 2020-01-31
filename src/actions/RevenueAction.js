@@ -372,7 +372,7 @@ const catchError = (error, dispatch, type) => {
   }
 
   if (!error.response) {
-    NotificationManager.error(NOTIFY_NETWORKERROR);
+    NotificationManager.error('NOTIFY_NETWORKERROR');
   }
   if (error.response.status === 400) {
     NotificationManager.error(NOTIFY_NETWORKERROR);

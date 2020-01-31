@@ -82,8 +82,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Slide from "@material-ui/core/Slide";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 
 import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../../../store/storages";
 
@@ -214,19 +212,21 @@ class ExpenseForm extends Component {
   }
 
   errorDialog() {
+    console.log(this.props.expenseReducer.error);
+
     setTimeout(async () => {
-      if (this.props.expenseReducer.error)
+      if (this.props.expenseReducer.error) {
         await this.setState({
           sessionDialog: true,
           sessionTitle: "Invalid Token",
           sessionContent:
             "Your Token is Invalid. you must push accept and login again."
         });
+      }
     }, 1000);
   }
 
   componentDidMount() {
-    this.errorDialog();
     this.activeSession();
     this.loadData();
     this.shopMoreTap(true);
@@ -238,6 +238,7 @@ class ExpenseForm extends Component {
     for (let index = 0; index < arrP.length; index++) {
       const element = arrP[index];
       arrangeL.push({
+        checked: false,
         No: index + 1,
         Id: element.Id,
         Description: element.Description,
@@ -258,6 +259,8 @@ class ExpenseForm extends Component {
   }
 
   async loadData() {
+    this.errorDialog();
+
     this.setState({ loading: true });
     await this.props.fetchingDataExpense(this.state.selectedBranch);
 
@@ -559,7 +562,7 @@ class ExpenseForm extends Component {
       });
       await this.setState({
         data: selectAllDatas,
-        originalData: selectAllDatas,
+        // originalData: selectAllDatas,
         filterData: selectAllDatas,
         filteredData: selectAllDatas,
         selectedDatas: selectAllDatas.length
@@ -690,6 +693,10 @@ class ExpenseForm extends Component {
           <div className="row" style={{ paddingTop: 15, paddingBottom: 15 }}>
             <div style={{ paddingLeft: 25, float: "left" }}>
               <CSVLink
+                style={{
+                  visibility:
+                    this.state.csvData.length === 0 ? "hidden" : "visible"
+                }}
                 className="btn-sm btn-outline-default mr-10"
                 data={this.state.csvData}
                 filename={Date.now() + ".csv"}
@@ -802,6 +809,10 @@ class ExpenseForm extends Component {
 
             <div style={{ float: "left" }}>
               <CSVLink
+                style={{
+                  visibility:
+                    this.state.csvData.length === 0 ? "hidden" : "visible"
+                }}
                 className="btn-sm btn-outline-default mr-10"
                 data={this.state.csvData}
                 filename={Date.now() + ".csv"}
@@ -1008,6 +1019,10 @@ class ExpenseForm extends Component {
   }
 
   async setDataAfterFilter(originalData, keySearch) {
+    if (keySearch === "") {
+      this.setState({ selectedDatas: 0 });
+    }
+
     let result = this.filterList(originalData, keySearch);
     if (result.length === 0) {
       await this.setState({
@@ -1101,22 +1116,22 @@ class ExpenseForm extends Component {
         </RctCollapsibleCard>
         <DeleteConfirmationDialog
           ref="deleteConfirmationDialog"
-          title="Are You Sure Want To Delete?"
-          message="This will delete data permanently."
+          title="Delete?"
+          message="Are you sure want to delete?"
           onConfirm={() => this.deleteDataPermanently()}
         />
 
         <DeleteConfirmationDialog
           ref="deleteMutipleConfirmationDialog"
-          title="Are You Sure Want To Delete?"
-          message="This will delete data permanently."
+          title="Delete?"
+          message="Are you sure want to delete?"
           onConfirm={() => this.onConfirmDeleteMultiple()}
         />
 
         <DeleteConfirmationDialog
           ref="sendMutipleConfirmationDialog"
-          title="Are You Sure Want To Send?"
-          message="This will send data to business central."
+          title="Send?"
+          message="Are you sure want to Send?"
           onConfirm={() => this.onConfirmUpdateMultiple()}
         />
 

@@ -45,13 +45,10 @@ import { connect } from "react-redux";
 // redux action
 import {
   fetchingDataRevenue,
-  fetchingDataExpense,
-  updateDataExpense,
-  addDataExpense,
-  deleteDataExpense,
-  sendDataExpense,
   activeSession,
-  clearUser
+  clearUser,
+  deleteDataRevenue,
+  sendDataRevenue
 } from "Actions";
 
 import { isMobile } from "react-device-detect";
@@ -265,19 +262,21 @@ class RevenueListForm extends Component {
   }
 
   errorDialog() {
+    console.log(this.props.revenueReducer.error);
+
     setTimeout(async () => {
-      if (this.props.revenueReducer.error)
+      if (this.props.revenueReducer.error) {
         await this.setState({
           sessionDialog: true,
           sessionTitle: "Invalid Token",
           sessionContent:
             "Your Token is Invalid. you must push accept and login again."
         });
+      }
     }, 1000);
   }
 
   componentDidMount() {
-    this.errorDialog();
     this.activeSession();
     this.loadData();
     this.shopMoreTap(true);
@@ -289,6 +288,7 @@ class RevenueListForm extends Component {
     for (let index = 0; index < arrP.length; index++) {
       const element = arrP[index];
       arrangeL.push({
+        checked: false,
         No: index + 1,
         Id: element.Id,
         BillDate: element.BillDate,
@@ -371,7 +371,96 @@ class RevenueListForm extends Component {
     return arrangeL;
   }
 
+  arrangeNumber2(arrP) {
+    var arrangeL = [];
+    for (let index = 0; index < arrP.length; index++) {
+      const element = arrP[index];
+      arrangeL.push({
+        checked: false,
+        No: index + 1,
+        Id: element.Id,
+        BillDate: element.BillDate,
+        FK_Branch: element.FK_Branch,
+        Description: element.Description,
+
+        petrol_attach: element.petrol_attach,
+        petrol_b20diesal_total: element.petrol_b20diesal_total,
+        petrol_b20diesal_quantity: element.petrol_b20diesal_quantity,
+        petrol_b20diesal_price: element.petrol_b20diesal_price,
+        petrol_b20diesal_paymentType: element.petrol_b20diesal_paymentType,
+
+        petrol_e20gsh_total: element.petrol_e20gsh_total,
+        petrol_e20gsh_quantity: element.petrol_e20gsh_quantity,
+        petrol_e20gsh_price: element.petrol_e20gsh_price,
+        petrol_e20gsh_paymentType: element.petrol_e20gsh_paymentType,
+
+        petrol_fsdiesal_total: element.petrol_fsdiesal_total,
+        petrol_fsdiesal_quantity: element.petrol_fsdiesal_quantity,
+        petrol_fsdiesal_price: element.petrol_fsdiesal_price,
+        petrol_fsdiesal_paymentType: element.petrol_fsdiesal_paymentType,
+
+        petrol_fsgsh91_total: element.petrol_fsgsh91_total,
+        petrol_fsgsh91_quantity: element.petrol_fsgsh91_quantity,
+        petrol_fsgsh91_price: element.petrol_fsgsh91_price,
+        petrol_fsgsh91_paymentType: element.petrol_fsgsh91_paymentType,
+
+        petrol_vpdiesal_total: element.petrol_vpdiesal_total,
+        petrol_vpdiesal_quantity: element.petrol_vpdiesal_quantity,
+        petrol_vpdiesal_price: element.petrol_vpdiesal_price,
+        petrol_vpdiesal_paymentType: element.petrol_vpdiesal_paymentType,
+
+        petrol_vpgsh95_total: element.petrol_vpgsh95_total,
+        petrol_vpgsh95_quantity: element.petrol_vpgsh95_quantity,
+        petrol_vpgsh95_price: element.petrol_vpgsh95_price,
+        petrol_vpgsh95_paymentType: element.petrol_vpgsh95_paymentType,
+
+        engineoil_attach: element.engineoil_attach,
+        engineoil_b20diesal_total: element.engineoil_b20diesal_total,
+        engineoil_b20diesal_price: element.engineoil_b20diesal_price,
+
+        engineoil_e20gsh_total: element.engineoil_e20gsh_total,
+        engineoil_e20gsh_price: element.engineoil_e20gsh_price,
+
+        engineoil_fsdiesal_total: element.engineoil_fsdiesal_total,
+        engineoil_fsdiesal_price: element.engineoil_fsdiesal_price,
+
+        carcare_attach: element.carcare_attach,
+        carcare_size_s_washcar_total: element.carcare_size_s_washcar_total,
+        carcare_size_s_washcar_price: element.carcare_size_s_washcar_price,
+        carcare_size_s_wax_total: element.carcare_size_s_wax_total,
+        carcare_size_s_wax_price: element.carcare_size_s_wax_price,
+
+        carcare_size_m_washcar_total: element.carcare_size_m_washcar_total,
+        carcare_size_m_washcar_price: element.carcare_size_m_washcar_price,
+        carcare_size_m_wax_total: element.carcare_size_m_wax_total,
+        carcare_size_m_wax_price: element.carcare_size_m_wax_price,
+
+        carcare_size_l_washcar_total: element.carcare_size_l_washcar_total,
+        carcare_size_l_washcar_price: element.carcare_size_l_washcar_price,
+        carcare_size_l_wax_total: element.carcare_size_l_wax_total,
+        carcare_size_l_wax_price: element.carcare_size_l_wax_price,
+
+        conveniencestore_attach: element.conveniencestore_attach,
+        conveniencestore_food_total: element.conveniencestore_food_total,
+        conveniencestore_food_price: element.conveniencestore_food_price,
+
+        conveniencestore_nonfood_total: element.conveniencestore_nonfood_total,
+        conveniencestore_nonfood_price: element.conveniencestore_nonfood_price,
+
+        cafe_attach: element.cafe_attach,
+        cafe_revenuecafe_total: element.cafe_revenuecafe_total,
+        cafe_revenuecafe_price: element.cafe_revenuecafe_price,
+        Approve: element.Approve,
+        Send: element.Send,
+        CreateBy: element.CreateBy,
+        Time_Diff: element.Time_Diff
+      });
+    }
+    return arrangeL;
+  }
+
   async loadData() {
+    this.errorDialog();
     this.setState({ loading: true });
     await this.props.fetchingDataRevenue(this.state.selectedBranch);
     var dataL = this.props.revenueReducer.data;
@@ -441,16 +530,15 @@ class RevenueListForm extends Component {
   async onConfirmDeleteMultiple() {
     const { selectedData } = this.state;
     let selectedL = this.returnSelectedKeys(selectedData);
-    await this.props.deleteDataExpense(selectedL);
+    await this.props.deleteDataRevenue(selectedL);
     this.loadData();
     this.refs.deleteMutipleConfirmationDialog.close();
   }
 
   async onDeleteMultiple() {
-    await this.setState({ showAttach: true });
-    // const { data } = this.state;
-    // await this.setState({ selectedData: data });
-    // this.refs.deleteMutipleConfirmationDialog.open();
+    const { data } = this.state;
+    await this.setState({ selectedData: data });
+    this.refs.deleteMutipleConfirmationDialog.open();
   }
 
   returnSelectedKeys(selectedData) {
@@ -465,10 +553,10 @@ class RevenueListForm extends Component {
     return arrayIndex;
   }
 
-  async onConfirmUpdateMultiple() {
+  async onConfirmSendMultiple() {
     const { selectedData } = this.state;
     let selectedL = this.returnSelectedKeys(selectedData);
-    await this.props.sendDataExpense(selectedL);
+    await this.props.sendDataRevenue(selectedL);
     this.loadData();
     this.refs.sendMutipleConfirmationDialog.close();
   }
@@ -506,7 +594,7 @@ class RevenueListForm extends Component {
       self.setState({ loading: false, data, selectedData: null });
       let arrayKey = [];
       arrayKey.push(selectedData.Id);
-      await this.props.deleteDataExpense(arrayKey);
+      await this.props.deleteDataRevenue(arrayKey);
     }, 500);
   }
 
@@ -1004,15 +1092,15 @@ class RevenueListForm extends Component {
   async onSelectAllData(e) {
     const { selectedDatas, data } = this.state;
     let selectAll = selectedDatas < data.length;
-
     if (selectAll) {
       let selectAllDatas = data.map(item => {
         item.checked = true;
         return item;
       });
+
       await this.setState({
         data: selectAllDatas,
-        originalData: selectAllDatas,
+        // originalData: selectAllDatas,
         filterData: selectAllDatas,
         filteredData: selectAllDatas,
         selectedDatas: selectAllDatas.length
@@ -1143,6 +1231,10 @@ class RevenueListForm extends Component {
           <div className="row" style={{ paddingTop: 15, paddingBottom: 15 }}>
             <div style={{ paddingLeft: 25, float: "left" }}>
               <CSVLink
+                style={{
+                  visibility:
+                    this.state.csvData.length === 0 ? "hidden" : "visible"
+                }}
                 className="btn-sm btn-outline-default mr-10"
                 data={this.state.csvData}
                 filename={Date.now() + ".csv"}
@@ -1255,6 +1347,10 @@ class RevenueListForm extends Component {
 
             <div style={{ float: "left" }}>
               <CSVLink
+                style={{
+                  visibility:
+                    this.state.csvData.length === 0 ? "hidden" : "visible"
+                }}
                 className="btn-sm btn-outline-default mr-10"
                 data={this.state.csvData}
                 filename={Date.now() + ".csv"}
@@ -1343,14 +1439,22 @@ class RevenueListForm extends Component {
                   <td className="d-flex justify-content-start">
                     <span
                       className={`badge badge-xs ${
-                        item.Send ? "badge-success" : "badge-danger"
+                        item.Approve
+                          ? "badge-success"
+                          : item.Send
+                          ? "badge-secondary"
+                          : "badge-danger"
                       } mr-10 mt-10 position-relative`}
                     >
                       &nbsp;
                     </span>
                     <div className="status">
                       <span className="d-block">
-                        {item.Send ? "Submitted" : "Pending"}
+                        {item.Approve
+                          ? "Approved"
+                          : item.Send
+                          ? "Submitted"
+                          : "Pending"}
                       </span>
                       <span className="small">{item.Time_Diff}</span>
                     </div>
@@ -1398,14 +1502,22 @@ class RevenueListForm extends Component {
                   <td className="d-flex justify-content-start">
                     <span
                       className={`badge badge-xs ${
-                        item.Send ? "badge-success" : "badge-danger"
+                        item.Approve
+                          ? "badge-success"
+                          : item.Send
+                          ? "badge-secondary"
+                          : "badge-danger"
                       } mr-10 mt-10 position-relative`}
                     >
                       &nbsp;
                     </span>
                     <div className="status">
                       <span className="d-block">
-                        {item.Send ? "Submitted" : "Pending"}
+                        {item.Approve
+                          ? "Approved"
+                          : item.Send
+                          ? "Submitted"
+                          : "Pending"}
                       </span>
                       <span className="small">{item.Time_Diff}</span>
                     </div>
@@ -1447,6 +1559,10 @@ class RevenueListForm extends Component {
   }
 
   async setDataAfterFilter(originalData, keySearch) {
+    if (keySearch === "") {
+      this.setState({ selectedDatas: 0 });
+    }
+
     let result = this.filterList(originalData, keySearch);
     if (result.length === 0) {
       await this.setState({
@@ -1458,7 +1574,7 @@ class RevenueListForm extends Component {
 
     var searchOriL = this.filterList(originalData, keySearch);
     await this.setState({
-      data: this.arrangeNumber(searchOriL),
+      data: this.arrangeNumber2(searchOriL),
       pagesCount: Math.ceil(searchOriL.length / this.state.pageSize),
       currentPage: 0
     });
@@ -1537,30 +1653,23 @@ class RevenueListForm extends Component {
         </RctCollapsibleCard>
         <DeleteConfirmationDialog
           ref="deleteConfirmationDialog"
-          title="Are You Sure Want To Delete?"
-          message="This will delete data permanently."
+          title="Delete"
+          message="Are you sure want to delete?"
           onConfirm={() => this.deleteDataPermanently()}
         />
 
         <DeleteConfirmationDialog
           ref="deleteMutipleConfirmationDialog"
-          title="Are You Sure Want To Delete?"
-          message="This will delete data permanently."
+          title="Delete"
+          message="Are you sure want to delete?"
           onConfirm={() => this.onConfirmDeleteMultiple()}
         />
 
         <DeleteConfirmationDialog
           ref="sendMutipleConfirmationDialog"
-          title="Are You Sure Want To Send?"
-          message="This will send data to business central."
-          onConfirm={() => this.onConfirmUpdateMultiple()}
-        />
-
-        <DeleteConfirmationDialog
-          ref="sessionDialog"
-          title="Session Invalid!"
-          message="This will delete data permanently."
-          onConfirm={() => this.deleteDataPermanently()}
+          title="Send?"
+          message="Are you sure want to Send?"
+          onConfirm={() => this.onConfirmSendMultiple()}
         />
 
         {this.sessionDialog()}
@@ -1621,12 +1730,9 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
+  deleteDataRevenue,
   fetchingDataRevenue,
-  fetchingDataExpense,
-  updateDataExpense,
-  addDataExpense,
-  deleteDataExpense,
-  sendDataExpense,
   activeSession,
-  clearUser
+  clearUser,
+  sendDataRevenue
 })(RevenueListForm);

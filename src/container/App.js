@@ -78,7 +78,7 @@ class App extends Component {
          if (user === null) {
             return (<Redirect to={'/signin'} />);
          } else {
-            return (<Redirect to={'/app/expense/expense-management'} />);
+            return (<Redirect to={'/app/expense/expense-management-list'} />);
          }
       }
       return (

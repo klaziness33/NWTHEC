@@ -8,6 +8,10 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Slide from "@material-ui/core/Slide";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
 // rct card box
 import RctCollapsibleCard from "Components/RctCollapsibleCard/RctCollapsibleCard";
@@ -21,9 +25,12 @@ import DateFnsUtils from "@date-io/date-fns";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { connect } from "react-redux";
 import {
+  addDataRevenue,
   sendRevenue,
   activeSession,
-  updateDataRevenue
+  updateDataRevenue,
+  approveRevenue,
+  disapproveRevenue
 } from "../../../actions";
 import {
   parseDateInt,
@@ -31,7 +38,7 @@ import {
   getBase64,
   decryptData
 } from "../../../helpers/helpers";
-import { STORAGE_USERMODELS  } from "../../../store/storages";
+import { STORAGE_USERMODELS } from "../../../store/storages";
 
 class RevenueCardForm extends Component {
   state = {
@@ -112,7 +119,9 @@ class RevenueCardForm extends Component {
     imageUrl: "",
     paymentType: [],
     branch: [],
-    fk_Role: 0
+    fk_Role: 0,
+    permission: 0,
+    FK_Branch: 0
   };
 
   onAttachFile(valueP, fromP) {
@@ -172,16 +181,40 @@ class RevenueCardForm extends Component {
     });
   }
 
-  onDisapprove() {
-    console.log("onDisapprove");
+  async onDisapprove() {
+    let arrayIndex = [this.state.addNewDataDetail.Id];
+    if (this.state.addNewDataDetail.Approve) {
+      this.setState({
+        alertDialog: true,
+        alertTitle: "Alert",
+        alertContent:
+          "Cannot to action due to this information already approved"
+      });
+    } else {
+      await this.props.disapproveRevenue(arrayIndex);
+      setTimeout(() => {
+        this.props.reloadData();
+        this.props.closeModal();
+      }, 500);
+    }
   }
 
-  onApprove() {
-    const userL =
-      localStorage.getItem(STORAGE_USERMODELS) === null
-        ? null
-        : JSON.parse(decryptData(localStorage.getItem(STORAGE_USERMODELS)));
-    console.log(userL);
+  async onApprove() {
+    let arrayIndex = [this.state.addNewDataDetail.Id];
+    if (this.state.addNewDataDetail.Approve) {
+      this.setState({
+        alertDialog: true,
+        alertTitle: "Alert",
+        alertContent:
+          "Cannot to action due to this information already approved"
+      });
+    } else {
+      await this.props.approveRevenue(arrayIndex);
+      setTimeout(() => {
+        this.props.reloadData();
+        this.props.closeModal();
+      }, 500);
+    }
   }
 
   async onClear() {
@@ -262,6 +295,11 @@ class RevenueCardForm extends Component {
   }
 
   async onChangeDataInForm(valueP, valueTypeP) {
+    if (valueTypeP === "FK_Branch") {
+      await this.setState({ FK_Branch: valueP.target.value });
+      return;
+    }
+
     await this.setState({
       addNewDataDetail: {
         ...this.state.addNewDataDetail,
@@ -288,6 +326,23 @@ class RevenueCardForm extends Component {
     this.setState({ showAttach: false });
   };
 
+  onAdd = async () => {
+    await this.setState({
+      addNewDataDetail: {
+        ...this.state.addNewDataDetail,
+        ["FK_Branch"]:
+          this.state.FK_Branch === 0
+            ? this.state.branch[0].Id
+            : this.state.FK_Branch
+      }
+    });
+    this.props.addDataRevenue(this.state.addNewDataDetail);
+    setTimeout(() => {
+      this.props.reloadData();
+      this.props.closeModal();
+    }, 500);
+  };
+
   onSend = async () => {
     await this.setState({
       addNewDataDetail: {
@@ -306,7 +361,43 @@ class RevenueCardForm extends Component {
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
+  onCloseAlertDialog() {
+    this.setState({ alertDialog: false });
+  }
+
+  alertDialog() {
+    const { alertDialog, alertTitle, alertContent } = this.state;
+    return (
+      <div>
+        <Dialog
+          open={alertDialog}
+          TransitionComponent={this.Transition}
+          keepMounted
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">{alertTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {alertContent}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => this.onCloseAlertDialog()}
+              variant="contained"
+              className="btn-primary text-white mr-10"
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+
   componentDidMount() {
+    this.setState({ permission: this.props.permission });
     this.setState({ branch: this.props.masterReducer.data });
     this.setState({
       paymentType: this.props.masterReducer.paymentType
@@ -351,7 +442,7 @@ class RevenueCardForm extends Component {
             className="table-responsive"
           >
             <MatButton
-              onClick={() => this.onSend()}
+              onClick={() => this.onAdd()}
               variant="contained"
               className="btn-primary mr-10 mb-10 text-white"
             >
@@ -376,10 +467,30 @@ class RevenueCardForm extends Component {
       return (
         <RctCollapsibleCard>
           <div
-            style={{ display: "flex", justifyContent: "center" }}
+            style={{
+              display: "flex",
+              justifyContent: "center"
+            }}
             className="table-responsive"
           >
             <MatButton
+              style={{
+                visibility: this.state.permission !== 0 ? "visible" : "hidden"
+              }}
+              onClick={() => this.onSend()}
+              variant="contained"
+              className="btn-secondary mr-10 mb-10 text-white"
+            >
+              <i
+                style={{ paddingRight: 7 }}
+                className="zmdi zmdi-check zmdi-hc-lg"
+              ></i>
+              Send
+            </MatButton>
+            <MatButton
+              style={{
+                visibility: this.state.permission !== 0 ? "visible" : "hidden"
+              }}
               onClick={() => this.onApprove()}
               variant="contained"
               className="btn-success mr-10 mb-10 text-white"
@@ -391,6 +502,9 @@ class RevenueCardForm extends Component {
               Approve
             </MatButton>
             <MatButton
+              style={{
+                visibility: this.state.permission !== 0 ? "visible" : "hidden"
+              }}
               onClick={() => this.onDisapprove()}
               variant="contained"
               className="btn-danger mr-10 mb-10 text-white"
@@ -2595,6 +2709,7 @@ class RevenueCardForm extends Component {
             {this.dialogInfo(this.props.switchMode)}
           </div>
         </div>
+        {this.alertDialog()}
         <div>
           {this.state.showAttach ? (
             <Dialog
@@ -2640,7 +2755,10 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
+  addDataRevenue,
   sendRevenue,
   activeSession,
-  updateDataRevenue
+  updateDataRevenue,
+  approveRevenue,
+  disapproveRevenue
 })(RevenueCardForm);

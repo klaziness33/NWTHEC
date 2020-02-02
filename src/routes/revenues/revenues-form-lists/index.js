@@ -174,7 +174,8 @@ class RevenueListForm extends Component {
     originalData: null,
     selectedDate: new Date(),
     csvData: [],
-    actionType: ""
+    actionType: "",
+    permission: 0
   };
 
   Transition = React.forwardRef(function Transition(props, ref) {
@@ -281,6 +282,13 @@ class RevenueListForm extends Component {
     this.loadData();
     this.shopMoreTap(true);
     this.tabArrange();
+  }
+
+  onApprove() {
+    console.log("onApprove");
+  }
+  onDisapprove() {
+    console.log("onDisapprove");
   }
 
   arrangeNumber(arrP) {
@@ -471,7 +479,8 @@ class RevenueListForm extends Component {
         originalData: null,
         pagesCount: 0,
         currentPage: 0,
-        selectedDatas: 0
+        selectedDatas: 0,
+        permission: 0
       });
       return;
     }
@@ -487,8 +496,25 @@ class RevenueListForm extends Component {
       filteredData: addPropsToObject(arrangeL, this.arrProps)
     });
 
-    await this.setState({ Fk_Role: this.props.authUser.user.fk_Role });
+    let roleL = this.filterRole(this.props.authUser.user.fk_Role);
+    this.setRoleState(roleL);
     this.setDataExportCsv();
+  }
+
+  async setRoleState(roleP) {
+    await this.setState({ Fk_Role: this.props.authUser.user.fk_Role });
+    if (roleP.toLowerCase() === "leader") {
+      await this.setState({ permission: this.props.authUser.user.fk_Role });
+    }
+  }
+
+  filterRole(RoleIdP) {
+    let roleL = this.props.masterReducer.role;
+    for (let index = 0; index < roleL.length; index++) {
+      const element = roleL[index];
+      if (element.Id != RoleIdP) continue;
+      return element.Name;
+    }
   }
 
   filterBranch(branchIdP) {
@@ -1137,7 +1163,7 @@ class RevenueListForm extends Component {
 
   // arrange for ui (web or mobile)
   tabArrange() {
-    const { selectedBranch, q, selectedDatas } = this.state;
+    const { selectedBranch, q, selectedDatas, permission } = this.state;
 
     if (isMobile) {
       return (
@@ -1160,6 +1186,26 @@ class RevenueListForm extends Component {
                     className="btn-secondary mr-10 mb-10 text-white btn-icon"
                   >
                     Send <i className="zmdi zmdi-mail-send"></i>
+                  </MatButton>
+                  <MatButton
+                    style={{
+                      visibility: permission !== 0 ? "visible" : "hidden"
+                    }}
+                    onClick={() => this.onApprove()}
+                    variant="contained"
+                    className="btn-success mr-10 mb-10 text-white btn-icon"
+                  >
+                    Approve <i className="zmdi zmdi-mail-send"></i>
+                  </MatButton>
+                  <MatButton
+                    style={{
+                      visibility: permission !== 0 ? "visible" : "hidden"
+                    }}
+                    onClick={() => this.onDisApprove()}
+                    variant="contained"
+                    className="btn-danger mr-10 mb-10 text-white btn-icon"
+                  >
+                    Disapprove <i className="zmdi zmdi-mail-send"></i>
                   </MatButton>
                 </div>
               ) : (
@@ -1275,6 +1321,26 @@ class RevenueListForm extends Component {
                     className="btn-secondary mr-10 mb-10 text-white btn-icon"
                   >
                     Send <i className="zmdi zmdi-mail-send"></i>
+                  </MatButton>
+                  <MatButton
+                    style={{
+                      visibility: permission !== 0 ? "visible" : "hidden"
+                    }}
+                    onClick={() => this.onApprove()}
+                    variant="contained"
+                    className="btn-success mr-10 mb-10 text-white btn-icon"
+                  >
+                    Approve <i className="zmdi zmdi-mail-send"></i>
+                  </MatButton>
+                  <MatButton
+                    style={{
+                      visibility: permission !== 0 ? "visible" : "hidden"
+                    }}
+                    onClick={() => this.onDisapprove()}
+                    variant="contained"
+                    className="btn-danger mr-10 mb-10 text-white btn-icon"
+                  >
+                    Disapprove <i className="zmdi zmdi-mail-send"></i>
                   </MatButton>
                 </div>
               ) : (
@@ -1707,6 +1773,7 @@ class RevenueListForm extends Component {
                 style={{ display: "flex", justifyContent: "center" }}
               >
                 <RevenueCardForm
+                  permission={this.state.permission}
                   reloadData={this.loadData.bind(this)}
                   closeModal={this.handleClose.bind(this)}
                   dataInit={this.state.editData}

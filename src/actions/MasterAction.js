@@ -30,7 +30,7 @@ const catchError = (error, dispatch, type) => {
 export const fetchingDataBranch = branchP => async dispatch => {
   dispatch({ type: FETCH_START_BRANCH });
   await axios
-    .get(AppConfig.serviceUrl + "/branch/read/Get?idP=" + branchP, {
+    .get(AppConfig.serviceUrl + "branch/read/Get?idP=" + branchP, {
       headers: {
         "content-type": "application/json; charset=utf-8",
         Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
@@ -57,10 +57,10 @@ export const fetchingDataBranch = branchP => async dispatch => {
     .catch(error => catchError(error, dispatch, FETCH_ERROR_BRANCH));
 };
 
-export const fetchingDataRole = roleP => async dispatch => {
+export const fetchingDataRole = () => async dispatch => {
   dispatch({ type: FETCH_START_ROLE });
   await axios
-    .get(AppConfig.serviceUrl + "/role/read/Get?idP=" + branchP, {
+    .get(AppConfig.serviceUrl + "role/read/Get?idP=" + "0", {
       headers: {
         "content-type": "application/json; charset=utf-8",
         Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)

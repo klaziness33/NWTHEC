@@ -17,7 +17,7 @@ const Footer = () => (
 			{/* <li className="list-inline-item">
 				<Button component={Link} to="/app/dashboard"><IntlMessages id="sidebar.gettingStarted" /></Button>
 			</li> */}
-			<li className="list-inline-item">
+			{/* <li className="list-inline-item">
 				<Button component={Link} to="/app/about-us"><IntlMessages id="sidebar.aboutUs" /></Button>
 			</li>
 			<li className="list-inline-item">
@@ -25,7 +25,7 @@ const Footer = () => (
 			</li>
 			<li className="list-inline-item">
 				<Button component={Link} to="/terms-condition"><IntlMessages id="sidebar.terms&Conditions" /></Button>
-			</li>
+			</li> */}
 			{/* <li className="list-inline-item">
 				<Button component={Link} to="/app/pages/feedback"><IntlMessages id="sidebar.feedback" /></Button>
 			</li> */}

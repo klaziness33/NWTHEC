@@ -83,7 +83,7 @@ class Signin extends Component {
                     </Link>
                   </div>
                   <div>
-                    <a className="mr-15" onClick={() => this.onUserSignUp()}>
+                    {/* <a className="mr-15" onClick={() => this.onUserSignUp()}>
                       Create New account?
                     </a>
                     <Button
@@ -92,7 +92,7 @@ class Signin extends Component {
                       onClick={() => this.onUserSignUp()}
                     >
                       Sign Up
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               </div>
@@ -105,9 +105,9 @@ class Signin extends Component {
                   <div className="session-body text-center">
                     <div className="session-head mb-30">
                       <h2 className="font-weight-bold">
-                        Get started with {AppConfig.brandName}
+                        Wellcome to {AppConfig.brandName}
                       </h2>
-                      <p className="mb-0">Most powerful ReactJS admin panel</p>
+                      <p className="mb-0">Shell Thailand Gas Station</p>
                     </div>
                     <Form>
                       <FormGroup className="has-wrapper">
@@ -153,24 +153,14 @@ class Signin extends Component {
                           Sign In
                         </Button>
                       </FormGroup>
-                      <FormGroup className="mb-15">
-                        <Button
-                          variant="contained"
-                          className="btn-secondary btn-block text-white w-100"
-                          size="large"
-                          onClick={() => this.loginAuth0()}
-                        >
-                          Sign In With Auth0
-                        </Button>
-                      </FormGroup>
                     </Form>
                     <p className="mb-0">
                       <a
                         target="_blank"
-                        href="#/terms-condition"
+                        href="#"
                         className="text-muted"
                       >
-                        Terms of Service
+                        Develop by NaviWorld (Thailand) Co. Ltd
                       </a>
                     </p>
                   </div>

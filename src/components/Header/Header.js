@@ -138,7 +138,7 @@ class Header extends Component {
                     </Tooltip>
                   </li>
                 )}
-                {!horizontalMenu && <QuickLinks />}
+                {/* {!horizontalMenu && <QuickLinks />}
                 <li className="list-inline-item search-icon d-inline-block">
                   <SearchForm />
                   <IconButton
@@ -154,7 +154,7 @@ class Header extends Component {
                       this.setState({ isMobileSearchFormVisible: false })
                     }
                   />
-                </li>
+                </li> */}
               </ul>
             )}
           </div>
@@ -176,8 +176,8 @@ class Header extends Component {
 							</li>
 						} */}
             <LanguageProvider />
-            <Notifications />
-            <Cart />
+            {/* <Notifications />
+            <Cart /> */}
             {/* <li className="list-inline-item setting-icon">
 							<Tooltip title="Chat" placement="bottom">
 								<IconButton aria-label="settings" onClick={() => this.setState({ customizer: true })}>

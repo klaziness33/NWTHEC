@@ -48,7 +48,9 @@ import {
   activeSession,
   clearUser,
   deleteDataRevenue,
-  sendDataRevenue
+  sendDataRevenue,
+  approveRevenue,
+  disapproveRevenue
 } from "Actions";
 
 import { isMobile } from "react-device-detect";
@@ -284,11 +286,64 @@ class RevenueListForm extends Component {
     this.tabArrange();
   }
 
-  onApprove() {
-    console.log("onApprove");
+  async onApprove() {
+    const { data } = this.state;
+    await this.setState({ selectedData: data });
+    this.refs.approveMutipleConfirmationDialog.open();
   }
-  onDisapprove() {
-    console.log("onDisapprove");
+
+  async onConfirmApproveMultiple() {
+    let breakL = false;
+    const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(
+          "cannot send this rows due to it has some rows as you selected already approved"
+        );
+        breakL = true;
+        break;
+      }
+    }
+    if (breakL) return;
+    //ToDo
+    let selectedL = this.returnSelectedKeys(selectedData);
+    await this.props.approveRevenue(selectedL);
+    setTimeout(() => {
+      this.loadData();
+      this.handleClose();
+      this.refs.approveMutipleConfirmationDialog.close();
+    }, 500);
+  }
+
+  async onDisapprove() {
+    const { data } = this.state;
+    await this.setState({ selectedData: data });
+    this.refs.disapproveMutipleConfirmationDialog.open();
+  }
+
+  async onConfirmDisapproveMultiple() {
+    let breakL = false;
+    const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(
+          "cannot send this rows due to it has some rows as you selected already approved"
+        );
+        breakL = true;
+        break;
+      }
+    }
+    if (breakL) return;
+    //ToDo
+    let selectedL = this.returnSelectedKeys(selectedData);
+    await this.props.disapproveRevenue(selectedL);
+    setTimeout(() => {
+      this.loadData();
+      this.handleClose();
+      this.refs.disapproveMutipleConfirmationDialog.close();
+    }, 500);
   }
 
   arrangeNumber(arrP) {
@@ -554,7 +609,20 @@ class RevenueListForm extends Component {
   }
 
   async onConfirmDeleteMultiple() {
+    let breakL = false;
     const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(
+          "cannot delete this rows due to it has some rows as you selected already approved"
+        );
+        breakL = true;
+        break;
+      }
+    }
+
+    if (breakL) return;
     let selectedL = this.returnSelectedKeys(selectedData);
     await this.props.deleteDataRevenue(selectedL);
     this.loadData();
@@ -580,7 +648,20 @@ class RevenueListForm extends Component {
   }
 
   async onConfirmSendMultiple() {
+    let breakL = false;
     const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(
+          "cannot send this rows due to it has some rows as you selected already approved"
+        );
+        breakL = true;
+        break;
+      }
+    }
+
+    if (breakL) return;
     let selectedL = this.returnSelectedKeys(selectedData);
     await this.props.sendDataRevenue(selectedL);
     this.loadData();
@@ -609,6 +690,10 @@ class RevenueListForm extends Component {
    */
   deleteDataPermanently() {
     const { selectedData } = this.state;
+    if (selectedData.Approve) {
+      alert("cannot delete this rows due to already approved");
+      return;
+    }
 
     let data = this.state.data;
     let indexOfDeleteData = data.indexOf(selectedData);
@@ -1181,6 +1266,9 @@ class RevenueListForm extends Component {
                     Delete <i className="zmdi zmdi-delete"></i>
                   </MatButton>
                   <MatButton
+                    style={{
+                      display: this.state.permission === 0 ? "inline" : "none"
+                    }}
                     onClick={() => this.onSend()}
                     variant="contained"
                     className="btn-secondary mr-10 mb-10 text-white btn-icon"
@@ -1316,6 +1404,9 @@ class RevenueListForm extends Component {
                     Delete <i className="zmdi zmdi-delete"></i>
                   </MatButton>
                   <MatButton
+                    style={{
+                      display: this.state.permission === 0 ? "inline" : "none"
+                    }}
                     onClick={() => this.onSend()}
                     variant="contained"
                     className="btn-secondary mr-10 mb-10 text-white btn-icon"
@@ -1738,6 +1829,20 @@ class RevenueListForm extends Component {
           onConfirm={() => this.onConfirmSendMultiple()}
         />
 
+        <DeleteConfirmationDialog
+          ref="approveMutipleConfirmationDialog"
+          title="Approve?"
+          message="Are you sure want to approve?"
+          onConfirm={() => this.onConfirmApproveMultiple()}
+        />
+
+        <DeleteConfirmationDialog
+          ref="disapproveMutipleConfirmationDialog"
+          title="Disapprove?"
+          message="Are you sure want to disapprove?"
+          onConfirm={() => this.onConfirmDisapproveMultiple()}
+        />
+
         {this.sessionDialog()}
 
         {this.state.showAttach ? (
@@ -1801,5 +1906,7 @@ export default connect(mapStateToProps, {
   fetchingDataRevenue,
   activeSession,
   clearUser,
-  sendDataRevenue
+  sendDataRevenue,
+  approveRevenue,
+  disapproveRevenue
 })(RevenueListForm);

@@ -438,7 +438,7 @@ class RevenueCardForm extends Component {
       return (
         <RctCollapsibleCard>
           <div
-            style={{ display: "flex", justifyContent: "center" }}
+            style={{ display: "flex", justifyContent: "flex-end" }}
             className="table-responsive"
           >
             <MatButton
@@ -448,7 +448,7 @@ class RevenueCardForm extends Component {
             >
               <i
                 style={{ paddingRight: 7 }}
-                className="zmdi zmdi-mail-send zmdi-hc-lg"
+                className="zmdi zmdi-plus zmdi-hc-lg"
               ></i>
               Add
             </MatButton>
@@ -460,6 +460,14 @@ class RevenueCardForm extends Component {
             >
               Clear
             </MatButton>
+
+            <MatButton
+              onClick={closeModalL}
+              variant="contained"
+              className="btn-danger mr-10 mb-10 text-white"
+            >
+              Close
+            </MatButton>
           </div>
         </RctCollapsibleCard>
       );
@@ -469,13 +477,13 @@ class RevenueCardForm extends Component {
           <div
             style={{
               display: "flex",
-              justifyContent: "center"
+              justifyContent: "flex-end"
             }}
             className="table-responsive"
           >
             <MatButton
               style={{
-                visibility: this.state.permission !== 0 ? "visible" : "hidden"
+                visibility: this.state.permission === 0 ? "visible" : "hidden"
               }}
               onClick={() => this.onSend()}
               variant="contained"
@@ -483,13 +491,17 @@ class RevenueCardForm extends Component {
             >
               <i
                 style={{ paddingRight: 7 }}
-                className="zmdi zmdi-check zmdi-hc-lg"
+                className="zmdi zmdi-mail-send zmdi-hc-lg"
               ></i>
               Send
             </MatButton>
             <MatButton
               style={{
-                visibility: this.state.permission !== 0 ? "visible" : "hidden"
+                visibility:
+                  this.state.permission === 0 ||
+                  this.state.addNewDataDetail.Approve === true
+                    ? "hidden"
+                    : "visible"
               }}
               onClick={() => this.onApprove()}
               variant="contained"
@@ -503,17 +515,29 @@ class RevenueCardForm extends Component {
             </MatButton>
             <MatButton
               style={{
-                visibility: this.state.permission !== 0 ? "visible" : "hidden"
+                visibility:
+                  this.state.permission === 0 ||
+                  this.state.addNewDataDetail.Approve === true
+                    ? "hidden"
+                    : "visible"
               }}
               onClick={() => this.onDisapprove()}
               variant="contained"
-              className="btn-danger mr-10 mb-10 text-white"
+              className="btn-secondary mr-10 mb-10 text-white"
             >
               <i
                 style={{ paddingRight: 7 }}
                 className="zmdi zmdi-close zmdi-hc-lg"
               ></i>
               Disapprove
+            </MatButton>
+
+            <MatButton
+              onClick={closeModalL}
+              variant="contained"
+              className="btn-danger mr-10 mb-10 text-white"
+            >
+              Close
             </MatButton>
           </div>
         </RctCollapsibleCard>
@@ -522,7 +546,7 @@ class RevenueCardForm extends Component {
       return (
         <RctCollapsibleCard>
           <div
-            style={{ display: "flex", justifyContent: "center" }}
+            style={{ display: "flex", justifyContent: "flex-end" }}
             className="table-responsive"
           >
             <MatButton
@@ -541,11 +565,7 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-danger mr-10 mb-10 text-white"
             >
-              <i
-                style={{ paddingRight: 7 }}
-                className="zmdi zmdi-close zmdi-hc-lg"
-              ></i>
-              Cancel
+              Close
             </MatButton>
           </div>
         </RctCollapsibleCard>
@@ -573,7 +593,7 @@ class RevenueCardForm extends Component {
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
                       <KeyboardDatePicker
-                        readOnly={readOnly}
+                        disabled={readOnly}
                         style={{
                           height: 56,
                           width: 251
@@ -599,7 +619,7 @@ class RevenueCardForm extends Component {
                       </FormHelperText>
                       <Input
                         onChange={e => this.onChangeDataInForm(e, "FK_Branch")}
-                        readOnly={readOnly}
+                        disabled={readOnly}
                         style={{
                           height: 53.63,
                           width: 251,
@@ -665,7 +685,7 @@ class RevenueCardForm extends Component {
                                   "petrol_b20diesal_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total1"
                               id="Total1"
@@ -686,7 +706,7 @@ class RevenueCardForm extends Component {
                                   "petrol_b20diesal_quantity"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="quantity1"
                               id="Quantity1"
@@ -707,7 +727,7 @@ class RevenueCardForm extends Component {
                                   "petrol_b20diesal_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price1"
                               id="Price1"
@@ -729,7 +749,7 @@ class RevenueCardForm extends Component {
                                   "petrol_b20diesal_paymentType"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType1"
                               id="paymentType1"
@@ -773,7 +793,7 @@ class RevenueCardForm extends Component {
                                   "petrol_e20gsh_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total2"
                               id="Total2"
@@ -794,7 +814,7 @@ class RevenueCardForm extends Component {
                                   "petrol_e20gsh_quantity"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="quantity2"
                               id="Quantity2"
@@ -815,7 +835,7 @@ class RevenueCardForm extends Component {
                                   "petrol_e20gsh_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price2"
                               id="Price2"
@@ -835,7 +855,7 @@ class RevenueCardForm extends Component {
                                   "petrol_e20gsh_paymentType"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType2"
                               id="paymentType2"
@@ -879,7 +899,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsdiesal_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total3"
                               id="Total3"
@@ -900,7 +920,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsdiesal_quantity"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="quantity3"
                               id="Quantity3"
@@ -921,7 +941,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsdiesal_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price3"
                               id="Price3"
@@ -943,7 +963,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsdiesal_paymentType"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType3"
                               id="paymentType3"
@@ -987,7 +1007,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsgsh91_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total4"
                               id="Total4"
@@ -1008,7 +1028,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsgsh91_quantity"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="quantity4"
                               id="Quantity4"
@@ -1029,7 +1049,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsgsh91_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price4"
                               id="Price4"
@@ -1051,7 +1071,7 @@ class RevenueCardForm extends Component {
                                   "petrol_fsgsh91_paymentType"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType4"
                               id="paymentType4"
@@ -1095,7 +1115,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpdiesal_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total5"
                               id="Total5"
@@ -1116,7 +1136,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpdiesal_quantity"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="quantity5"
                               id="Quantity5"
@@ -1137,7 +1157,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpdiesal_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price5"
                               id="Price5"
@@ -1159,7 +1179,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpdiesal_paymentType"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType5"
                               id="paymentType5"
@@ -1203,7 +1223,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpgsh95_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total6"
                               id="Total6"
@@ -1224,7 +1244,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpgsh95_quantity"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="quantity6"
                               id="Quantity6"
@@ -1245,7 +1265,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpgsh95_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price6"
                               id="Price6"
@@ -1267,7 +1287,7 @@ class RevenueCardForm extends Component {
                                   "petrol_vpgsh95_paymentType"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType6"
                               id="paymentType6"
@@ -1402,7 +1422,7 @@ class RevenueCardForm extends Component {
                                   "engineoil_b20diesal_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total7"
                               id="Total7"
@@ -1423,7 +1443,7 @@ class RevenueCardForm extends Component {
                                   "engineoil_b20diesal_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price7"
                               id="price7"
@@ -1437,7 +1457,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="hidden7"
                               id="hidden7"
@@ -1450,7 +1470,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType7"
                               id="paymentType7"
@@ -1494,7 +1514,7 @@ class RevenueCardForm extends Component {
                                   "engineoil_e20gsh_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total8"
                               id="Total8"
@@ -1515,7 +1535,7 @@ class RevenueCardForm extends Component {
                                   "engineoil_e20gsh_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price8"
                               id="price8"
@@ -1529,7 +1549,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="hidden8"
                               id="hidden8"
@@ -1542,7 +1562,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType8"
                               id="paymentType8"
@@ -1586,7 +1606,7 @@ class RevenueCardForm extends Component {
                                   "engineoil_fsdiesal_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total9"
                               id="Total9"
@@ -1607,7 +1627,7 @@ class RevenueCardForm extends Component {
                                   "engineoil_fsdiesal_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price9"
                               id="price9"
@@ -1621,7 +1641,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="hidden9"
                               id="hidden9"
@@ -1634,7 +1654,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType9"
                               id="paymentType9"
@@ -1800,7 +1820,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_s_washcar_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 80
                               }}
@@ -1826,7 +1846,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_s_washcar_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 120
                               }}
@@ -1867,7 +1887,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_m_washcar_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 80
                               }}
@@ -1893,7 +1913,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_m_washcar_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 120
                               }}
@@ -1934,7 +1954,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_l_washcar_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 80
                               }}
@@ -1960,7 +1980,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_l_washcar_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 120
                               }}
@@ -2002,7 +2022,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_s_wax_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 80
                               }}
@@ -2026,7 +2046,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_s_wax_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 120
                               }}
@@ -2065,7 +2085,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_m_wax_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 80
                               }}
@@ -2089,7 +2109,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_m_wax_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 120
                               }}
@@ -2128,7 +2148,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_l_wax_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 80
                               }}
@@ -2152,7 +2172,7 @@ class RevenueCardForm extends Component {
                                   "carcare_size_l_wax_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               style={{
                                 width: 120
                               }}
@@ -2287,7 +2307,7 @@ class RevenueCardForm extends Component {
                                   "conveniencestore_food_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total17"
                               id="Total17"
@@ -2310,7 +2330,7 @@ class RevenueCardForm extends Component {
                                   "conveniencestore_food_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price17"
                               id="price17"
@@ -2324,7 +2344,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="hidden17"
                               id="hidden17"
@@ -2337,7 +2357,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType17"
                               id="paymentType17"
@@ -2384,7 +2404,7 @@ class RevenueCardForm extends Component {
                                   "conveniencestore_nonfood_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total18"
                               id="Total18"
@@ -2407,7 +2427,7 @@ class RevenueCardForm extends Component {
                                   "conveniencestore_nonfood_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price18"
                               id="price18"
@@ -2421,7 +2441,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="hidden18"
                               id="hidden18"
@@ -2434,7 +2454,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType18"
                               id="paymentType18"
@@ -2571,7 +2591,7 @@ class RevenueCardForm extends Component {
                                   "cafe_revenuecafe_total"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="total19"
                               id="Total19"
@@ -2592,7 +2612,7 @@ class RevenueCardForm extends Component {
                                   "cafe_revenuecafe_price"
                                 )
                               }
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="price19"
                               id="price19"
@@ -2606,7 +2626,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="number"
                               name="hidden19"
                               id="hidden19"
@@ -2619,7 +2639,7 @@ class RevenueCardForm extends Component {
                         <Form>
                           <FormGroup>
                             <Input
-                              readOnly={readOnly}
+                              disabled={readOnly}
                               type="select"
                               name="paymentType19"
                               id="paymentType19"

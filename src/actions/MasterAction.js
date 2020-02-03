@@ -20,7 +20,6 @@ const catchError = (error, dispatch, type) => {
   if (dispatch !== null) {
     dispatch({ type: type });
   }
-
   if (!error.response) {
     NotificationManager.error(NOTIFY_NETWORKERROR);
   }
@@ -84,27 +83,26 @@ export const fetchingDataRole = () => async dispatch => {
     .catch(error => catchError(error, dispatch, FETCH_ERROR_ROLE));
 };
 
-
-export const fetchingDataVendor = () => async dispatch => {
-  dispatch({ type: FETCH_START_VENDOR_MASTER });
-  await axios
-    .get(AppConfig.serviceUrl + "vendor/read/Get?idP=" + "0", {
-      headers: {
-        "content-type": "application/json; charset=utf-8",
-        Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
-      }
-    })
-    .then(response => {
-      // check response
-      if (response.data.description !== RESPONSE_SUCCESS) {
-        dispatch({ type: FETCH_ERROR_VENDOR_MASTER });
-        NotificationManager.error(response.data.data);
-      } else {
-        dispatch({
-          type: FETCH_END_VENDOR_MASTER,
-          payload: response.data.data
-        });
-      }
-    })
-    .catch(error => catchError(error, dispatch, FETCH_ERROR_VENDOR_MASTER));
-};
+// export const fetchingDataVendor = () => async dispatch => {
+//   dispatch({ type: FETCH_START_VENDOR_MASTER });
+//   await axios
+//     .get(AppConfig.serviceUrl + "vendor/read/Get?idP=" + "0", {
+//       headers: {
+//         "content-type": "application/json; charset=utf-8",
+//         Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+//       }
+//     })
+//     .then(response => {
+//       // check response
+//       if (response.data.description !== RESPONSE_SUCCESS) {
+//         dispatch({ type: FETCH_ERROR_VENDOR_MASTER });
+//         NotificationManager.error(response.data.data);
+//       } else {
+//         dispatch({
+//           type: FETCH_END_VENDOR_MASTER,
+//           payload: response.data.data
+//         });
+//       }
+//     })
+//     .catch(error => catchError(error, dispatch, FETCH_ERROR_VENDOR_MASTER));
+// };

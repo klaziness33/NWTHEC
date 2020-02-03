@@ -39,10 +39,6 @@ const INIT_STATE = {
     localStorage.getItem(STORAGE_ROLE) === null
       ? null
       : JSON.parse(decryptData(localStorage.getItem(STORAGE_ROLE))),
-  vendor:
-    localStorage.getItem(STORAGE_VENDOR) === null
-      ? null
-      : JSON.parse(decryptData(localStorage.getItem(STORAGE_VENDOR))),
   loading: false
 };
 
@@ -73,15 +69,6 @@ export default (state = INIT_STATE, action) => {
       return { ...state, role: action.payload, loading: false };
 
     case FETCH_ERROR_ROLE:
-      return { ...state, loading: false };
-
-    case FETCH_START_VENDOR_MASTER:
-      return { ...state, role: null, loading: true };
-
-    case FETCH_END_VENDOR_MASTER:
-      return { ...state, role: action.payload, loading: false };
-
-    case FETCH_ERROR_VENDOR_MASTER:
       return { ...state, loading: false };
 
     default:

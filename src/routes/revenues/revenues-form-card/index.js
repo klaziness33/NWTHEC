@@ -483,7 +483,7 @@ class RevenueCardForm extends Component {
           >
             <MatButton
               style={{
-                visibility: this.state.permission === 0 ? "visible" : "hidden"
+                display: this.state.permission === 0 ? "inline" : "none"
               }}
               onClick={() => this.onSend()}
               variant="contained"
@@ -497,11 +497,11 @@ class RevenueCardForm extends Component {
             </MatButton>
             <MatButton
               style={{
-                visibility:
+                display:
                   this.state.permission === 0 ||
                   this.state.addNewDataDetail.Approve === true
-                    ? "hidden"
-                    : "visible"
+                    ? "none"
+                    : "inline"
               }}
               onClick={() => this.onApprove()}
               variant="contained"
@@ -515,11 +515,11 @@ class RevenueCardForm extends Component {
             </MatButton>
             <MatButton
               style={{
-                visibility:
+                display:
                   this.state.permission === 0 ||
                   this.state.addNewDataDetail.Approve === true
-                    ? "hidden"
-                    : "visible"
+                    ? "none"
+                    : "inline"
               }}
               onClick={() => this.onDisapprove()}
               variant="contained"

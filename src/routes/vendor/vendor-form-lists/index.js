@@ -1,6 +1,8 @@
 /**
  * Data Management Page
  */
+import AppConfig from "../../../constants/AppConfig";
+import axios from "axios";
 import React, { Component } from "react";
 import { Helmet } from "react-helmet";
 import MatButton from "@material-ui/core/Button";
@@ -93,6 +95,7 @@ class VendorForm extends Component {
     loading: false,
     addNewDataModal: false,
     addNewDataDetail: {
+      Id: 0,
       Name: "",
       Description: "",
       checked: false
@@ -111,7 +114,8 @@ class VendorForm extends Component {
     q: "",
     originalData: null,
     selectedDate: new Date(),
-    csvData: []
+    csvData: [],
+    validateName: false
   };
 
   // handleDateChange = this.handleDateChange.bind(this);
@@ -163,6 +167,37 @@ class VendorForm extends Component {
   async onAccept() {
     await this.props.clearUser();
     this.props.history.push("/signin");
+  }
+
+  async onValidateName(valP, idP) {
+    if (valP === "") return;
+    await axios
+      .post(
+        AppConfig.serviceUrl + "vendor/validate",
+        {
+          Id: idP,
+          Name: valP
+        },
+        {
+          headers: {
+            "content-type": "application/json; charset=utf-8",
+            Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+          }
+        }
+      )
+      .then(response => {
+        if (
+          response.data.description === "success" &&
+          response.data.data === "Valid"
+        ) {
+          this.setState({ validateName: false });
+        } else {
+          this.setState({ validateName: true });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   sessionDialog() {
@@ -350,6 +385,7 @@ class VendorForm extends Component {
     this.setState({
       addNewDataModal: true,
       addNewDataDetail: {
+        Id: 0,
         Name: "",
         Description: "",
         checked: false
@@ -393,6 +429,8 @@ class VendorForm extends Component {
    */
   async addNewData() {
     const { addNewDataDetail } = this.state;
+    await this.onValidateName(addNewDataDetail.Name, addNewDataDetail.Id);
+    if (this.state.validateName) return;
     await this.props.addDataVendor(addNewDataDetail);
     await this.setState({ addNewDataModal: false, loading: true });
     this.loadData();
@@ -459,8 +497,10 @@ class VendorForm extends Component {
    */
   async updateData() {
     const { editData } = this.state;
-    await this.props.updateDataVendor(editData);
+    await this.onValidateName(editData.Name, editData.Id);
+    if (this.state.validateName) return;
 
+    await this.props.updateDataVendor(editData);
     // data for show on ui //
     let indexOfUpdateData = "";
     let datas = this.state.data;
@@ -888,10 +928,22 @@ class VendorForm extends Component {
                     id="Name"
                     placeholder="Enter Name"
                     value={addNewDataDetail.Name}
+                    onBlur={e =>
+                      this.onValidateName(e.target.value, addNewDataDetail.Id)
+                    }
                     onChange={e =>
                       this.onChangeAddNewDataDetails("Name", e.target.value)
                     }
                   />
+                  <Label
+                    style={{
+                      display: !this.state.validateName ? "none " : "inline",
+                      color: "red",
+                      fontSize: 15
+                    }}
+                  >
+                    This vendor has already been used.
+                  </Label>
                 </FormGroup>
                 <FormGroup>
                   <Label for="Description">Description</Label>
@@ -924,10 +976,22 @@ class VendorForm extends Component {
                     id="Name"
                     placeholder="Enter Name"
                     value={editData.Name}
+                    onBlur={e =>
+                      this.onValidateName(e.target.value, editData.Id)
+                    }
                     onChange={e =>
                       this.onUpdateDataDetails("Name", e.target.value)
                     }
                   />
+                  <Label
+                    style={{
+                      display: !this.state.validateName ? "none " : "inline",
+                      color: "red",
+                      fontSize: 15
+                    }}
+                  >
+                    This vendor has already been used.
+                  </Label>
                 </FormGroup>
                 <FormGroup>
                   <Label for="Description">Description</Label>

@@ -1,6 +1,7 @@
 /**
  * Data Management Page
  */
+import AppConfig from "../../../constants/AppConfig";
 import React, { Component } from "react";
 import { Helmet } from "react-helmet";
 import MatButton from "@material-ui/core/Button";
@@ -54,6 +55,8 @@ import { connect } from "react-redux";
 
 // redux action
 import {
+  validateDataExpense,
+  fetchingDataVendor,
   fetchingDataExpense,
   updateDataExpense,
   addDataExpense,
@@ -82,7 +85,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Slide from "@material-ui/core/Slide";
-
+import axios from "axios";
 import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../../../store/storages";
 
 const moment = require("moment");
@@ -93,6 +96,7 @@ class ExpenseForm extends Component {
 
   dataBranch = ["Petrol 001", "Petrol 002"];
   state = {
+    validateBillNo: false,
     sessionTitle: "",
     sessionContent: "",
     sessionStatus: false,
@@ -105,7 +109,7 @@ class ExpenseForm extends Component {
       Id: "",
       Description: "",
       Invoice_No: "",
-      CreateDate: parseDateString(Date.now()),
+      BillDate: parseDateString(Date.now()),
       Total: "",
       Fk_Branch: "",
       checked: false
@@ -124,7 +128,8 @@ class ExpenseForm extends Component {
     q: "",
     originalData: null,
     selectedDate: new Date(),
-    csvData: []
+    csvData: [],
+    vendor: null
   };
 
   // handleDateChange = this.handleDateChange.bind(this);
@@ -242,7 +247,7 @@ class ExpenseForm extends Component {
         No: index + 1,
         Id: element.Id,
         Description: element.Description,
-        CreateDate: element.CreateDate,
+        BillDate: element.BillDate,
         UpdateDate: element.UpdateDate,
         CreateBy: element.CreateBy,
         UpdateBy: element.UpdateBy,
@@ -259,9 +264,11 @@ class ExpenseForm extends Component {
   }
 
   async loadData() {
-    this.errorDialog();
+    // this.errorDialog();
 
-    this.setState({ loading: true });
+    await this.props.fetchingDataVendor("0");
+    await this.setState({ vendor: this.props.vendorReducer.data });
+    await this.setState({ loading: true });
     await this.props.fetchingDataExpense(this.state.selectedBranch);
 
     var expenseL = this.props.expenseReducer.data;
@@ -296,8 +303,8 @@ class ExpenseForm extends Component {
     arrayNew.push([
       "No.",
       "Description",
-      "Invoice No.",
-      "CreateDate",
+      "Bill No.",
+      "BillDate",
       "Total",
       "Send"
     ]);
@@ -307,7 +314,7 @@ class ExpenseForm extends Component {
         data[index].No,
         data[index].Description,
         data[index].Invoice_No,
-        convertDateToWebservice(data[index].CreateDate),
+        convertDateToWebservice(data[index].BillDate),
         data[index].Total.toFixed(2),
         data[index].Send
       ]);
@@ -389,12 +396,13 @@ class ExpenseForm extends Component {
   opnAddNewDataModal(e) {
     e.preventDefault();
     this.setState({
+      validateBillNo: false,
       addNewDataModal: true,
       addNewDataDetail: {
         Id: "",
         Description: "",
         Invoice_No: "",
-        CreateDate: parseDateString(Date.now()),
+        BillDate: parseDateString(Date.now()),
         Total: "",
         Fk_Branch: "",
         checked: false
@@ -437,11 +445,19 @@ class ExpenseForm extends Component {
    * Add New Data
    */
   async addNewData() {
-    const { addNewDataDetail } = this.state;
+    const { addNewDataDetail, selectedBranch } = this.state;
+
+    await this.onValidateBillNo(
+      addNewDataDetail.Invoice_No,
+      addNewDataDetail.Id
+    );
+    if (this.state.validateBillNo) return;
+
     await this.props.addDataExpense(
       addNewDataDetail,
-      this.state.data[0].Fk_Branch
+      this.state.data === null ? selectedBranch : this.state.data[0].Fk_Branch
     );
+    
     await this.setState({ addNewDataModal: false, loading: true });
     this.loadData();
     await this.setState({ loading: false });
@@ -458,7 +474,11 @@ class ExpenseForm extends Component {
    * On Edit Data
    */
   onEditData(data) {
-    this.setState({ addNewDataModal: true, editData: data });
+    this.setState({
+      addNewDataModal: true,
+      editData: data,
+      validateBillNo: false
+    });
   }
 
   /**
@@ -480,11 +500,45 @@ class ExpenseForm extends Component {
       editData: {
         ...this.state.editData,
         [key]:
-          key === "CreateDate"
+          key === "BillDate"
             ? parseDateString(new Date(value).getTime())
             : value
       }
     });
+  }
+
+  /**
+   * BillNo or InvoiceNo
+   */
+  async onValidateBillNo(valP, idP) {
+    if (valP === "") return;
+    await axios
+      .post(
+        AppConfig.serviceUrl + "expense/validate",
+        {
+          Id: idP,
+          Invoice_No: valP
+        },
+        {
+          headers: {
+            "content-type": "application/json; charset=utf-8",
+            Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+          }
+        }
+      )
+      .then(response => {
+        if (
+          response.data.description === "success" &&
+          response.data.data === "Valid"
+        ) {
+          this.setState({ validateBillNo: false });
+        } else {
+          this.setState({ validateBillNo: true });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   /**
@@ -495,18 +549,20 @@ class ExpenseForm extends Component {
       value = 0;
     }
 
-    await this.setState({
-      addNewDataDetail: {
-        ...this.state.addNewDataDetail,
-        ["Fk_Branch"]: this.state.data[0].Fk_Branch
-      }
-    });
+    if (this.state.data !== null) {
+      await this.setState({
+        addNewDataDetail: {
+          ...this.state.addNewDataDetail,
+          ["Fk_Branch"]: this.state.data[0].Fk_Branch
+        }
+      });
+    }
 
     await this.setState({
       addNewDataDetail: {
         ...this.state.addNewDataDetail,
         [key]:
-          key === "CreateDate"
+          key === "BillDate"
             ? parseDateString(new Date(value).getTime())
             : value
       }
@@ -518,6 +574,9 @@ class ExpenseForm extends Component {
    */
   async updateData() {
     const { editData } = this.state;
+    await this.onValidateBillNo(editData.Invoice_No, editData.Id);
+    if (this.state.validateBillNo) return;
+
     await this.props.updateDataExpense(editData, this.state.data[0].Fk_Branch);
 
     // data for show on ui //
@@ -841,7 +900,7 @@ class ExpenseForm extends Component {
       return (
         <tr>
           <th style={{ width: "35%" }}>Description</th>
-          <th style={{ width: "35%" }}>Invoice No.</th>
+          <th style={{ width: "35%" }}>Bill No.</th>
           <th style={{ width: "10%" }}>Total</th>
           <th style={{ width: "10%" }}>Status</th>
           <th style={{ width: "10%" }}>Action</th>
@@ -867,8 +926,8 @@ class ExpenseForm extends Component {
           </th>
           <th style={{ width: "3%" }}>No.</th>
           <th style={{ width: "40%" }}>Description</th>
-          <th style={{ width: "15%" }}>Invoice No.</th>
-          <th style={{ width: "10%" }}>Create Date</th>
+          <th style={{ width: "15%" }}>Bill No.</th>
+          <th style={{ width: "10%" }}>Bill Date</th>
           <th style={{ width: "10%" }}>Total</th>
           <th style={{ width: "10%" }}>Status</th>
           <th style={{ width: "10%" }}>Action</th>
@@ -958,7 +1017,7 @@ class ExpenseForm extends Component {
                   </td>
                   <td>{item.Invoice_No}</td>
                   {!isMobile ? (
-                    <td>{moment(item.CreateDate).format("DD/MM/YYYY")}</td>
+                    <td>{moment(item.BillDate).format("DD/MM/YYYY")}</td>
                   ) : (
                     ""
                   )}
@@ -1001,6 +1060,15 @@ class ExpenseForm extends Component {
     }
   }
 
+  filterVendor(VendorNameP) {
+    let vendorL = this.props.vendorReducer.data;
+    for (let index = 0; index < vendorL.length; index++) {
+      const element = vendorL[index];
+      if (element.Name != VendorNameP) continue;
+      return element.Name;
+    }
+  }
+
   _ = require("lodash");
   filterList(arr, value) {
     return this._.filter(arr, function(object) {
@@ -1011,7 +1079,7 @@ class ExpenseForm extends Component {
           .indexOf(value.toLowerCase()) >= 0 ||
         object["Description"].toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
         object["Invoice_No"].toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
-        moment(object["CreateDate"].toLowerCase())
+        moment(object["BillDate"].toLowerCase())
           .format("DD/MM/YYYY")
           .indexOf(value.toLowerCase()) >= 0
       );
@@ -1146,33 +1214,54 @@ class ExpenseForm extends Component {
             {editData === null ? (
               <Form>
                 <FormGroup>
-                  <Label for="Description">Description</Label>
+                  <Label for="Description">Description (Vendor)</Label>
+                  <i
+                    onClick={() => this.redirectToVendor()}
+                    style={{ paddingLeft: 15 }}
+                    class="zmdi zmdi-plus-circle"
+                  >
+                    {" "}
+                    <a href="#" onClick={() => this.redirectToVendor()}>
+                      Add
+                    </a>
+                  </i>
                   <Input
-                    max="250"
-                    style={{ borderColor: "#CBCBCB", height: 56 }}
-                    type="text"
-                    name="Description"
-                    id="Description"
-                    placeholder="Enter Description"
-                    value={addNewDataDetail.Description}
+                    fullWidth
                     onChange={e =>
                       this.onChangeAddNewDataDetails(
                         "Description",
                         e.target.value
                       )
                     }
-                  />
+                    style={{
+                      height: 56,
+                      borderColor: "#CBCBCB"
+                    }}
+                    type="select"
+                    name="select"
+                    id="Select"
+                  >
+                    {this.state.vendor &&
+                      this.state.vendor.map((value, key) => (
+                        <option key={key} value={value.Name}>
+                          {value.Name}
+                        </option>
+                      ))}
+                  </Input>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Invoice_No">Invoice No.</Label>
+                  <Label for="Invoice_No">Bill No.</Label>
                   <Input
                     max="50"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Invoice_No"
                     id="Invoice_No"
-                    placeholder="Enter invoice No."
+                    placeholder="Enter Bill No."
                     value={addNewDataDetail.Invoice_No}
+                    onBlur={e =>
+                      this.onValidateBillNo(e.target.value, addNewDataDetail.Id)
+                    }
                     onChange={e =>
                       this.onChangeAddNewDataDetails(
                         "Invoice_No",
@@ -1180,9 +1269,18 @@ class ExpenseForm extends Component {
                       )
                     }
                   />
+                  <Label
+                    style={{
+                      display: !this.state.validateBillNo ? "none " : "inline",
+                      color: "red",
+                      fontSize: 15
+                    }}
+                  >
+                    This bill number has already been used.
+                  </Label>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="CreateDate">Create Date</Label>
+                  <Label for="BillDate">Bill Date</Label>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
                       <KeyboardDatePicker
@@ -1191,9 +1289,9 @@ class ExpenseForm extends Component {
                         margin="normal"
                         id="date-picker-dialog"
                         format="dd/MM/yyyy"
-                        value={parseDateInt(addNewDataDetail.CreateDate)}
+                        value={parseDateInt(addNewDataDetail.BillDate)}
                         onChange={e =>
-                          this.onChangeAddNewDataDetails("CreateDate", e)
+                          this.onChangeAddNewDataDetails("BillDate", e)
                         }
                         KeyboardButtonProps={{
                           "aria-label": "change date"
@@ -1222,37 +1320,68 @@ class ExpenseForm extends Component {
             ) : (
               <Form>
                 <FormGroup>
-                  <Label for="Description">Description</Label>
+                  <Label for="Description">Description (Vendor)</Label>
+                  <i
+                    onClick={() => this.redirectToVendor()}
+                    style={{ paddingLeft: 15 }}
+                    class="zmdi zmdi-plus-circle"
+                  >
+                    {" "}
+                    <a href="#" onClick={() => this.redirectToVendor()}>
+                      Add
+                    </a>
+                  </i>
                   <Input
-                    max="250"
-                    style={{ borderColor: "#CBCBCB", height: 56 }}
-                    type="text"
-                    name="Description"
-                    id="Description"
-                    placeholder="Enter Description"
-                    value={editData.Description}
+                    fullWidth
                     onChange={e =>
                       this.onUpdateDataDetails("Description", e.target.value)
                     }
-                  />
+                    value={editData.Description}
+                    style={{
+                      height: 56,
+                      borderColor: "#CBCBCB"
+                    }}
+                    type="select"
+                    name="select"
+                    id="Select"
+                  >
+                    {this.state.vendor &&
+                      this.state.vendor.map((value, key) => (
+                        <option key={key} value={value.Name}>
+                          {value.Name}
+                        </option>
+                      ))}
+                  </Input>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Invoice_No">Invoice No.</Label>
+                  <Label for="Invoice_No">Bill No.</Label>
                   <Input
                     max="50"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Invoice_No"
                     id="Invoice_No"
-                    placeholder="Enter invoice No."
+                    placeholder="Enter Bill No."
                     value={editData.Invoice_No}
+                    onBlur={e =>
+                      this.onValidateBillNo(e.target.value, editData.Id)
+                    }
                     onChange={e =>
                       this.onUpdateDataDetails("Invoice_No", e.target.value)
                     }
                   />
+                  <Label
+                    style={{
+                      display: !this.state.validateBillNo ? "none " : "inline",
+                      color: "red",
+                      fontSize: 15
+                    }}
+                  >
+                    This bill number has already been used.
+                  </Label>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="CreateDate">Create Date</Label>
+                  <Label for="BillDate">Bill Date</Label>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
                       <KeyboardDatePicker
@@ -1261,10 +1390,8 @@ class ExpenseForm extends Component {
                         margin="normal"
                         id="date-picker-dialog"
                         format="dd/MM/yyyy"
-                        value={parseDateInt(editData.CreateDate)}
-                        onChange={e =>
-                          this.onUpdateDataDetails("CreateDate", e)
-                        }
+                        value={parseDateInt(editData.BillDate)}
+                        onChange={e => this.onUpdateDataDetails("BillDate", e)}
                         KeyboardButtonProps={{
                           "aria-label": "change date"
                         }}
@@ -1328,11 +1455,13 @@ class ExpenseForm extends Component {
 
 // // map state to props
 const mapStateToProps = state => {
-  const { expenseReducer, masterReducer, authUser } = state;
-  return { expenseReducer, masterReducer, authUser };
+  const { expenseReducer, masterReducer, authUser, vendorReducer } = state;
+  return { expenseReducer, masterReducer, authUser, vendorReducer };
 };
 
 export default connect(mapStateToProps, {
+  validateDataExpense,
+  fetchingDataVendor,
   fetchingDataExpense,
   updateDataExpense,
   addDataExpense,

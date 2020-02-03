@@ -14,7 +14,10 @@ import {
   DEL_ERROR_EXPENSE,
   SEND_START_EXPENSE,
   SEND_END_EXPENSE,
-  SEND_ERROR_EXPENSE
+  SEND_ERROR_EXPENSE,
+  VALIDATE_START_EXPENSE,
+  VALIDATE_END_EXPENSE,
+  VALIDATE_ERROR_EXPENSE
 } from "Actions/types";
 import {
   RESPONSE_SUCCESS,
@@ -29,10 +32,7 @@ import {
 } from "../notifications/notifications";
 import AppConfig from "../constants/AppConfig";
 import axios from "axios";
-import {
-  decryptData,
-  convertDateToWebservice
-} from "../helpers/helpers";
+import { decryptData, convertDateToWebservice } from "../helpers/helpers";
 
 const catchError = (error, dispatch, type) => {
   if (dispatch !== null) {
@@ -229,4 +229,29 @@ export const addDataExpense = (dataP, branchP) => async dispatch => {
     })
     .catch(error => catchError(error, dispatch, ADD_ERROR_EXPENSE));
   dispatch({ type: ADD_END_EXPENSE });
+};
+
+export const validateDataExpense = dataP => async dispatch => {
+  dispatch({ type: VALIDATE_START_EXPENSE });
+  await axios
+    .post(
+      AppConfig.serviceUrl + "expense/validate",
+      {
+        Invoice_No: dataP.Invoice_No
+      },
+      {
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+        }
+      }
+    )
+    .then(response => {
+      if (response.data.description !== RESPONSE_SUCCESS) {
+        dispatch({ type: VALIDATE_ERROR_EXPENSE });
+      } else {
+        dispatch({ type: VALIDATE_END_EXPENSE });
+      }
+    })
+    .catch(error => catchError(error, dispatch, VALIDATE_ERROR_EXPENSE));
 };

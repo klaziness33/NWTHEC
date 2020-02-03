@@ -13,7 +13,6 @@ import {
   ADD_END_VENDOR,
   ADD_ERROR_VENDOR
 } from "Actions/types";
-import { RESPONSE_SUCCESS, RESPONSE_NETWORKERROR } from "../actions/response";
 import {
   STORAGE_USERMODELS,
   STORAGE_TOKEN,
@@ -25,7 +24,14 @@ import {
 import { NOTIFY_NETWORKERROR } from "../notifications/notifications";
 import AppConfig from "../constants/AppConfig";
 import axios from "axios";
-import { encryptData } from "../helpers/helpers";
+import {
+  RESPONSE_SUCCESS,
+  RESPONSE_ERROR,
+  RESPONSE_NETWORKERROR,
+  RESPONSE_NULL
+} from "../actions/response";
+
+import { decryptData, convertDateToWebservice } from "../helpers/helpers";
 
 const catchError = (error, dispatch, type) => {
   if (dispatch !== null) {
@@ -111,7 +117,7 @@ export const deleteDataVendor = dataP => async dispatch => {
     .catch(error => catchError(error, dispatch, DEL_ERROR_VENDOR));
 };
 
-export const updateDataVendor = (dataP, branchP) => async dispatch => {
+export const updateDataVendor = dataP => async dispatch => {
   const userL =
     localStorage.getItem(STORAGE_USERMODELS) === null
       ? null
@@ -122,12 +128,10 @@ export const updateDataVendor = (dataP, branchP) => async dispatch => {
     .post(
       AppConfig.serviceUrl + "vendor/update",
       {
-        Fk_Branch: branchP,
         Id: dataP.Id,
-        Invoice_No: dataP.Invoice_No,
-        Total: dataP.Total,
+        Name: dataP.Name,
         Description: dataP.Description,
-        CreateBy: convertDateToWebservice(dataP.CreateDate), // ** borrow variable to send date type string //
+        CreateBy: userL.user_Name,
         UpdateBy: userL.user_Name
       },
       {

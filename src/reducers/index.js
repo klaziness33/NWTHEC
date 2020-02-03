@@ -14,7 +14,7 @@ import CrmReducer from "./CrmReducer";
 import ExpenseReducer from "./ExpenseReducer";
 import MasterReducer from "./MasterReducer";
 import RevenueReducer from "./RevenueReducer";
-
+import VendorReducer from "./VendorReducer";
 const reducers = combineReducers({
   settings,
   chatAppReducer,
@@ -27,7 +27,8 @@ const reducers = combineReducers({
   CrmReducer: CrmReducer,
   expenseReducer: ExpenseReducer,
   masterReducer: MasterReducer,
-  revenueReducer: RevenueReducer
+  revenueReducer: RevenueReducer,
+  vendorReducer: VendorReducer
 });
 
 export default reducers;

@@ -10,20 +10,23 @@ import {
   FETCH_ERROR_PAYMENTTYPE,
   FETCH_START_ROLE,
   FETCH_END_ROLE,
-  FETCH_ERROR_ROLE
+  FETCH_ERROR_ROLE,
+  FETCH_START_VENDOR_MASTER,
+  FETCH_END_VENDOR_MASTER,
+  FETCH_ERROR_VENDOR_MASTER
 } from "Actions/types";
 
 import {
   STORAGE_BRANCH,
   STORAGE_PAYMENTTYPE,
-  STORAGE_ROLE
+  STORAGE_ROLE,
+  STORAGE_VENDOR
 } from "../store/storages";
 import { decryptData } from "../helpers/helpers";
 /**
  * initial auth user
  */
 const INIT_STATE = {
-  // data: JSON.parse(decryptData(localStorage.getItem(STORAGE_BRANCH))),
   data:
     localStorage.getItem(STORAGE_BRANCH) === null
       ? null
@@ -36,6 +39,10 @@ const INIT_STATE = {
     localStorage.getItem(STORAGE_ROLE) === null
       ? null
       : JSON.parse(decryptData(localStorage.getItem(STORAGE_ROLE))),
+  vendor:
+    localStorage.getItem(STORAGE_VENDOR) === null
+      ? null
+      : JSON.parse(decryptData(localStorage.getItem(STORAGE_VENDOR))),
   loading: false
 };
 
@@ -66,6 +73,15 @@ export default (state = INIT_STATE, action) => {
       return { ...state, role: action.payload, loading: false };
 
     case FETCH_ERROR_ROLE:
+      return { ...state, loading: false };
+
+    case FETCH_START_VENDOR_MASTER:
+      return { ...state, role: null, loading: true };
+
+    case FETCH_END_VENDOR_MASTER:
+      return { ...state, role: action.payload, loading: false };
+
+    case FETCH_ERROR_VENDOR_MASTER:
       return { ...state, loading: false };
 
     default:

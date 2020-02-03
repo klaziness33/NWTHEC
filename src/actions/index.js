@@ -12,3 +12,4 @@ export * from './CrmActions';
 export * from './ExpenseActions';
 export * from './MasterAction';
 export * from './RevenueAction';
+export * from './VendorAction';

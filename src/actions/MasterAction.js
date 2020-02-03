@@ -5,7 +5,10 @@ import {
   FETCH_ERROR_BRANCH,
   FETCH_START_ROLE,
   FETCH_ERROR_ROLE,
-  FETCH_END_ROLE
+  FETCH_END_ROLE,
+  FETCH_START_VENDOR_MASTER,
+  FETCH_END_VENDOR_MASTER,
+  FETCH_ERROR_VENDOR_MASTER
 } from "Actions/types";
 import { RESPONSE_SUCCESS, RESPONSE_NETWORKERROR } from "../actions/response";
 import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../store/storages";
@@ -79,4 +82,29 @@ export const fetchingDataRole = () => async dispatch => {
       }
     })
     .catch(error => catchError(error, dispatch, FETCH_ERROR_ROLE));
+};
+
+
+export const fetchingDataVendor = () => async dispatch => {
+  dispatch({ type: FETCH_START_VENDOR_MASTER });
+  await axios
+    .get(AppConfig.serviceUrl + "vendor/read/Get?idP=" + "0", {
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+      }
+    })
+    .then(response => {
+      // check response
+      if (response.data.description !== RESPONSE_SUCCESS) {
+        dispatch({ type: FETCH_ERROR_VENDOR_MASTER });
+        NotificationManager.error(response.data.data);
+      } else {
+        dispatch({
+          type: FETCH_END_VENDOR_MASTER,
+          payload: response.data.data
+        });
+      }
+    })
+    .catch(error => catchError(error, dispatch, FETCH_ERROR_VENDOR_MASTER));
 };

@@ -32,12 +32,6 @@ import {
 // delete confirmation dialog
 import DeleteConfirmationDialog from "Components/DeleteConfirmationDialog/DeleteConfirmationDialog";
 
-// add new Data form
-//import ExpenseFormAdd from "./expense-form-add";
-
-// update Data form
-// import ExpenseFormUpdate from "./expense-form-update";
-
 // page title bar
 import PageTitleBar from "Components/PageTitleBar/PageTitleBar";
 
@@ -54,11 +48,10 @@ import { connect } from "react-redux";
 
 // redux action
 import {
-  fetchingDataExpense,
-  updateDataExpense,
-  addDataExpense,
-  deleteDataExpense,
-  sendDataExpense,
+  fetchingDataVendor,
+  updateDataVendor,
+  addDataVendor,
+  deleteDataVendor,
   activeSession,
   clearUser
 } from "Actions";
@@ -86,12 +79,10 @@ import Slide from "@material-ui/core/Slide";
 import { STORAGE_USERMODELS, STORAGE_TOKEN } from "../../../store/storages";
 
 const moment = require("moment");
-class ExpenseForm extends Component {
+class VendorForm extends Component {
   pageSize = 10;
   pageGrop = [10, 25, 50, 100];
   arrProps = [["checked", false]];
-
-  dataBranch = ["Petrol 001", "Petrol 002"];
   state = {
     sessionTitle: "",
     sessionContent: "",
@@ -102,12 +93,8 @@ class ExpenseForm extends Component {
     loading: false,
     addNewDataModal: false,
     addNewDataDetail: {
-      Id: "",
+      Name: "",
       Description: "",
-      Invoice_No: "",
-      CreateDate: parseDateString(Date.now()),
-      Total: "",
-      Fk_Branch: "",
       checked: false
     },
     openViewDataDialog: false,
@@ -212,10 +199,10 @@ class ExpenseForm extends Component {
   }
 
   errorDialog() {
-    console.log(this.props.expenseReducer.error);
+    console.log(this.props.vendorReducer.error);
 
     setTimeout(async () => {
-      if (this.props.expenseReducer.error) {
+      if (this.props.vendorReducer.error) {
         await this.setState({
           sessionDialog: true,
           sessionTitle: "Invalid Token",
@@ -227,9 +214,8 @@ class ExpenseForm extends Component {
   }
 
   componentDidMount() {
-    this.activeSession();
+    // this.activeSession();
     this.loadData();
-    this.shopMoreTap(true);
     this.tabArrange();
   }
 
@@ -241,31 +227,27 @@ class ExpenseForm extends Component {
         checked: false,
         No: index + 1,
         Id: element.Id,
+        Name: element.Name,
         Description: element.Description,
         CreateDate: element.CreateDate,
         UpdateDate: element.UpdateDate,
         CreateBy: element.CreateBy,
         UpdateBy: element.UpdateBy,
-        Enable: element.Enable,
-        Invoice_No: element.Invoice_No,
-        Total: element.Total,
-        Image: element.Image,
-        Send: element.Send,
-        Fk_Branch: element.Fk_Branch,
-        Time_Diff: element.Time_Diff
+        Enable: element.Enable
       });
     }
     return arrangeL;
   }
 
   async loadData() {
-    this.errorDialog();
+    // this.errorDialog();
 
     this.setState({ loading: true });
-    await this.props.fetchingDataExpense(this.state.selectedBranch);
+    await this.props.fetchingDataVendor("0");
 
-    var expenseL = this.props.expenseReducer.data;
-    if (expenseL == null) {
+    var vendorL = this.props.vendorReducer.data;
+
+    if (vendorL == null) {
       this.setState({
         loading: false,
         data: null,
@@ -277,7 +259,7 @@ class ExpenseForm extends Component {
       return;
     }
 
-    var arrangeL = this.arrangeNumber(expenseL);
+    var arrangeL = this.arrangeNumber(vendorL);
     await this.setState({
       selectedDatas: 0,
       originalData: addPropsToObject(arrangeL, this.arrProps),
@@ -293,23 +275,14 @@ class ExpenseForm extends Component {
 
   async setDataExportCsv() {
     let arrayNew = [];
-    arrayNew.push([
-      "No.",
-      "Description",
-      "Invoice No.",
-      "CreateDate",
-      "Total",
-      "Send"
-    ]);
+    arrayNew.push(["No.", "Name", "Description", "CreateDate"]);
     const { data } = this.state;
     for (let index = 0; index < data.length; index++) {
       arrayNew.push([
         data[index].No,
+        data[index].Name,
         data[index].Description,
-        data[index].Invoice_No,
-        convertDateToWebservice(data[index].CreateDate),
-        data[index].Total.toFixed(2),
-        data[index].Send
+        convertDateToWebservice(data[index].CreateDate)
       ]);
     }
     await this.setState({ csvData: arrayNew });
@@ -318,7 +291,7 @@ class ExpenseForm extends Component {
   async onConfirmDeleteMultiple() {
     const { selectedData } = this.state;
     let selectedL = this.returnSelectedKeys(selectedData);
-    await this.props.deleteDataExpense(selectedL);
+    await this.props.deleteDataVendor(selectedL);
     this.loadData();
     this.refs.deleteMutipleConfirmationDialog.close();
   }
@@ -339,20 +312,6 @@ class ExpenseForm extends Component {
       }
     }
     return arrayIndex;
-  }
-
-  async onConfirmUpdateMultiple() {
-    const { selectedData } = this.state;
-    let selectedL = this.returnSelectedKeys(selectedData);
-    await this.props.sendDataExpense(selectedL);
-    this.loadData();
-    this.refs.sendMutipleConfirmationDialog.close();
-  }
-
-  async onSend() {
-    const { data } = this.state;
-    await this.setState({ selectedData: data });
-    this.refs.sendMutipleConfirmationDialog.open();
   }
 
   /**
@@ -379,7 +338,7 @@ class ExpenseForm extends Component {
       self.setState({ loading: false, data, selectedData: null });
       let arrayKey = [];
       arrayKey.push(selectedData.Id);
-      await this.props.deleteDataExpense(arrayKey);
+      await this.props.deleteDataVendor(arrayKey);
     }, 500);
   }
 
@@ -391,12 +350,8 @@ class ExpenseForm extends Component {
     this.setState({
       addNewDataModal: true,
       addNewDataDetail: {
-        Id: "",
+        Name: "",
         Description: "",
-        Invoice_No: "",
-        CreateDate: parseDateString(Date.now()),
-        Total: "",
-        Fk_Branch: "",
         checked: false
       }
     });
@@ -438,10 +393,7 @@ class ExpenseForm extends Component {
    */
   async addNewData() {
     const { addNewDataDetail } = this.state;
-    await this.props.addDataExpense(
-      addNewDataDetail,
-      this.state.data[0].Fk_Branch
-    );
+    await this.props.addDataVendor(addNewDataDetail);
     await this.setState({ addNewDataModal: false, loading: true });
     this.loadData();
     await this.setState({ loading: false });
@@ -491,17 +443,6 @@ class ExpenseForm extends Component {
    * On Change Add New Data Details
    */
   async onChangeAddNewDataDetails(key, value) {
-    if (key === "Total" && (value <= 0 || value === "")) {
-      value = 0;
-    }
-
-    await this.setState({
-      addNewDataDetail: {
-        ...this.state.addNewDataDetail,
-        ["Fk_Branch"]: this.state.data[0].Fk_Branch
-      }
-    });
-
     await this.setState({
       addNewDataDetail: {
         ...this.state.addNewDataDetail,
@@ -518,7 +459,7 @@ class ExpenseForm extends Component {
    */
   async updateData() {
     const { editData } = this.state;
-    await this.props.updateDataExpense(editData, this.state.data[0].Fk_Branch);
+    await this.props.updateDataVendor(editData);
 
     // data for show on ui //
     let indexOfUpdateData = "";
@@ -576,10 +517,6 @@ class ExpenseForm extends Component {
     }
   }
 
-  shopMoreTap(status) {
-    this.setState({ moreTap: status });
-  }
-
   selectPageSize(e) {
     this.setState({
       pageSize: e.target.value,
@@ -602,120 +539,7 @@ class ExpenseForm extends Component {
     const { selectedBranch, q, selectedDatas } = this.state;
 
     if (isMobile) {
-      return (
-        <div>
-          <div className="row">
-            <div>
-              {selectedDatas > 0 ? (
-                <div style={{ paddingLeft: 25, paddingTop: 25 }}>
-                  <MatButton
-                    onClick={() => this.onDeleteMultiple()}
-                    variant="contained"
-                    color="primary"
-                    className="mr-10 mb-10 text-white btn-icon"
-                  >
-                    Delete <i className="zmdi zmdi-delete"></i>
-                  </MatButton>
-                  <MatButton
-                    onClick={() => this.onSend()}
-                    variant="contained"
-                    className="btn-secondary mr-10 mb-10 text-white btn-icon"
-                  >
-                    Send <i className="zmdi zmdi-mail-send"></i>
-                  </MatButton>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-
-            <div style={{ float: "left" }}>
-              <div style={{ paddingLeft: 25 }}>
-                <FormHelperText style={{ paddingBottom: 5 }}>
-                  Select Branch
-                </FormHelperText>
-                <Input
-                  onChange={this.changeBranch}
-                  value={selectedBranch}
-                  style={{
-                    height: 56,
-                    width: 279,
-                    borderColor: "#CBCBCB"
-                  }}
-                  type="select"
-                  name="select"
-                  id="Select"
-                >
-                  {this.props.masterReducer.data &&
-                    this.props.masterReducer.data.map((value, key) => (
-                      <option key={key} value={value.Id}>
-                        {value.Name}
-                      </option>
-                    ))}
-                </Input>
-              </div>
-            </div>
-          </div>
-          <div className="row" style={{ paddingTop: 15 }}>
-            <div style={{ paddingLeft: 25 }}>
-              <Input
-                onChange={e => this.selectPageSize(e)}
-                type="select"
-                name="select"
-                id="Select"
-              >
-                {this.pageGrop.map((value, key) => (
-                  <option key={key} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </Input>
-            </div>
-            <div style={{ float: "left", paddingLeft: 10 }}>
-              <a
-                href="#"
-                onClick={e => this.onReload(e)}
-                className="btn-outline-default mr-10"
-              >
-                <i className="ti-reload"></i>
-              </a>
-            </div>
-            <div style={{ float: "left", paddingLeft: 5 }}>
-              <Input
-                value={q}
-                onChange={this.searchData}
-                type="search"
-                className="search-input-lg"
-                placeholder="Search.."
-              />
-            </div>
-          </div>
-          <div className="row" style={{ paddingTop: 15, paddingBottom: 15 }}>
-            <div style={{ paddingLeft: 25, float: "left" }}>
-              <CSVLink
-                style={{
-                  visibility:
-                    this.state.csvData.length === 0 ? "hidden" : "visible"
-                }}
-                className="btn-sm btn-outline-default mr-10"
-                data={this.state.csvData}
-                filename={Date.now() + ".csv"}
-              >
-                Export to Excel
-              </CSVLink>
-              <a
-                href="#"
-                onClick={e => this.opnAddNewDataModal(e)}
-                color="primary"
-                className="caret btn-sm mr-10"
-              >
-                Add Vendor List
-                <i className="zmdi zmdi-plus"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      );
+      return "";
     } else {
       return (
         <div>
@@ -731,20 +555,13 @@ class ExpenseForm extends Component {
                   >
                     Delete <i className="zmdi zmdi-delete"></i>
                   </MatButton>
-                  <MatButton
-                    onClick={() => this.onSend()}
-                    variant="contained"
-                    className="btn-secondary mr-10 mb-10 text-white btn-icon"
-                  >
-                    Send <i className="zmdi zmdi-mail-send"></i>
-                  </MatButton>
                 </div>
               ) : (
                 ""
               )}
             </div>
 
-            <div style={{ float: "left" }}>
+            <div style={{ float: "left", visibility: "hidden" }}>
               <div style={{ paddingLeft: 25 }}>
                 <FormHelperText style={{ paddingBottom: 5 }}>
                   Select Branch
@@ -838,15 +655,7 @@ class ExpenseForm extends Component {
   tableHeaderArrange(selectedDatas, data) {
     // const { selectedDatas, data } = this.state;
     if (isMobile) {
-      return (
-        <tr>
-          <th style={{ width: "35%" }}>Description</th>
-          <th style={{ width: "35%" }}>Invoice No.</th>
-          <th style={{ width: "10%" }}>Total</th>
-          <th style={{ width: "10%" }}>Status</th>
-          <th style={{ width: "10%" }}>Action</th>
-        </tr>
-      );
+      return "";
     } else {
       return (
         <tr>
@@ -866,11 +675,9 @@ class ExpenseForm extends Component {
             />
           </th>
           <th style={{ width: "3%" }}>No.</th>
-          <th style={{ width: "40%" }}>Description</th>
-          <th style={{ width: "15%" }}>Invoice No.</th>
+          <th style={{ width: "40%" }}>Name</th>
+          <th style={{ width: "35%" }}>Description</th>
           <th style={{ width: "10%" }}>Create Date</th>
-          <th style={{ width: "10%" }}>Total</th>
-          <th style={{ width: "10%" }}>Status</th>
           <th style={{ width: "10%" }}>Action</th>
         </tr>
       );
@@ -880,56 +687,7 @@ class ExpenseForm extends Component {
   tableLineArrange(data, currentPage) {
     // const { data, currentPage } = this.state;
     if (isMobile) {
-      return (
-        <tbody>
-          {data &&
-            data
-              .slice(
-                currentPage * this.state.pageSize,
-                (currentPage + 1) * this.state.pageSize
-              )
-              .map((item, key) => (
-                <tr key={key}>
-                  <td>
-                    <h5 className="mb-5 fw-bold">{item.Description}</h5>
-                  </td>
-                  <td>{item.Invoice_No}</td>
-                  <td>{roundN(item.Total, 2)}</td>
-                  <td className="d-flex justify-content-start">
-                    <span
-                      className={`badge badge-xs ${
-                        item.Send ? "badge-success" : "badge-danger"
-                      } mr-10 mt-10 position-relative`}
-                    >
-                      &nbsp;
-                    </span>
-                    <div className="status">
-                      <span className="d-block">
-                        {item.Send ? "Submitted" : "Pending"}
-                      </span>
-                      <span className="small">{item.Time_Diff}</span>
-                    </div>
-                  </td>
-                  <td className="list-action">
-                    <button
-                      type="button"
-                      className="rct-link-btn"
-                      onClick={() => this.onEditData(item)}
-                    >
-                      <i className="ti-pencil"></i>
-                    </button>
-                    <button
-                      type="button"
-                      className="rct-link-btn"
-                      onClick={() => this.onDelete(item)}
-                    >
-                      <i className="ti-close"></i>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-        </tbody>
-      );
+      return "";
     } else {
       return (
         <tbody>
@@ -952,32 +710,15 @@ class ExpenseForm extends Component {
                       }
                     />
                   </td>
-                  {!isMobile ? <td>{item.No}</td> : ""}
-                  <td>
-                    <h5 className="mb-5 fw-bold">{item.Description}</h5>
-                  </td>
-                  <td>{item.Invoice_No}</td>
+                  <td>{item.No}</td>
+                  <td>{item.Name}</td>
+                  <td>{item.Description}</td>
+
                   {!isMobile ? (
                     <td>{moment(item.CreateDate).format("DD/MM/YYYY")}</td>
                   ) : (
                     ""
                   )}
-                  <td>{roundN(item.Total, 2)}</td>
-                  <td className="d-flex justify-content-start">
-                    <span
-                      className={`badge badge-xs ${
-                        item.Send ? "badge-success" : "badge-danger"
-                      } mr-10 mt-10 position-relative`}
-                    >
-                      &nbsp;
-                    </span>
-                    <div className="status">
-                      <span className="d-block">
-                        {item.Send ? "Submitted" : "Pending"}
-                      </span>
-                      <span className="small">{item.Time_Diff}</span>
-                    </div>
-                  </td>
                   <td className="list-action">
                     <button
                       type="button"
@@ -1005,12 +746,11 @@ class ExpenseForm extends Component {
   filterList(arr, value) {
     return this._.filter(arr, function(object) {
       return (
-        object["Total"]
+        object["Name"]
           .toString()
           .toLowerCase()
           .indexOf(value.toLowerCase()) >= 0 ||
         object["Description"].toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
-        object["Invoice_No"].toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
         moment(object["CreateDate"].toLowerCase())
           .format("DD/MM/YYYY")
           .indexOf(value.toLowerCase()) >= 0
@@ -1128,13 +868,6 @@ class ExpenseForm extends Component {
           onConfirm={() => this.onConfirmDeleteMultiple()}
         />
 
-        <DeleteConfirmationDialog
-          ref="sendMutipleConfirmationDialog"
-          title="Send?"
-          message="Are you sure want to Send?"
-          onConfirm={() => this.onConfirmUpdateMultiple()}
-        />
-
         <Modal
           isOpen={this.state.addNewDataModal}
           toggle={() => this.onAddUpdateDataModalClose()}
@@ -1145,6 +878,21 @@ class ExpenseForm extends Component {
           <ModalBody>
             {editData === null ? (
               <Form>
+                <FormGroup>
+                  <Label for="Name">Name</Label>
+                  <Input
+                    max="250"
+                    style={{ borderColor: "#CBCBCB", height: 56 }}
+                    type="text"
+                    name="Name"
+                    id="Name"
+                    placeholder="Enter Name"
+                    value={addNewDataDetail.Name}
+                    onChange={e =>
+                      this.onChangeAddNewDataDetails("Name", e.target.value)
+                    }
+                  />
+                </FormGroup>
                 <FormGroup>
                   <Label for="Description">Description</Label>
                   <Input
@@ -1163,64 +911,24 @@ class ExpenseForm extends Component {
                     }
                   />
                 </FormGroup>
-                <FormGroup>
-                  <Label for="Invoice_No">Invoice No.</Label>
-                  <Input
-                    max="50"
-                    style={{ borderColor: "#CBCBCB", height: 56 }}
-                    type="text"
-                    name="Invoice_No"
-                    id="Invoice_No"
-                    placeholder="Enter invoice No."
-                    value={addNewDataDetail.Invoice_No}
-                    onChange={e =>
-                      this.onChangeAddNewDataDetails(
-                        "Invoice_No",
-                        e.target.value
-                      )
-                    }
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="CreateDate">Create Date</Label>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Grid container>
-                      <KeyboardDatePicker
-                        fullWidth
-                        inputVariant="outlined"
-                        margin="normal"
-                        id="date-picker-dialog"
-                        format="dd/MM/yyyy"
-                        value={parseDateInt(addNewDataDetail.CreateDate)}
-                        onChange={e =>
-                          this.onChangeAddNewDataDetails("CreateDate", e)
-                        }
-                        KeyboardButtonProps={{
-                          "aria-label": "change date"
-                        }}
-                      />
-                    </Grid>
-                  </MuiPickersUtilsProvider>
-                </FormGroup>
-                <FormGroup>
-                  <Label for="Total">Total</Label>
-                  <Input
-                    min="0"
-                    required
-                    style={{ borderColor: "#CBCBCB", height: 56 }}
-                    type="number"
-                    name="Total"
-                    id="Total"
-                    placeholder="Enter Total"
-                    value={addNewDataDetail.Total}
-                    onChange={e =>
-                      this.onChangeAddNewDataDetails("Total", e.target.value)
-                    }
-                  />
-                </FormGroup>
               </Form>
             ) : (
               <Form>
+                <FormGroup>
+                  <Label for="Name">Name</Label>
+                  <Input
+                    max="250"
+                    style={{ borderColor: "#CBCBCB", height: 56 }}
+                    type="text"
+                    name="Name"
+                    id="Name"
+                    placeholder="Enter Name"
+                    value={editData.Name}
+                    onChange={e =>
+                      this.onUpdateDataDetails("Name", e.target.value)
+                    }
+                  />
+                </FormGroup>
                 <FormGroup>
                   <Label for="Description">Description</Label>
                   <Input
@@ -1233,58 +941,6 @@ class ExpenseForm extends Component {
                     value={editData.Description}
                     onChange={e =>
                       this.onUpdateDataDetails("Description", e.target.value)
-                    }
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="Invoice_No">Invoice No.</Label>
-                  <Input
-                    max="50"
-                    style={{ borderColor: "#CBCBCB", height: 56 }}
-                    type="text"
-                    name="Invoice_No"
-                    id="Invoice_No"
-                    placeholder="Enter invoice No."
-                    value={editData.Invoice_No}
-                    onChange={e =>
-                      this.onUpdateDataDetails("Invoice_No", e.target.value)
-                    }
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="CreateDate">Create Date</Label>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Grid container>
-                      <KeyboardDatePicker
-                        fullWidth
-                        inputVariant="outlined"
-                        margin="normal"
-                        id="date-picker-dialog"
-                        format="dd/MM/yyyy"
-                        value={parseDateInt(editData.CreateDate)}
-                        onChange={e =>
-                          this.onUpdateDataDetails("CreateDate", e)
-                        }
-                        KeyboardButtonProps={{
-                          "aria-label": "change date"
-                        }}
-                      />
-                    </Grid>
-                  </MuiPickersUtilsProvider>
-                </FormGroup>
-                <FormGroup>
-                  <Label for="Total">Total</Label>
-                  <Input
-                    min="0"
-                    required
-                    style={{ borderColor: "#CBCBCB", height: 56 }}
-                    type="number"
-                    name="Total"
-                    id="Total"
-                    placeholder="Enter Total"
-                    value={editData.Total}
-                    onChange={e =>
-                      this.onUpdateDataDetails("Total", e.target.value)
                     }
                   />
                 </FormGroup>
@@ -1328,16 +984,15 @@ class ExpenseForm extends Component {
 
 // // map state to props
 const mapStateToProps = state => {
-  const { expenseReducer, masterReducer, authUser } = state;
-  return { expenseReducer, masterReducer, authUser };
+  const { vendorReducer, masterReducer, authUser } = state;
+  return { vendorReducer, masterReducer, authUser };
 };
 
 export default connect(mapStateToProps, {
-  fetchingDataExpense,
-  updateDataExpense,
-  addDataExpense,
-  deleteDataExpense,
-  sendDataExpense,
+  fetchingDataVendor,
+  updateDataVendor,
+  addDataVendor,
+  deleteDataVendor,
   activeSession,
   clearUser
-})(ExpenseForm);
+})(VendorForm);

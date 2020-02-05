@@ -775,7 +775,7 @@ module.exports = {
   "sidebar.expense.filter.branch": "Select Branch",
   "sidebar.expense.filter.search": "Search..",
   "sidebar.expense.button.exportexcel": "Export to Excel",
-  "sidebar.expense.button.addexpenselist": "Add Expense List+",
+  "sidebar.expense.button.addexpenselist": "Add Expense List",
   "sidebar.expense.dialog.add.title": "Add Expense",
   "sidebar.expense.dialog.update.title": "Update Expense",
   "sidebar.expense.dialog.add.description": "Description (Vendor)",
@@ -821,7 +821,7 @@ module.exports = {
   "sidebar.revenues.filter.branch": "Select Branch",
   "sidebar.revenues.filter.search": "Search..",
   "sidebar.revenues.button.exportexcel": "Export to Excel",
-  "sidebar.revenues.button.addrevenielist": "Add Revenue List+",
+  "sidebar.revenues.button.addrevenielist": "Add Revenue List",
   "sidebar.revenues.table.no": "No.",
   "sidebar.revenues.table.discription": "Description",
   "sidebar.revenues.table.createby": "CreateBy",
@@ -859,7 +859,8 @@ module.exports = {
   "sidebar.revenues.dialog.carcare.sizel": "Size L",
   "sidebar.revenues.dialog.carcare.washcar": "Wash Car",
   "sidebar.revenues.dialog.carcare.wax": "Wax",
-  "sidebar.revenues.dialog.conveniencestore": "Product Type : Convenience Store",
+  "sidebar.revenues.dialog.conveniencestore":
+    "Product Type : Convenience Store",
   "sidebar.revenues.dialog.conveniencestore.food": "Food",
   "sidebar.revenues.dialog.conveniencestore.foodnon": "Non-Food",
   "sidebar.revenues.dialog.cafe": "Product Type : Cafe",
@@ -880,11 +881,9 @@ module.exports = {
   "sidebar.revenues.dialog.approve.title": "Approve?",
   "sidebar.revenues.dialog.approve.message": "Are you sure want to approve?",
   "sidebar.revenues.dialog.disapprove.title": "Disapprove?",
-  "sidebar.revenues.dialog.disapprove.message": "Are you sure want to disapprove?",
-
+  "sidebar.revenues.dialog.disapprove.message":
+    "Are you sure want to disapprove?",
   "sidebar.dialog.session.btn.accept": "Accept",
-
-
   "sidebar.management": "Management",
   "sidebar.revenues": "Revenues",
   "sidebar.revenuesList": "Revenues List",
@@ -892,6 +891,29 @@ module.exports = {
   "sidebar.revenuesManagement": "Revenues Management",
   "sidebar.allrightsreserved": "All Rights Reserved.",
   // * revenue * //
+
+  // * vendor * //
+  "sidebar.vendor.btn.delete": "Delete",
+  "sidebar.vendor.table.no": "No.",
+  "sidebar.vendor.table.name": "Name",
+  "sidebar.vendor.table.createdate": "CreateDate",
+  "sidebar.vendor.table.action": "Action",
+  "sidebar.vendor.filter.search": "Search..",
+  "sidebar.vendor.filter.branch": "Select Branch",
+  "sidebar.vendor.button.exportexcel": "Export to Excel",
+  "sidebar.vendor.button.addvendorlist": "Add Vendor List",
+  "sidebar.vendor.dialog.add.title": "Add Vendor",
+  "sidebar.vendor.dialog.add.name": "Name",
+  "sidebar.vendor.dialog.add.description": "Description",
+  "sidebar.vendor.dialog.btn.add": "Add",
+  "sidebar.vendor.dialog.btn.cancel": "Cancel",
+  "sidebar.vendor.dialog.update.title": "Update Vendor",
+  "sidebar.vendor.dialog.update.name": "Name",
+  "sidebar.vendor.dialog.update.description": "Description",
+  "sidebar.vendor.dialog.update.update": "Update",
+  "sidebar.vendor.dialog.update.cancel": "Cancel",
+  // * vendor * //
+
   "sidebar.vendor": "Vendors",
   "sidebar.vendorManagement": "Vendors Management"
   // end customize //

@@ -774,7 +774,7 @@ module.exports = {
   "sidebar.expense.filter.branch": "เลือกสาขา",
   "sidebar.expense.filter.search": "ค้นหา..",
   "sidebar.expense.button.exportexcel": "ส่งข้อมูลออกเอ็กเซล",
-  "sidebar.expense.button.addexpenselist": "เพิ่มรายการค่าใช้จ่าย+",
+  "sidebar.expense.button.addexpenselist": "เพิ่มรายการค่าใช้จ่าย",
   "sidebar.expense.dialog.add.title": "เพิ่มค่าใช้จ่าย",
   "sidebar.expense.dialog.update.title": "อัพเดทค่าใช้จ่าย",
   "sidebar.expense.dialog.add.description": "รายละเอียด (ผู้ขาย)",
@@ -818,7 +818,7 @@ module.exports = {
   "sidebar.revenues.filter.branch": "เลือกสาขา",
   "sidebar.revenues.filter.search": "ค้นหา..",
   "sidebar.revenues.button.exportexcel": "ส่งข้อมูลออกเอ็กเซล",
-  "sidebar.revenues.button.addrevenielist": "เพิ่มรายการรายได้+",
+  "sidebar.revenues.button.addrevenielist": "เพิ่มรายการรายได้",
   "sidebar.revenues.table.no": "ลำดับ",
   "sidebar.revenues.table.discription": "รายละเอียด",
   "sidebar.revenues.table.createby": "แก้ไขล่าสุดโดย",
@@ -887,9 +887,33 @@ module.exports = {
   "sidebar.revenuesList": "รายการรายได้",
   "sidebar.revenuesCard": "การ์ดรายได้",
   "sidebar.revenuesManagement": "การจัดการรายได้",
+  // * revenue * //
+
+  // * vendor * //
+  "sidebar.vendor.btn.delete": "ลบ",
+  "sidebar.vendor.table.no": "ลำดับ",
+  "sidebar.vendor.table.name": "ชื่อ",
+  "sidebar.vendor.table.createdate": "วันที่สร้าง",
+  "sidebar.vendor.table.action": "แอ็คชั่น",
+  "sidebar.vendor.filter.search": "ค้นหา..",
+  "sidebar.vendor.filter.branch": "ค้นหาสาขา",
+  "sidebar.vendor.button.exportexcel": "ส่งข้อมูลออกเอ็กเซล",
+  "sidebar.vendor.button.addvendorlist": "เพิ่มรายการผู้ขาย",
+  "sidebar.vendor.dialog.add.title": "เพิ่มผู้ขาย",
+  "sidebar.vendor.dialog.add.name": "ชื่อ",
+  "sidebar.vendor.dialog.add.description": "รายละเอียด",
+  "sidebar.vendor.dialog.btn.add": "เพิ่ม",
+  "sidebar.vendor.dialog.btn.cancel": "ยกเลิก",
+  "sidebar.vendor.dialog.update.title": "อัพเดทผู้ขาย",
+  "sidebar.vendor.dialog.update.name": "ชื่อ",
+  "sidebar.vendor.dialog.update.description": "รายละเอียด",
+  "sidebar.vendor.dialog.update.update": "อัพเดท",
+  "sidebar.vendor.dialog.update.cancel": "ยกเลิก",
+  // * vendor * //
+
   "sidebar.allrightsreserved": "สงวนลิขสิทธิ์",
   "sidebar.vendor": "ผู้ขาย",
   "sidebar.vendorManagement": "การจัดการผู้ขาย"
-  // * revenue * //
+
   // end customize //
 };

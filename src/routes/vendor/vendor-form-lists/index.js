@@ -86,6 +86,10 @@ class VendorForm extends Component {
   pageGrop = [10, 25, 50, 100];
   arrProps = [["checked", false]];
   state = {
+    Locale: "",
+    placeholderTotal: "Enter Total",
+    placeholderBillNo: "Enter Bill No.",
+    placeholderSearch: "Search..",
     sessionTitle: "",
     sessionContent: "",
     sessionStatus: false,
@@ -593,7 +597,8 @@ class VendorForm extends Component {
                     color="primary"
                     className="mr-10 mb-10 text-white btn-icon"
                   >
-                    Delete <i className="zmdi zmdi-delete"></i>
+                    {<IntlMessages id="sidebar.vendor.btn.delete" />}{" "}
+                    <i className="zmdi zmdi-delete"></i>
                   </MatButton>
                 </div>
               ) : (
@@ -604,7 +609,7 @@ class VendorForm extends Component {
             <div style={{ float: "left", visibility: "hidden" }}>
               <div style={{ paddingLeft: 25 }}>
                 <FormHelperText style={{ paddingBottom: 5 }}>
-                  Select Branch
+                  {<IntlMessages id="sidebar.vendor.filter.branch" />}
                 </FormHelperText>
                 <Input
                   onChange={this.changeBranch}
@@ -659,7 +664,7 @@ class VendorForm extends Component {
                   onChange={this.searchData}
                   type="search"
                   className="search-input-lg"
-                  placeholder="Search.."
+                  placeholder={this.state.placeholderSearch}
                 />
               </div>
             </div>
@@ -674,7 +679,7 @@ class VendorForm extends Component {
                 data={this.state.csvData}
                 filename={Date.now() + ".csv"}
               >
-                Export to Excel
+                {<IntlMessages id="sidebar.vendor.button.exportexcel" />}
               </CSVLink>
               <a
                 href="#"
@@ -682,7 +687,7 @@ class VendorForm extends Component {
                 color="primary"
                 className="caret btn-sm mr-10"
               >
-                Add Vendor List
+                {<IntlMessages id="sidebar.vendor.button.addvendorlist" />}
                 <i className="zmdi zmdi-plus"></i>
               </a>
             </div>
@@ -714,11 +719,18 @@ class VendorForm extends Component {
               }
             />
           </th>
-          <th style={{ width: "3%" }}>No.</th>
-          <th style={{ width: "40%" }}>Name</th>
-          <th style={{ width: "35%" }}>Description</th>
-          <th style={{ width: "10%" }}>Create Date</th>
-          <th style={{ width: "10%" }}>Action</th>
+          <th style={{ width: "3%" }}>
+            {<IntlMessages id="sidebar.vendor.table.no" />}
+          </th>
+          <th style={{ width: "75%" }}>
+            {<IntlMessages id="sidebar.vendor.table.name" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.vendor.table.createdate" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.vendor.button.action" />}
+          </th>
         </tr>
       );
     }
@@ -752,8 +764,6 @@ class VendorForm extends Component {
                   </td>
                   <td>{item.No}</td>
                   <td>{item.Name}</td>
-                  <td>{item.Description}</td>
-
                   {!isMobile ? (
                     <td>{moment(item.CreateDate).format("DD/MM/YYYY")}</td>
                   ) : (
@@ -824,6 +834,27 @@ class VendorForm extends Component {
     const { originalData } = this.state;
     await this.setState({ q: event.target.value });
     await this.setDataAfterFilter(originalData, this.state.q);
+  }
+
+  componentDidUpdate() {
+    const { Locale } = this.state;
+    const { settings } = this.props;
+    if (Locale === settings.locale.locale) return;
+    if (settings.locale.locale === "th") {
+      this.setState({
+        Locale: "th",
+        placeholderSearch: "ค้นหา..",
+        placeholderTotal: "ระบุหมายเลขบิล",
+        placeholderBillNo: "ระบุยอดรวม"
+      });
+    } else {
+      this.setState({
+        Locale: "en",
+        placeholderSearch: "Search..",
+        placeholderTotal: "Enter Total",
+        placeholderBillNo: "Enter Bill No."
+      });
+    }
   }
 
   render() {
@@ -1048,8 +1079,8 @@ class VendorForm extends Component {
 
 // // map state to props
 const mapStateToProps = state => {
-  const { vendorReducer, masterReducer, authUser } = state;
-  return { vendorReducer, masterReducer, authUser };
+  const { vendorReducer, masterReducer, authUser, settings } = state;
+  return { vendorReducer, masterReducer, authUser, settings };
 };
 
 export default connect(mapStateToProps, {

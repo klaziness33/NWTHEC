@@ -4,7 +4,7 @@
 /* eslint-disable */
 import React from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-
+import { Helmet } from "react-helmet";
 // async components
 import {
   AsyncRevenuesListComponent,

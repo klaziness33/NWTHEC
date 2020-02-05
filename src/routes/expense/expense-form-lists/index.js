@@ -100,6 +100,15 @@ class ExpenseForm extends Component {
     placeholderTotal: "Enter Total",
     placeholderBillNo: "Enter Bill No.",
     placeholderSearch: "Search..",
+    sessionTimeOutTitle: "Session Timeout",
+    sessionTimeOutContent:
+      "You are timed out due to inactivity you must push accept and login again.",
+    sessionInvalidOutTitle: "Invalid session",
+    sessionInvalidOutContent:
+      "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
+    tokenInvalidTitle: "Invalid Token",
+    tokenInvalidContent:
+      "Your Token is Invalid. you must push accept and login again.",
     validateBillNo: false,
     sessionTitle: "",
     sessionContent: "",
@@ -168,16 +177,14 @@ class ExpenseForm extends Component {
       if (this.props.authUser.session.data === "Session timeout")
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Session Timeout",
-          sessionContent:
-            "You are timed out due to inactivity you must push accept and login again."
+          sessionTitle: this.state.sessionTimeOutTitle,
+          sessionContent: this.state.sessionTimeOutContent
         });
       if (this.props.authUser.session.data === "Invalid session")
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Invalid session",
-          sessionContent:
-            "Your session is Invalid. due to might have another person try to login with this account."
+          sessionTitle: this.state.sessionInvalidOutTitle,
+          sessionContent: this.state.sessionInvalidOutContent
         });
     }
   }
@@ -221,15 +228,12 @@ class ExpenseForm extends Component {
   }
 
   errorDialog() {
-    console.log(this.props.expenseReducer.error);
-
     setTimeout(async () => {
       if (this.props.expenseReducer.error) {
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Invalid Token",
-          sessionContent:
-            "Your Token is Invalid. you must push accept and login again."
+          sessionTitle: this.state.tokenInvalidTitle,
+          sessionContent: this.state.tokenInvalidContent
         });
       }
     }, 1000);
@@ -983,14 +987,32 @@ class ExpenseForm extends Component {
         Locale: "th",
         placeholderSearch: "ค้นหา..",
         placeholderTotal: "ระบุหมายเลขบิล",
-        placeholderBillNo: "ระบุยอดรวม"
+        placeholderBillNo: "ระบุยอดรวม",
+        sessionTimeOutTitle: "เซสชันหมดอายุ",
+        sessionTimeOutContent:
+          "คุณหมดเวลาเนื่องจากไม่มีการใช้งานคุณจะต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
+        sessionInvalidOutTitle: "เซสชันไม่ถูกต้อง",
+        sessionInvalidOutContent:
+          "เซสชันของคุณไม่ถูกต้อง เนื่องจากอาจมีบุคคลอื่นพยายามลงชื่อเข้าใช้ด้วยบัญชีนี้คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
+        tokenInvalidTitle: "โทเค็นไม่ถูกต้อง",
+        tokenInvalidContent:
+          "โทเค็นของคุณไม่ถูกต้อง คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง"
       });
     } else {
       this.setState({
         Locale: "en",
         placeholderSearch: "Search..",
         placeholderTotal: "Enter Total",
-        placeholderBillNo: "Enter Bill No."
+        placeholderBillNo: "Enter Bill No.",
+        sessionTimeOutTitle: "Session Timeout",
+        sessionTimeOutContent:
+          "You are timed out due to inactivity you must push accept and login again.",
+        sessionInvalidOutTitle: "Invalid session",
+        sessionInvalidOutContent:
+          "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
+        tokenInvalidTitle: "Invalid Token",
+        tokenInvalidContent:
+          "Your Token is Invalid. you must push accept and login again."
       });
     }
   }

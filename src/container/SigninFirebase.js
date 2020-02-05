@@ -77,8 +77,8 @@ class Signin extends Component {
                         src={AppConfig.appLogo}
                         alt="session-logo"
                         className="img-fluid"
-                        width="110"
-                        height="35"
+                        width="190"
+                        height="60"
                       />
                     </Link>
                   </div>

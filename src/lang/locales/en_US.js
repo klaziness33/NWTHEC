@@ -893,11 +893,11 @@ module.exports = {
   // * revenue * //
 
   // * vendor * //
-  "sidebar.vendor.btn.delete": "Delete",
+  "sidebar.vendor.button.delete": "Delete",
   "sidebar.vendor.table.no": "No.",
   "sidebar.vendor.table.name": "Name",
   "sidebar.vendor.table.createdate": "CreateDate",
-  "sidebar.vendor.table.action": "Action",
+  "sidebar.vendor.button.action": "Action",
   "sidebar.vendor.filter.search": "Search..",
   "sidebar.vendor.filter.branch": "Select Branch",
   "sidebar.vendor.button.exportexcel": "Export to Excel",
@@ -905,13 +905,15 @@ module.exports = {
   "sidebar.vendor.dialog.add.title": "Add Vendor",
   "sidebar.vendor.dialog.add.name": "Name",
   "sidebar.vendor.dialog.add.description": "Description",
-  "sidebar.vendor.dialog.btn.add": "Add",
-  "sidebar.vendor.dialog.btn.cancel": "Cancel",
+  "sidebar.vendor.dialog.button.add": "Add",
+  "sidebar.vendor.dialog.button.cancel": "Cancel",
+  "sidebar.vendor.dialog.button.update": "Update",
   "sidebar.vendor.dialog.update.title": "Update Vendor",
   "sidebar.vendor.dialog.update.name": "Name",
   "sidebar.vendor.dialog.update.description": "Description",
   "sidebar.vendor.dialog.update.update": "Update",
   "sidebar.vendor.dialog.update.cancel": "Cancel",
+  "sidebar.vendor.alert": "This vendor has already been used.",
   // * vendor * //
 
   "sidebar.vendor": "Vendors",

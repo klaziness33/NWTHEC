@@ -12,7 +12,7 @@ const AppConfig = {
   cryptoKey: '1AE58EAD81B3C7C5182809A974BCF24D1C0FB69FB4A0D364939C8FA6C0C00D09',
   // end customize //
 
-  appLogo: require("Assets/img/site-logo.png"), // App Logo
+  appLogo: require("Assets/img/site-logo1.png"), // App Logo
   brandName: "NWTH E-Commerce", // Brand Name
   navCollapsed: false, // Sidebar collapse
   darkMode: false, // Dark Mode

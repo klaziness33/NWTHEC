@@ -890,11 +890,11 @@ module.exports = {
   // * revenue * //
 
   // * vendor * //
-  "sidebar.vendor.btn.delete": "ลบ",
+  "sidebar.vendor.button.delete": "ลบ",
   "sidebar.vendor.table.no": "ลำดับ",
   "sidebar.vendor.table.name": "ชื่อ",
   "sidebar.vendor.table.createdate": "วันที่สร้าง",
-  "sidebar.vendor.table.action": "แอ็คชั่น",
+  "sidebar.vendor.button.action": "แอ็คชั่น",
   "sidebar.vendor.filter.search": "ค้นหา..",
   "sidebar.vendor.filter.branch": "ค้นหาสาขา",
   "sidebar.vendor.button.exportexcel": "ส่งข้อมูลออกเอ็กเซล",
@@ -902,13 +902,15 @@ module.exports = {
   "sidebar.vendor.dialog.add.title": "เพิ่มผู้ขาย",
   "sidebar.vendor.dialog.add.name": "ชื่อ",
   "sidebar.vendor.dialog.add.description": "รายละเอียด",
-  "sidebar.vendor.dialog.btn.add": "เพิ่ม",
-  "sidebar.vendor.dialog.btn.cancel": "ยกเลิก",
+  "sidebar.vendor.dialog.button.add": "เพิ่ม",
+  "sidebar.vendor.dialog.button.cancel": "ยกเลิก",
+  "sidebar.vendor.dialog.button.update": "อัพเดท",
   "sidebar.vendor.dialog.update.title": "อัพเดทผู้ขาย",
   "sidebar.vendor.dialog.update.name": "ชื่อ",
   "sidebar.vendor.dialog.update.description": "รายละเอียด",
   "sidebar.vendor.dialog.update.update": "อัพเดท",
   "sidebar.vendor.dialog.update.cancel": "ยกเลิก",
+  "sidebar.vendor.alert": "ชื่อผู้ขายนี้ถูกนำไปใช้แล้ว",
   // * vendor * //
 
   "sidebar.allrightsreserved": "สงวนลิขสิทธิ์",

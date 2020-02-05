@@ -87,9 +87,9 @@ class VendorForm extends Component {
   arrProps = [["checked", false]];
   state = {
     Locale: "",
-    placeholderTotal: "Enter Total",
-    placeholderBillNo: "Enter Bill No.",
     placeholderSearch: "Search..",
+    placeholderName: "Enter Name",
+    placeholderDescription: "Enter Description",
     sessionTitle: "",
     sessionContent: "",
     sessionStatus: false,
@@ -229,7 +229,7 @@ class VendorForm extends Component {
               variant="contained"
               className="btn-primary text-white mr-10"
             >
-              Accept
+              {<IntlMessages id="sidebar.vendor.button.action" />}
             </Button>
           </DialogActions>
         </Dialog>
@@ -844,15 +844,15 @@ class VendorForm extends Component {
       this.setState({
         Locale: "th",
         placeholderSearch: "ค้นหา..",
-        placeholderTotal: "ระบุหมายเลขบิล",
-        placeholderBillNo: "ระบุยอดรวม"
+        placeholderName: "ระบุชื่อ",
+        placeholderDescription: "ระบุรายละเอียด"
       });
     } else {
       this.setState({
         Locale: "en",
         placeholderSearch: "Search..",
-        placeholderTotal: "Enter Total",
-        placeholderBillNo: "Enter Bill No."
+        placeholderName: "Enter Name",
+        placeholderDescription: "Enter Description"
       });
     }
   }
@@ -944,20 +944,26 @@ class VendorForm extends Component {
           toggle={() => this.onAddUpdateDataModalClose()}
         >
           <ModalHeader toggle={() => this.onAddUpdateDataModalClose()}>
-            {editData === null ? "Add New Data" : "Update Data"}
+            {editData === null ? (
+              <IntlMessages id="sidebar.vendor.dialog.add.title" />
+            ) : (
+              <IntlMessages id="sidebar.vendor.dialog.update.title" />
+            )}
           </ModalHeader>
           <ModalBody>
             {editData === null ? (
               <Form>
                 <FormGroup>
-                  <Label for="Name">Name</Label>
+                  <Label for="Name">
+                    <IntlMessages id="sidebar.vendor.dialog.add.name" />
+                  </Label>
                   <Input
                     max="250"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Name"
                     id="Name"
-                    placeholder="Enter Name"
+                    placeholder={this.state.placeholderName}
                     value={addNewDataDetail.Name}
                     onBlur={e =>
                       this.onValidateName(e.target.value, addNewDataDetail.Id)
@@ -973,18 +979,20 @@ class VendorForm extends Component {
                       fontSize: 15
                     }}
                   >
-                    This vendor has already been used.
+                    <IntlMessages id="sidebar.vendor.alert" />
                   </Label>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Description">Description</Label>
+                  <Label for="Description">
+                    <IntlMessages id="sidebar.vendor.dialog.add.description" />
+                  </Label>
                   <Input
                     max="250"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Description"
                     id="Description"
-                    placeholder="Enter Description"
+                    placeholder={this.state.placeholderDescription}
                     value={addNewDataDetail.Description}
                     onChange={e =>
                       this.onChangeAddNewDataDetails(
@@ -998,14 +1006,16 @@ class VendorForm extends Component {
             ) : (
               <Form>
                 <FormGroup>
-                  <Label for="Name">Name</Label>
+                  <Label for="Name">
+                    <IntlMessages id="sidebar.vendor.dialog.add.name" />
+                  </Label>
                   <Input
                     max="250"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Name"
                     id="Name"
-                    placeholder="Enter Name"
+                    placeholder={this.state.placeholderName}
                     value={editData.Name}
                     onBlur={e =>
                       this.onValidateName(e.target.value, editData.Id)
@@ -1021,18 +1031,20 @@ class VendorForm extends Component {
                       fontSize: 15
                     }}
                   >
-                    This vendor has already been used.
+                    <IntlMessages id="sidebar.vendor.alert" />
                   </Label>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Description">Description</Label>
+                  <Label for="Description">
+                    <IntlMessages id="sidebar.vendor.dialog.add.description" />
+                  </Label>
                   <Input
                     max="250"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Description"
                     id="Description"
-                    placeholder="Enter Description"
+                    placeholder={this.state.placeholderDescription}
                     value={editData.Description}
                     onChange={e =>
                       this.onUpdateDataDetails("Description", e.target.value)
@@ -1049,7 +1061,7 @@ class VendorForm extends Component {
                 className="text-white btn-success"
                 onClick={() => this.addNewData()}
               >
-                Add
+                <IntlMessages id="sidebar.vendor.dialog.button.add" />
               </Button>
             ) : (
               <Button
@@ -1058,7 +1070,7 @@ class VendorForm extends Component {
                 className="text-white"
                 onClick={() => this.updateData()}
               >
-                Update
+                <IntlMessages id="sidebar.vendor.dialog.button.update" />
               </Button>
             )}{" "}
             <Button
@@ -1066,7 +1078,7 @@ class VendorForm extends Component {
               className="text-white btn-danger"
               onClick={() => this.onAddUpdateDataModalClose()}
             >
-              Cancel
+              <IntlMessages id="sidebar.vendor.dialog.button.cancel" />
             </Button>
           </ModalFooter>
         </Modal>

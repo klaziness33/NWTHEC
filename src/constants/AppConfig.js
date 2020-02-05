@@ -30,7 +30,7 @@ const AppConfig = {
     icon: "en"
   },
   enableUserTour: process.env.NODE_ENV === "production" ? true : false, // Enable / Disable User Tour
-  copyRightText: "NaviWorld (Thailand) © 2019 All Rights Reserved.", // Copy Right Text
+  copyRightText: "NaviWorld (Thailand) © 2019", // Copy Right Text
   // light theme colors
   themeColors: {
     primary: "#5D92F4",

@@ -11,7 +11,7 @@ export default {
 
     {
       menu_title: "sidebar.revenues",
-      menu_icon: "zmdi zmdi-view-web",
+      menu_icon: "zmdi zmdi-view-carousel",
       path: "/app/revenues/revenues-management-list",
       new_item: false,
       child_routes: null

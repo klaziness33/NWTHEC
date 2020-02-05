@@ -39,6 +39,7 @@ import {
   decryptData
 } from "../../../helpers/helpers";
 import { STORAGE_USERMODELS } from "../../../store/storages";
+import IntlMessages from "Util/IntlMessages";
 
 class RevenueCardForm extends Component {
   state = {
@@ -425,6 +426,10 @@ class RevenueCardForm extends Component {
   }
 
   onUpdateData() {
+    if (this.state.addNewDataDetail.Approve === true) {
+      alert("cannot update information after approval");
+      return;
+    }
     this.props.updateDataRevenue(this.state.addNewDataDetail);
     setTimeout(() => {
       this.props.reloadData();
@@ -446,27 +451,27 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-primary mr-10 mb-10 text-white"
             >
-              <i
+              {/* <i
                 style={{ paddingRight: 7 }}
                 className="zmdi zmdi-plus zmdi-hc-lg"
-              ></i>
-              Add
+              ></i> */}
+              {<IntlMessages id="sidebar.revenues.dialog.btn.add" />}
             </MatButton>
 
-            <MatButton
+            {/* <MatButton
               onClick={() => this.onClear()}
               variant="contained"
               className="btn-secondary mr-10 mb-10 text-white"
             >
-              Clear
-            </MatButton>
+              {<IntlMessages id="sidebar.revenues.dialog.btn.clear" />}
+            </MatButton> */}
 
             <MatButton
               onClick={closeModalL}
               variant="contained"
               className="btn-danger mr-10 mb-10 text-white"
             >
-              Close
+              {<IntlMessages id="sidebar.revenues.dialog.btn.close" />}
             </MatButton>
           </div>
         </RctCollapsibleCard>
@@ -489,11 +494,11 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-secondary mr-10 mb-10 text-white"
             >
-              <i
+              {/* <i
                 style={{ paddingRight: 7 }}
                 className="zmdi zmdi-mail-send zmdi-hc-lg"
-              ></i>
-              Send
+              ></i> */}
+              {<IntlMessages id="sidebar.revenues.dialog.btn.send" />}
             </MatButton>
             <MatButton
               style={{
@@ -507,11 +512,11 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-success mr-10 mb-10 text-white"
             >
-              <i
+              {/* <i
                 style={{ paddingRight: 7 }}
                 className="zmdi zmdi-check zmdi-hc-lg"
-              ></i>
-              Approve
+              ></i> */}
+              {<IntlMessages id="sidebar.revenues.dialog.btn.approve" />}
             </MatButton>
             <MatButton
               style={{
@@ -525,11 +530,11 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-secondary mr-10 mb-10 text-white"
             >
-              <i
+              {/* <i
                 style={{ paddingRight: 7 }}
                 className="zmdi zmdi-close zmdi-hc-lg"
-              ></i>
-              Disapprove
+              ></i> */}
+              {<IntlMessages id="sidebar.revenues.dialog.btn.disapprove" />}
             </MatButton>
 
             <MatButton
@@ -537,7 +542,7 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-danger mr-10 mb-10 text-white"
             >
-              Close
+              {<IntlMessages id="sidebar.revenues.dialog.btn.close" />}
             </MatButton>
           </div>
         </RctCollapsibleCard>
@@ -554,18 +559,18 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-success mr-10 mb-10 text-white"
             >
-              <i
+              {/* <i
                 style={{ paddingRight: 7 }}
                 className="zmdi zmdi-check zmdi-hc-lg"
-              ></i>
-              Update
+              ></i> */}
+              {<IntlMessages id="sidebar.revenues.dialog.btn.update" />}
             </MatButton>
             <MatButton
               onClick={closeModalL}
               variant="contained"
               className="btn-danger mr-10 mb-10 text-white"
             >
-              Close
+              {<IntlMessages id="sidebar.revenues.dialog.btn.close" />}
             </MatButton>
           </div>
         </RctCollapsibleCard>
@@ -589,7 +594,9 @@ class RevenueCardForm extends Component {
                 className="row"
               >
                 <div style={{ paddingRight: 10 }}>
-                  <FormHelperText>Select Date</FormHelperText>
+                  <FormHelperText>
+                    {<IntlMessages id="sidebar.revenues.dialog.filter.date" />}
+                  </FormHelperText>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
                       <KeyboardDatePicker
@@ -615,7 +622,7 @@ class RevenueCardForm extends Component {
                   <Form>
                     <FormGroup>
                       <FormHelperText style={{ paddingBottom: 16 }}>
-                        Select Branch
+                        {<IntlMessages id="sidebar.revenues.filter.branch" />}
                       </FormHelperText>
                       <Input
                         onChange={e => this.onChangeDataInForm(e, "FK_Branch")}
@@ -641,7 +648,9 @@ class RevenueCardForm extends Component {
                 </div>
               </div>
             </RctCollapsibleCard>
-            <RctCollapsibleCard heading="Product Type : Petrol">
+            <RctCollapsibleCard
+              heading={<IntlMessages id="sidebar.revenues.dialog.petrol" />}
+            >
               <div
                 style={{ display: "flex", justifyContent: "center" }}
                 className="table-responsive"
@@ -650,10 +659,26 @@ class RevenueCardForm extends Component {
                   <thead style={{ backgroundColor: "#FFF" }}>
                     <tr>
                       <th></th>
-                      <th style={{ paddingLeft: 30 }}>Total</th>
-                      <th style={{ paddingLeft: 30 }}>Quantity</th>
-                      <th style={{ paddingLeft: 30 }}>Price</th>
-                      <th style={{ paddingLeft: 30 }}>Payment Type</th>
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.total" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.quantity" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.price" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.paymenttype" />
+                        }
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1336,7 +1361,9 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment-alt zmdi-hc-lg"
                       ></i>
-                      Show Attach
+                      {
+                        <IntlMessages id="sidebar.revenues.dialog.btn.attached" />
+                      }
                     </Button>
                   </label>
                 ) : (
@@ -1368,13 +1395,15 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment zmdi-hc-lg"
                       ></i>
-                      Attach Document
+                      {<IntlMessages id="sidebar.revenues.dialog.btn.attach" />}
                     </Button>
                   </label>
                 )}
               </div>
             </RctCollapsibleCard>
-            <RctCollapsibleCard heading="Product Type : Engine Oil">
+            <RctCollapsibleCard
+              heading={<IntlMessages id="sidebar.revenues.dialog.engineoil" />}
+            >
               <div
                 style={{ display: "flex", justifyContent: "center" }}
                 className="table-responsive"
@@ -1383,13 +1412,25 @@ class RevenueCardForm extends Component {
                   <thead style={{ backgroundColor: "#FFF" }}>
                     <tr>
                       <th></th>
-                      <th style={{ paddingLeft: 30 }}>Total</th>
-                      <th style={{ paddingLeft: 30 }}>Price</th>
-                      <th style={{ paddingLeft: 30, visibility: "hidden" }}>
-                        Quantity
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.total" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.price" />
+                        }
                       </th>
                       <th style={{ paddingLeft: 30, visibility: "hidden" }}>
-                        Payment Type
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.quantity" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30, visibility: "hidden" }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.paymenttype" />
+                        }
                       </th>
                     </tr>
                   </thead>
@@ -1702,7 +1743,9 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment-alt zmdi-hc-lg"
                       ></i>
-                      Show Attach
+                      {
+                        <IntlMessages id="sidebar.revenues.dialog.btn.attached" />
+                      }
                     </Button>
                   </label>
                 ) : (
@@ -1734,13 +1777,15 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment zmdi-hc-lg"
                       ></i>
-                      Attach Document
+                      {<IntlMessages id="sidebar.revenues.dialog.btn.attach" />}
                     </Button>
                   </label>
                 )}
               </div>
             </RctCollapsibleCard>
-            <RctCollapsibleCard heading="Product Type : Car Care">
+            <RctCollapsibleCard
+              heading={<IntlMessages id="sidebar.revenues.dialog.carcare" />}
+            >
               <div
                 style={{ display: "flex", justifyContent: "center" }}
                 className="table-responsive"
@@ -1749,7 +1794,9 @@ class RevenueCardForm extends Component {
                   <thead style={{ backgroundColor: "#FFF" }}>
                     <tr>
                       <th style={{ fontWeight: "bold", fontSize: 15 }}>
-                        Size S
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.carcare.sizes" />
+                        }
                       </th>
                       <th></th>
                       <th></th>
@@ -1760,7 +1807,9 @@ class RevenueCardForm extends Component {
                           paddingLeft: 20
                         }}
                       >
-                        Size M
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.carcare.sizem" />
+                        }
                       </th>
                       <th></th>
                       <th></th>
@@ -1771,21 +1820,47 @@ class RevenueCardForm extends Component {
                           paddingLeft: 20
                         }}
                       >
-                        Size L
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.carcare.sizel" />
+                        }
                       </th>
                       <th></th>
                       <th></th>
                     </tr>
                     <tr>
                       <th></th>
-                      <th style={{ paddingLeft: 20 }}>Total</th>
-                      <th style={{ paddingLeft: 10 }}>Price</th>
+                      <th style={{ paddingLeft: 20 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.total" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 10 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.price" />
+                        }
+                      </th>
                       <th></th>
-                      <th style={{ paddingLeft: 20 }}>Total</th>
-                      <th style={{ paddingLeft: 10 }}>Price</th>
+                      <th style={{ paddingLeft: 20 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.total" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 10 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.price" />
+                        }
+                      </th>
                       <th></th>
-                      <th style={{ paddingLeft: 20 }}>Total</th>
-                      <th style={{ paddingLeft: 10 }}>Price</th>
+                      <th style={{ paddingLeft: 20 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.total" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 10 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.price" />
+                        }
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1801,7 +1876,10 @@ class RevenueCardForm extends Component {
                               }}
                               for="Wash Car"
                             >
-                              Wash Car :{" "}
+                              {
+                                <IntlMessages id="sidebar.revenues.dialog.carcare.washcar" />
+                              }{" "}
+                              :{" "}
                             </Label>
                           </FormGroup>
                         </Form>
@@ -1868,7 +1946,10 @@ class RevenueCardForm extends Component {
                               }}
                               for="Wash Car"
                             >
-                              Wash Car :{" "}
+                              {
+                                <IntlMessages id="sidebar.revenues.dialog.carcare.washcar" />
+                              }{" "}
+                              :{" "}
                             </Label>
                           </FormGroup>
                         </Form>
@@ -1935,7 +2016,10 @@ class RevenueCardForm extends Component {
                               }}
                               for="Wash Car"
                             >
-                              Wash Car :{" "}
+                              {
+                                <IntlMessages id="sidebar.revenues.dialog.carcare.washcar" />
+                              }{" "}
+                              :{" "}
                             </Label>
                           </FormGroup>
                         </Form>
@@ -2005,7 +2089,10 @@ class RevenueCardForm extends Component {
                               }}
                               for="Wax"
                             >
-                              Wax :{" "}
+                              {
+                                <IntlMessages id="sidebar.revenues.dialog.carcare.wax" />
+                              }{" "}
+                              :{" "}
                             </Label>
                           </FormGroup>
                         </Form>
@@ -2068,7 +2155,10 @@ class RevenueCardForm extends Component {
                               }}
                               for="Wax"
                             >
-                              Wax :{" "}
+                              {
+                                <IntlMessages id="sidebar.revenues.dialog.carcare.wax" />
+                              }{" "}
+                              :{" "}
                             </Label>
                           </FormGroup>
                         </Form>
@@ -2131,7 +2221,10 @@ class RevenueCardForm extends Component {
                               }}
                               for="Wax"
                             >
-                              Wax :{" "}
+                              {
+                                <IntlMessages id="sidebar.revenues.dialog.carcare.wax" />
+                              }{" "}
+                              :{" "}
                             </Label>
                           </FormGroup>
                         </Form>
@@ -2218,7 +2311,9 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment-alt zmdi-hc-lg"
                       ></i>
-                      Show Attach
+                      {
+                        <IntlMessages id="sidebar.revenues.dialog.btn.attached" />
+                      }
                     </Button>
                   </label>
                 ) : (
@@ -2250,13 +2345,17 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment zmdi-hc-lg"
                       ></i>
-                      Attach Document
+                      {<IntlMessages id="sidebar.revenues.dialog.btn.attach" />}
                     </Button>
                   </label>
                 )}
               </div>
             </RctCollapsibleCard>
-            <RctCollapsibleCard heading="Product Type : Convenience store">
+            <RctCollapsibleCard
+              heading={
+                <IntlMessages id="sidebar.revenues.dialog.conveniencestore" />
+              }
+            >
               <div
                 style={{ display: "flex", justifyContent: "center" }}
                 className="table-responsive"
@@ -2265,13 +2364,25 @@ class RevenueCardForm extends Component {
                   <thead style={{ backgroundColor: "#FFF" }}>
                     <tr>
                       <th></th>
-                      <th style={{ paddingLeft: 30 }}>Total</th>
-                      <th style={{ paddingLeft: 30 }}>Price</th>
-                      <th style={{ paddingLeft: 30, visibility: "hidden" }}>
-                        Quantity
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.total" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.price" />
+                        }
                       </th>
                       <th style={{ paddingLeft: 30, visibility: "hidden" }}>
-                        Payment Type
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.quantity" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30, visibility: "hidden" }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.paymenttype" />
+                        }
                       </th>
                     </tr>
                   </thead>
@@ -2505,7 +2616,9 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment-alt zmdi-hc-lg"
                       ></i>
-                      Show Attach
+                      {
+                        <IntlMessages id="sidebar.revenues.dialog.btn.attached" />
+                      }
                     </Button>
                   </label>
                 ) : (
@@ -2537,13 +2650,15 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment zmdi-hc-lg"
                       ></i>
-                      Attach Document
+                      {<IntlMessages id="sidebar.revenues.dialog.btn.attach" />}
                     </Button>
                   </label>
                 )}
               </div>
             </RctCollapsibleCard>
-            <RctCollapsibleCard heading="Product Type : Cafe">
+            <RctCollapsibleCard
+              heading={<IntlMessages id="sidebar.revenues.dialog.cafe" />}
+            >
               <div
                 style={{ display: "flex", justifyContent: "center" }}
                 className="table-responsive"
@@ -2552,13 +2667,25 @@ class RevenueCardForm extends Component {
                   <thead style={{ backgroundColor: "#FFF" }}>
                     <tr>
                       <th></th>
-                      <th style={{ paddingLeft: 30 }}>Total</th>
-                      <th style={{ paddingLeft: 30 }}>Price</th>
-                      <th style={{ paddingLeft: 30, visibility: "hidden" }}>
-                        Quantity
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.total" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30 }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.petrol.header.price" />
+                        }
                       </th>
                       <th style={{ paddingLeft: 30, visibility: "hidden" }}>
-                        Payment Type
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.btn.quantity" />
+                        }
+                      </th>
+                      <th style={{ paddingLeft: 30, visibility: "hidden" }}>
+                        {
+                          <IntlMessages id="sidebar.revenues.dialog.btn.paymenttype" />
+                        }
                       </th>
                     </tr>
                   </thead>
@@ -2574,7 +2701,10 @@ class RevenueCardForm extends Component {
                               }}
                               for="Food"
                             >
-                              Revenue Cafe :{" "}
+                              {
+                                <IntlMessages id="sidebar.revenues.dialog.cafe.revenue" />
+                              }{" "}
+                              :{" "}
                             </Label>
                           </FormGroup>
                         </Form>
@@ -2688,7 +2818,7 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment-alt zmdi-hc-lg"
                       ></i>
-                      Show Attach
+                      <IntlMessages id="sidebar.revenues.dialog.btn.attached" />
                     </Button>
                   </label>
                 ) : (
@@ -2720,7 +2850,7 @@ class RevenueCardForm extends Component {
                         style={{ paddingRight: 7 }}
                         className="zmdi zmdi-attachment zmdi-hc-lg"
                       ></i>
-                      Attach Document
+                      <IntlMessages id="sidebar.revenues.dialog.btn.attach" />
                     </Button>
                   </label>
                 )}

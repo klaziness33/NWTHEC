@@ -79,6 +79,22 @@ class RevenueListForm extends Component {
 
   dataBranch = ["Petrol 001", "Petrol 002"];
   state = {
+    Locale: "",
+    placeholderTotal: "Enter Total",
+    placeholderBillNo: "Enter Bill No.",
+    placeholderSearch: "Search..",
+    placeholderTitleUpdate: "Update Revenue",
+    placeholderTitleAdd: "Add Revenue",
+    placeholderTitlePreview: "Preview Revenue",
+    sessionTimeOutTitle: "Session Timeout",
+    sessionTimeOutContent:
+      "You are timed out due to inactivity you must push accept and login again.",
+    sessionInvalidOutTitle: "Invalid session",
+    sessionInvalidOutContent:
+      "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
+    tokenInvalidTitle: "Invalid Token",
+    tokenInvalidContent:
+      "Your Token is Invalid. you must push accept and login again.",
     sessionTitle: "",
     sessionContent: "",
     sessionStatus: false,
@@ -209,20 +225,20 @@ class RevenueListForm extends Component {
     await this.props.activeSession(usermodelsL.user_Name, tokenL);
     if (this.props.authUser.session.description === "success") {
       if (this.props.authUser.session.data === "Valid session") return;
-      if (this.props.authUser.session.data === "Session timeout")
+      if (this.props.authUser.session.data === "Session timeout") {   
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Session Timeout",
-          sessionContent:
-            "You are timed out due to inactivity you must push accept and login again."
+          sessionTitle: this.state.sessionTimeOutTitle,
+          sessionContent: this.state.sessionTimeOutContent
         });
-      if (this.props.authUser.session.data === "Invalid session")
+      }
+      if (this.props.authUser.session.data === "Invalid session") {
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Invalid session",
-          sessionContent:
-            "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again."
+          sessionTitle: this.state.sessionInvalidOutTitle,
+          sessionContent: this.state.sessionInvalidOutContent
         });
+      }
     }
   }
 
@@ -256,7 +272,7 @@ class RevenueListForm extends Component {
               variant="contained"
               className="btn-primary text-white mr-10"
             >
-              Accept
+              {<IntlMessages id="sidebar.dialog.session.btn.accept" />}
             </Button>
           </DialogActions>
         </Dialog>
@@ -271,9 +287,8 @@ class RevenueListForm extends Component {
       if (this.props.revenueReducer.error) {
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Invalid Token",
-          sessionContent:
-            "Your Token is Invalid. you must push accept and login again."
+          sessionTitle: this.state.tokenInvalidTitle,
+          sessionContent: this.state.tokenInvalidContent
         });
       }
     }, 1000);
@@ -523,7 +538,7 @@ class RevenueListForm extends Component {
   }
 
   async loadData() {
-    this.errorDialog();
+    // this.errorDialog();
     this.setState({ loading: true });
     await this.props.fetchingDataRevenue(this.state.selectedBranch);
     var dataL = this.props.revenueReducer.data;
@@ -1246,148 +1261,56 @@ class RevenueListForm extends Component {
     this.loadData();
   }
 
+  componentDidUpdate() {
+    const { Locale } = this.state;
+    const { settings } = this.props;
+    if (Locale === settings.locale.locale) return;
+    if (settings.locale.locale === "th") {
+      this.setState({
+        Locale: "th",
+        placeholderSearch: "ค้นหา..",
+        placeholderTotal: "ระบุหมายเลขบิล",
+        placeholderBillNo: "ระบุยอดรวม",
+        placeholderTitleUpdate: "อัพเดทรายได้",
+        placeholderTitleAdd: "เพิ่มรายได้",
+        placeholderTitlePreview: "ดูตัวอย่างรายได้",
+        sessionTimeOutTitle: "เซสชันหมดอายุ",
+        sessionTimeOutContent:
+          "คุณหมดเวลาเนื่องจากไม่มีการใช้งานคุณจะต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
+        sessionInvalidOutTitle: "เซสชันไม่ถูกต้อง",
+        sessionInvalidOutContent:
+          "เซสชันของคุณไม่ถูกต้อง เนื่องจากอาจมีบุคคลอื่นพยายามลงชื่อเข้าใช้ด้วยบัญชีนี้คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
+        tokenInvalidTitle: "โทเค็นไม่ถูกต้อง",
+        tokenInvalidContent:
+          "โทเค็นของคุณไม่ถูกต้อง คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง"
+      });
+    } else {
+      this.setState({
+        Locale: "en",
+        placeholderSearch: "Search..",
+        placeholderTotal: "Enter Total",
+        placeholderBillNo: "Enter Bill No.",
+        placeholderTitleUpdate: "Update Revenue",
+        placeholderTitleAdd: "Add Revenue",
+        placeholderTitlePreview: "Preview Revenue",
+        sessionTimeOutTitle: "Session Timeout",
+        sessionTimeOutContent:
+          "You are timed out due to inactivity you must push accept and login again.",
+        sessionInvalidOutTitle: "Invalid session",
+        sessionInvalidOutContent: "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
+        tokenInvalidTitle: "Invalid Token",
+        tokenInvalidContent:
+          "Your Token is Invalid. you must push accept and login again."
+      });
+    }
+  }
+
   // arrange for ui (web or mobile)
   tabArrange() {
     const { selectedBranch, q, selectedDatas, permission } = this.state;
 
     if (isMobile) {
-      return (
-        <div>
-          <div className="row">
-            <div>
-              {selectedDatas > 0 ? (
-                <div style={{ paddingLeft: 25, paddingTop: 25 }}>
-                  <MatButton
-                    onClick={() => this.onDeleteMultiple()}
-                    variant="contained"
-                    color="primary"
-                    className="mr-10 mb-10 text-white btn-icon"
-                  >
-                    Delete <i className="zmdi zmdi-delete"></i>
-                  </MatButton>
-                  <MatButton
-                    style={{
-                      display: this.state.permission === 0 ? "inline" : "none"
-                    }}
-                    onClick={() => this.onSend()}
-                    variant="contained"
-                    className="btn-secondary mr-10 mb-10 text-white btn-icon"
-                  >
-                    Send <i className="zmdi zmdi-mail-send"></i>
-                  </MatButton>
-                  <MatButton
-                    style={{
-                      visibility: permission !== 0 ? "visible" : "hidden"
-                    }}
-                    onClick={() => this.onApprove()}
-                    variant="contained"
-                    className="btn-success mr-10 mb-10 text-white btn-icon"
-                  >
-                    Approve <i className="zmdi zmdi-mail-send"></i>
-                  </MatButton>
-                  <MatButton
-                    style={{
-                      visibility: permission !== 0 ? "visible" : "hidden"
-                    }}
-                    onClick={() => this.onDisApprove()}
-                    variant="contained"
-                    className="btn-danger mr-10 mb-10 text-white btn-icon"
-                  >
-                    Disapprove <i className="zmdi zmdi-mail-send"></i>
-                  </MatButton>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-
-            <div style={{ float: "left" }}>
-              <div style={{ paddingLeft: 25 }}>
-                <FormHelperText style={{ paddingBottom: 5 }}>
-                  Select Branch
-                </FormHelperText>
-                <Input
-                  onChange={this.changeBranch}
-                  value={selectedBranch}
-                  style={{
-                    height: 56,
-                    width: 279,
-                    borderColor: "#CBCBCB"
-                  }}
-                  type="select"
-                  name="select"
-                  id="Select"
-                >
-                  {this.props.masterReducer.data &&
-                    this.props.masterReducer.data.map((value, key) => (
-                      <option key={key} value={value.Id}>
-                        {value.Name}
-                      </option>
-                    ))}
-                </Input>
-              </div>
-            </div>
-          </div>
-          <div className="row" style={{ paddingTop: 15 }}>
-            <div style={{ paddingLeft: 25 }}>
-              <Input
-                onChange={e => this.selectPageSize(e)}
-                type="select"
-                name="select"
-                id="Select"
-              >
-                {this.pageGrop.map((value, key) => (
-                  <option key={key} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </Input>
-            </div>
-            <div style={{ float: "left", paddingLeft: 10 }}>
-              <a
-                href="#"
-                onClick={e => this.onReload(e)}
-                className="btn-outline-default mr-10"
-              >
-                <i className="ti-reload"></i>
-              </a>
-            </div>
-            <div style={{ float: "left", paddingLeft: 5 }}>
-              <Input
-                value={q}
-                onChange={this.searchData}
-                type="search"
-                className="search-input-lg"
-                placeholder="Search.."
-              />
-            </div>
-          </div>
-          <div className="row" style={{ paddingTop: 15, paddingBottom: 15 }}>
-            <div style={{ paddingLeft: 25, float: "left" }}>
-              <CSVLink
-                style={{
-                  visibility:
-                    this.state.csvData.length === 0 ? "hidden" : "visible"
-                }}
-                className="btn-sm btn-outline-default mr-10"
-                data={this.state.csvData}
-                filename={Date.now() + ".csv"}
-              >
-                Export to Excel
-              </CSVLink>
-              <a
-                href="#"
-                onClick={e => this.opnAddNewDataModal(e)}
-                color="primary"
-                className="caret btn-sm mr-10"
-              >
-                Add Revenue List
-                <i className="zmdi zmdi-plus"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      );
+      return "";
     } else {
       return (
         <div>
@@ -1401,7 +1324,8 @@ class RevenueListForm extends Component {
                     color="primary"
                     className="mr-10 mb-10 text-white btn-icon"
                   >
-                    Delete <i className="zmdi zmdi-delete"></i>
+                    {<IntlMessages id="sidebar.revenues.dialog.btn.delete" />}{" "}
+                    <i className="zmdi zmdi-delete"></i>
                   </MatButton>
                   <MatButton
                     style={{
@@ -1411,7 +1335,8 @@ class RevenueListForm extends Component {
                     variant="contained"
                     className="btn-secondary mr-10 mb-10 text-white btn-icon"
                   >
-                    Send <i className="zmdi zmdi-mail-send"></i>
+                    {<IntlMessages id="sidebar.revenues.dialog.btn.send" />}{" "}
+                    <i className="zmdi zmdi-mail-send"></i>
                   </MatButton>
                   <MatButton
                     style={{
@@ -1421,7 +1346,8 @@ class RevenueListForm extends Component {
                     variant="contained"
                     className="btn-success mr-10 mb-10 text-white btn-icon"
                   >
-                    Approve <i className="zmdi zmdi-mail-send"></i>
+                    {<IntlMessages id="sidebar.revenues.dialog.btn.approve" />}{" "}
+                    <i className="zmdi zmdi-mail-send"></i>
                   </MatButton>
                   <MatButton
                     style={{
@@ -1431,7 +1357,10 @@ class RevenueListForm extends Component {
                     variant="contained"
                     className="btn-danger mr-10 mb-10 text-white btn-icon"
                   >
-                    Disapprove <i className="zmdi zmdi-mail-send"></i>
+                    {
+                      <IntlMessages id="sidebar.revenues.dialog.btn.disapprove" />
+                    }{" "}
+                    <i className="zmdi zmdi-mail-send"></i>
                   </MatButton>
                 </div>
               ) : (
@@ -1442,7 +1371,7 @@ class RevenueListForm extends Component {
             <div style={{ float: "left" }}>
               <div style={{ paddingLeft: 25 }}>
                 <FormHelperText style={{ paddingBottom: 5 }}>
-                  Select Branch
+                  {<IntlMessages id="sidebar.revenues.filter.branch" />}
                 </FormHelperText>
                 <Input
                   onChange={this.changeBranch}
@@ -1497,7 +1426,7 @@ class RevenueListForm extends Component {
                   onChange={this.searchData}
                   type="search"
                   className="search-input-lg"
-                  placeholder="Search.."
+                  placeholder={this.state.placeholderSearch}
                 />
               </div>
             </div>
@@ -1512,7 +1441,7 @@ class RevenueListForm extends Component {
                 data={this.state.csvData}
                 filename={Date.now() + ".csv"}
               >
-                Export to Excel
+                {<IntlMessages id="sidebar.revenues.button.exportexcel" />}
               </CSVLink>
               <a
                 href="#"
@@ -1520,7 +1449,7 @@ class RevenueListForm extends Component {
                 color="primary"
                 className="caret btn-sm mr-10"
               >
-                Add Revenue List
+                {<IntlMessages id="sidebar.revenues.button.addrevenielist" />}
                 <i className="zmdi zmdi-plus"></i>
               </a>
             </div>
@@ -1533,14 +1462,7 @@ class RevenueListForm extends Component {
   tableHeaderArrange(selectedDatas, data) {
     // const { selectedDatas, data } = this.state;
     if (isMobile) {
-      return (
-        <tr>
-          <th style={{ width: "70%" }}>Description</th>
-          <th style={{ width: "10%" }}>CreateBy</th>
-          <th style={{ width: "10%" }}>CreateDate</th>
-          <th style={{ width: "10%" }}>Status</th>
-        </tr>
-      );
+      return "";
     } else {
       return (
         <tr>
@@ -1559,12 +1481,24 @@ class RevenueListForm extends Component {
               }
             />
           </th>
-          <th style={{ width: "3%" }}>No.</th>
-          <th style={{ width: "55%" }}>Description</th>
-          <th style={{ width: "10%" }}>CreateBy</th>
-          <th style={{ width: "10%" }}>CreateDate</th>
-          <th style={{ width: "10%" }}>Status</th>
-          <th style={{ width: "10%" }}>Action</th>
+          <th style={{ width: "3%" }}>
+            {<IntlMessages id="sidebar.revenues.table.no" />}
+          </th>
+          <th style={{ width: "55%" }}>
+            {<IntlMessages id="sidebar.revenues.table.discription" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.revenues.table.createby" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.revenues.table.billdate" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.revenues.table.status" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.revenues.table.action" />}
+          </th>
         </tr>
       );
     }
@@ -1573,53 +1507,7 @@ class RevenueListForm extends Component {
   tableLineArrange(data, currentPage) {
     // const { data, currentPage } = this.state;
     if (isMobile) {
-      return (
-        <tbody>
-          {data &&
-            data
-              .slice(
-                currentPage * this.state.pageSize,
-                (currentPage + 1) * this.state.pageSize
-              )
-              .map((item, key) => (
-                <tr key={key}>
-                  <td>
-                    {" "}
-                    <h5 className="mb-5 fw-bold">
-                      <a href="#" onClick={() => this.onPreviewData(item)}>
-                        {item.Description}
-                      </a>
-                    </h5>
-                  </td>
-                  <td>{item.CreateBy}</td>
-                  <td>{item.BillDate}</td>
-                  <td className="d-flex justify-content-start">
-                    <span
-                      className={`badge badge-xs ${
-                        item.Approve
-                          ? "badge-success"
-                          : item.Send
-                          ? "badge-secondary"
-                          : "badge-danger"
-                      } mr-10 mt-10 position-relative`}
-                    >
-                      &nbsp;
-                    </span>
-                    <div className="status">
-                      <span className="d-block">
-                        {item.Approve
-                          ? "Approved"
-                          : item.Send
-                          ? "Submitted"
-                          : "Pending"}
-                      </span>
-                      <span className="small">{item.Time_Diff}</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-        </tbody>
-      );
+      return "";
     } else {
       return (
         <tbody>
@@ -1810,36 +1698,40 @@ class RevenueListForm extends Component {
         </RctCollapsibleCard>
         <DeleteConfirmationDialog
           ref="deleteConfirmationDialog"
-          title="Delete"
-          message="Are you sure want to delete?"
+          title={<IntlMessages id="sidebar.revenues.dialog.delete.title" />}
+          message={<IntlMessages id="sidebar.revenues.dialog.delete.message" />}
           onConfirm={() => this.deleteDataPermanently()}
         />
 
         <DeleteConfirmationDialog
           ref="deleteMutipleConfirmationDialog"
-          title="Delete"
-          message="Are you sure want to delete?"
+          title={<IntlMessages id="sidebar.revenues.dialog.delete.title" />}
+          message={<IntlMessages id="sidebar.revenues.dialog.delete.message" />}
           onConfirm={() => this.onConfirmDeleteMultiple()}
         />
 
         <DeleteConfirmationDialog
           ref="sendMutipleConfirmationDialog"
-          title="Send?"
-          message="Are you sure want to Send?"
+          title={<IntlMessages id="sidebar.revenues.dialog.send.title" />}
+          message={<IntlMessages id="sidebar.revenues.dialog.send.message" />}
           onConfirm={() => this.onConfirmSendMultiple()}
         />
 
         <DeleteConfirmationDialog
           ref="approveMutipleConfirmationDialog"
-          title="Approve?"
-          message="Are you sure want to approve?"
+          title={<IntlMessages id="sidebar.revenues.dialog.approve.title" />}
+          message={
+            <IntlMessages id="sidebar.revenues.dialog.approve.message" />
+          }
           onConfirm={() => this.onConfirmApproveMultiple()}
         />
 
         <DeleteConfirmationDialog
           ref="disapproveMutipleConfirmationDialog"
-          title="Disapprove?"
-          message="Are you sure want to disapprove?"
+          title={<IntlMessages id="sidebar.revenues.dialog.disapprove.title" />}
+          message={
+            <IntlMessages id="sidebar.revenues.dialog.disapprove.message" />
+          }
           onConfirm={() => this.onConfirmDisapproveMultiple()}
         />
 
@@ -1859,8 +1751,12 @@ class RevenueListForm extends Component {
               <div className="row justify-content-between">
                 <DialogTitle id="form-dialog-title">
                   {this.state.actionType === "Add"
-                    ? this.state.actionType
-                    : this.state.actionType +
+                    ? this.state.placeholderTitleAdd
+                    : this.state.actionType === "Preview"
+                    ? this.state.placeholderTitlePreview +
+                      " : " +
+                      this.state.editData.Description
+                    : this.state.placeholderTitleUpdate +
                       " : " +
                       this.state.editData.Description}
                 </DialogTitle>
@@ -1897,8 +1793,8 @@ class RevenueListForm extends Component {
 
 // // map state to props
 const mapStateToProps = state => {
-  const { revenueReducer, masterReducer, authUser } = state;
-  return { revenueReducer, masterReducer, authUser };
+  const { revenueReducer, masterReducer, authUser, settings } = state;
+  return { revenueReducer, masterReducer, authUser, settings };
 };
 
 export default connect(mapStateToProps, {

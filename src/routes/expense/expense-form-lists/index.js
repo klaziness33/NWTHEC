@@ -2,7 +2,7 @@
  * Data Management Page
  */
 import AppConfig from "../../../constants/AppConfig";
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import MatButton from "@material-ui/core/Button";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -96,6 +96,10 @@ class ExpenseForm extends Component {
 
   dataBranch = ["Petrol 001", "Petrol 002"];
   state = {
+    Locale: "",
+    placeholderTotal: "Enter Total",
+    placeholderBillNo: "Enter Bill No.",
+    placeholderSearch: "Search..",
     validateBillNo: false,
     sessionTitle: "",
     sessionContent: "",
@@ -457,7 +461,7 @@ class ExpenseForm extends Component {
       addNewDataDetail,
       this.state.data === null ? selectedBranch : this.state.data[0].Fk_Branch
     );
-    
+
     await this.setState({ addNewDataModal: false, loading: true });
     this.loadData();
     await this.setState({ loading: false });
@@ -567,6 +571,18 @@ class ExpenseForm extends Component {
             : value
       }
     });
+
+    if (
+      key !== "Description" &&
+      this.state.addNewDataDetail.Description === ""
+    ) {
+      await this.setState({
+        addNewDataDetail: {
+          ...this.state.addNewDataDetail,
+          ["Description"]: this.props.vendorReducer.data[0].Name
+        }
+      });
+    }
   }
 
   /**
@@ -661,120 +677,7 @@ class ExpenseForm extends Component {
     const { selectedBranch, q, selectedDatas } = this.state;
 
     if (isMobile) {
-      return (
-        <div>
-          <div className="row">
-            <div>
-              {selectedDatas > 0 ? (
-                <div style={{ paddingLeft: 25, paddingTop: 25 }}>
-                  <MatButton
-                    onClick={() => this.onDeleteMultiple()}
-                    variant="contained"
-                    color="primary"
-                    className="mr-10 mb-10 text-white btn-icon"
-                  >
-                    Delete <i className="zmdi zmdi-delete"></i>
-                  </MatButton>
-                  <MatButton
-                    onClick={() => this.onSend()}
-                    variant="contained"
-                    className="btn-secondary mr-10 mb-10 text-white btn-icon"
-                  >
-                    Send <i className="zmdi zmdi-mail-send"></i>
-                  </MatButton>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-
-            <div style={{ float: "left" }}>
-              <div style={{ paddingLeft: 25 }}>
-                <FormHelperText style={{ paddingBottom: 5 }}>
-                  Select Branch
-                </FormHelperText>
-                <Input
-                  onChange={this.changeBranch}
-                  value={selectedBranch}
-                  style={{
-                    height: 56,
-                    width: 279,
-                    borderColor: "#CBCBCB"
-                  }}
-                  type="select"
-                  name="select"
-                  id="Select"
-                >
-                  {this.props.masterReducer.data &&
-                    this.props.masterReducer.data.map((value, key) => (
-                      <option key={key} value={value.Id}>
-                        {value.Name}
-                      </option>
-                    ))}
-                </Input>
-              </div>
-            </div>
-          </div>
-          <div className="row" style={{ paddingTop: 15 }}>
-            <div style={{ paddingLeft: 25 }}>
-              <Input
-                onChange={e => this.selectPageSize(e)}
-                type="select"
-                name="select"
-                id="Select"
-              >
-                {this.pageGrop.map((value, key) => (
-                  <option key={key} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </Input>
-            </div>
-            <div style={{ float: "left", paddingLeft: 10 }}>
-              <a
-                href="#"
-                onClick={e => this.onReload(e)}
-                className="btn-outline-default mr-10"
-              >
-                <i className="ti-reload"></i>
-              </a>
-            </div>
-            <div style={{ float: "left", paddingLeft: 5 }}>
-              <Input
-                value={q}
-                onChange={this.searchData}
-                type="search"
-                className="search-input-lg"
-                placeholder="Search.."
-              />
-            </div>
-          </div>
-          <div className="row" style={{ paddingTop: 15, paddingBottom: 15 }}>
-            <div style={{ paddingLeft: 25, float: "left" }}>
-              <CSVLink
-                style={{
-                  visibility:
-                    this.state.csvData.length === 0 ? "hidden" : "visible"
-                }}
-                className="btn-sm btn-outline-default mr-10"
-                data={this.state.csvData}
-                filename={Date.now() + ".csv"}
-              >
-                Export to Excel
-              </CSVLink>
-              <a
-                href="#"
-                onClick={e => this.opnAddNewDataModal(e)}
-                color="primary"
-                className="caret btn-sm mr-10"
-              >
-                Add Expense List
-                <i className="zmdi zmdi-plus"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      );
+      return "";
     } else {
       return (
         <div>
@@ -806,7 +709,7 @@ class ExpenseForm extends Component {
             <div style={{ float: "left" }}>
               <div style={{ paddingLeft: 25 }}>
                 <FormHelperText style={{ paddingBottom: 5 }}>
-                  Select Branch
+                  {<IntlMessages id="sidebar.expense.filter.branch" />}
                 </FormHelperText>
                 <Input
                   onChange={this.changeBranch}
@@ -861,7 +764,7 @@ class ExpenseForm extends Component {
                   onChange={this.searchData}
                   type="search"
                   className="search-input-lg"
-                  placeholder="Search.."
+                  placeholder={this.state.placeholderSearch}
                 />
               </div>
             </div>
@@ -876,7 +779,7 @@ class ExpenseForm extends Component {
                 data={this.state.csvData}
                 filename={Date.now() + ".csv"}
               >
-                Export to Excel
+                {<IntlMessages id="sidebar.expense.button.exportexcel" />}
               </CSVLink>
               <a
                 href="#"
@@ -884,7 +787,7 @@ class ExpenseForm extends Component {
                 color="primary"
                 className="caret btn-sm mr-10"
               >
-                Add Expense List
+                {<IntlMessages id="sidebar.expense.button.addexpenselist" />}
                 <i className="zmdi zmdi-plus"></i>
               </a>
             </div>
@@ -897,15 +800,7 @@ class ExpenseForm extends Component {
   tableHeaderArrange(selectedDatas, data) {
     // const { selectedDatas, data } = this.state;
     if (isMobile) {
-      return (
-        <tr>
-          <th style={{ width: "35%" }}>Description</th>
-          <th style={{ width: "35%" }}>Bill No.</th>
-          <th style={{ width: "10%" }}>Total</th>
-          <th style={{ width: "10%" }}>Status</th>
-          <th style={{ width: "10%" }}>Action</th>
-        </tr>
-      );
+      return "";
     } else {
       return (
         <tr>
@@ -924,13 +819,27 @@ class ExpenseForm extends Component {
               }
             />
           </th>
-          <th style={{ width: "3%" }}>No.</th>
-          <th style={{ width: "40%" }}>Description</th>
-          <th style={{ width: "15%" }}>Bill No.</th>
-          <th style={{ width: "10%" }}>Bill Date</th>
-          <th style={{ width: "10%" }}>Total</th>
-          <th style={{ width: "10%" }}>Status</th>
-          <th style={{ width: "10%" }}>Action</th>
+          <th style={{ width: "3%" }}>
+            {<IntlMessages id="sidebar.expense.table.no" />}
+          </th>
+          <th style={{ width: "40%" }}>
+            {<IntlMessages id="sidebar.expense.table.discription" />}
+          </th>
+          <th style={{ width: "15%" }}>
+            {<IntlMessages id="sidebar.expense.table.billno" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.expense.table.billdate" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.expense.table.total" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.expense.table.status" />}
+          </th>
+          <th style={{ width: "10%" }}>
+            {<IntlMessages id="sidebar.expense.table.action" />}
+          </th>
         </tr>
       );
     }
@@ -939,56 +848,7 @@ class ExpenseForm extends Component {
   tableLineArrange(data, currentPage) {
     // const { data, currentPage } = this.state;
     if (isMobile) {
-      return (
-        <tbody>
-          {data &&
-            data
-              .slice(
-                currentPage * this.state.pageSize,
-                (currentPage + 1) * this.state.pageSize
-              )
-              .map((item, key) => (
-                <tr key={key}>
-                  <td>
-                    <h5 className="mb-5 fw-bold">{item.Description}</h5>
-                  </td>
-                  <td>{item.Invoice_No}</td>
-                  <td>{roundN(item.Total, 2)}</td>
-                  <td className="d-flex justify-content-start">
-                    <span
-                      className={`badge badge-xs ${
-                        item.Send ? "badge-success" : "badge-danger"
-                      } mr-10 mt-10 position-relative`}
-                    >
-                      &nbsp;
-                    </span>
-                    <div className="status">
-                      <span className="d-block">
-                        {item.Send ? "Submitted" : "Pending"}
-                      </span>
-                      <span className="small">{item.Time_Diff}</span>
-                    </div>
-                  </td>
-                  <td className="list-action">
-                    <button
-                      type="button"
-                      className="rct-link-btn"
-                      onClick={() => this.onEditData(item)}
-                    >
-                      <i className="ti-pencil"></i>
-                    </button>
-                    <button
-                      type="button"
-                      className="rct-link-btn"
-                      onClick={() => this.onDelete(item)}
-                    >
-                      <i className="ti-close"></i>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-        </tbody>
-      );
+      return "";
     } else {
       return (
         <tbody>
@@ -1114,6 +974,27 @@ class ExpenseForm extends Component {
     await this.setDataAfterFilter(originalData, this.state.q);
   }
 
+  componentDidUpdate() {
+    const { Locale } = this.state;
+    const { settings } = this.props;
+    if (Locale === settings.locale.locale) return;
+    if (settings.locale.locale === "th") {
+      this.setState({
+        Locale: "th",
+        placeholderSearch: "ค้นหา..",
+        placeholderTotal: "ระบุหมายเลขบิล",
+        placeholderBillNo: "ระบุยอดรวม"
+      });
+    } else {
+      this.setState({
+        Locale: "en",
+        placeholderSearch: "Search..",
+        placeholderTotal: "Enter Total",
+        placeholderBillNo: "Enter Bill No."
+      });
+    }
+  }
+
   render() {
     const {
       loading,
@@ -1184,22 +1065,22 @@ class ExpenseForm extends Component {
         </RctCollapsibleCard>
         <DeleteConfirmationDialog
           ref="deleteConfirmationDialog"
-          title="Delete?"
-          message="Are you sure want to delete?"
+          title={<IntlMessages id="sidebar.expense.dialog.delete.title" />}
+          message={<IntlMessages id="sidebar.expense.dialog.delete.message" />}
           onConfirm={() => this.deleteDataPermanently()}
         />
 
         <DeleteConfirmationDialog
           ref="deleteMutipleConfirmationDialog"
-          title="Delete?"
-          message="Are you sure want to delete?"
+          title={<IntlMessages id="sidebar.expense.dialog.delete.title" />}
+          message={<IntlMessages id="sidebar.expense.dialog.delete.message" />}
           onConfirm={() => this.onConfirmDeleteMultiple()}
         />
 
         <DeleteConfirmationDialog
           ref="sendMutipleConfirmationDialog"
-          title="Send?"
-          message="Are you sure want to Send?"
+          title={<IntlMessages id="sidebar.expense.dialog.send.title" />}
+          message={<IntlMessages id="sidebar.expense.dialog.send.message" />}
           onConfirm={() => this.onConfirmUpdateMultiple()}
         />
 
@@ -1208,13 +1089,21 @@ class ExpenseForm extends Component {
           toggle={() => this.onAddUpdateDataModalClose()}
         >
           <ModalHeader toggle={() => this.onAddUpdateDataModalClose()}>
-            {editData === null ? "Add New Data" : "Update Data"}
+            {editData === null ? (
+              <IntlMessages id="sidebar.expense.dialog.add.title" />
+            ) : (
+              <IntlMessages id="sidebar.expense.dialog.update.title" />
+            )}
           </ModalHeader>
           <ModalBody>
             {editData === null ? (
               <Form>
                 <FormGroup>
-                  <Label for="Description">Description (Vendor)</Label>
+                  <Label for="Description">
+                    {
+                      <IntlMessages id="sidebar.expense.dialog.add.description" />
+                    }
+                  </Label>
                   <i
                     onClick={() => this.redirectToVendor()}
                     style={{ paddingLeft: 15 }}
@@ -1222,7 +1111,9 @@ class ExpenseForm extends Component {
                   >
                     {" "}
                     <a href="#" onClick={() => this.redirectToVendor()}>
-                      Add
+                      {
+                        <IntlMessages id="sidebar.expense.dialog.add.description.add" />
+                      }
                     </a>
                   </i>
                   <Input
@@ -1250,14 +1141,17 @@ class ExpenseForm extends Component {
                   </Input>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Invoice_No">Bill No.</Label>
+                  <Label for="Invoice_No">
+                    {" "}
+                    {<IntlMessages id="sidebar.expense.dialog.add.billno" />}
+                  </Label>
                   <Input
                     max="50"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Invoice_No"
                     id="Invoice_No"
-                    placeholder="Enter Bill No."
+                    placeholder={this.state.placeholderBillNo}
                     value={addNewDataDetail.Invoice_No}
                     onBlur={e =>
                       this.onValidateBillNo(e.target.value, addNewDataDetail.Id)
@@ -1276,11 +1170,16 @@ class ExpenseForm extends Component {
                       fontSize: 15
                     }}
                   >
-                    This bill number has already been used.
+                    {
+                      <IntlMessages id="sidebar.expense.dialog.add.billno.validate" />
+                    }
                   </Label>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="BillDate">Bill Date</Label>
+                  <Label for="BillDate">
+                    {" "}
+                    {<IntlMessages id="sidebar.expense.dialog.add.billdate" />}
+                  </Label>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
                       <KeyboardDatePicker
@@ -1301,7 +1200,10 @@ class ExpenseForm extends Component {
                   </MuiPickersUtilsProvider>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Total">Total</Label>
+                  <Label for="Total">
+                    {" "}
+                    {<IntlMessages id="sidebar.expense.dialog.add.total" />}
+                  </Label>
                   <Input
                     min="0"
                     required
@@ -1309,7 +1211,7 @@ class ExpenseForm extends Component {
                     type="number"
                     name="Total"
                     id="Total"
-                    placeholder="Enter Total"
+                    placeholder={this.state.placeholderTotal}
                     value={addNewDataDetail.Total}
                     onChange={e =>
                       this.onChangeAddNewDataDetails("Total", e.target.value)
@@ -1320,7 +1222,12 @@ class ExpenseForm extends Component {
             ) : (
               <Form>
                 <FormGroup>
-                  <Label for="Description">Description (Vendor)</Label>
+                  <Label for="Description">
+                    {" "}
+                    {
+                      <IntlMessages id="sidebar.expense.dialog.update.description" />
+                    }
+                  </Label>
                   <i
                     onClick={() => this.redirectToVendor()}
                     style={{ paddingLeft: 15 }}
@@ -1328,7 +1235,9 @@ class ExpenseForm extends Component {
                   >
                     {" "}
                     <a href="#" onClick={() => this.redirectToVendor()}>
-                      Add
+                      {
+                        <IntlMessages id="sidebar.expense.dialog.update.description.add" />
+                      }
                     </a>
                   </i>
                   <Input
@@ -1354,14 +1263,16 @@ class ExpenseForm extends Component {
                   </Input>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Invoice_No">Bill No.</Label>
+                  <Label for="Invoice_No">
+                    {<IntlMessages id="sidebar.expense.dialog.update.billno" />}
+                  </Label>
                   <Input
                     max="50"
                     style={{ borderColor: "#CBCBCB", height: 56 }}
                     type="text"
                     name="Invoice_No"
                     id="Invoice_No"
-                    placeholder="Enter Bill No."
+                    placeholder={this.state.placeholderBillNo}
                     value={editData.Invoice_No}
                     onBlur={e =>
                       this.onValidateBillNo(e.target.value, editData.Id)
@@ -1377,11 +1288,17 @@ class ExpenseForm extends Component {
                       fontSize: 15
                     }}
                   >
-                    This bill number has already been used.
+                    {
+                      <IntlMessages id="sidebar.expense.dialog.update.billno.validate" />
+                    }
                   </Label>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="BillDate">Bill Date</Label>
+                  <Label for="BillDate">
+                    {
+                      <IntlMessages id="sidebar.expense.dialog.update.billdate" />
+                    }
+                  </Label>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
                       <KeyboardDatePicker
@@ -1400,7 +1317,9 @@ class ExpenseForm extends Component {
                   </MuiPickersUtilsProvider>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="Total">Total</Label>
+                  <Label for="Total">
+                    {<IntlMessages id="sidebar.expense.dialog.update.total" />}
+                  </Label>
                   <Input
                     min="0"
                     required
@@ -1408,7 +1327,7 @@ class ExpenseForm extends Component {
                     type="number"
                     name="Total"
                     id="Total"
-                    placeholder="Enter Total"
+                    placeholder={this.state.placeholderTotal}
                     value={editData.Total}
                     onChange={e =>
                       this.onUpdateDataDetails("Total", e.target.value)
@@ -1425,7 +1344,7 @@ class ExpenseForm extends Component {
                 className="text-white btn-success"
                 onClick={() => this.addNewData()}
               >
-                Add
+                {<IntlMessages id="sidebar.expense.dialog.add.btn.add" />}
               </Button>
             ) : (
               <Button
@@ -1434,7 +1353,7 @@ class ExpenseForm extends Component {
                 className="text-white"
                 onClick={() => this.updateData()}
               >
-                Update
+                {<IntlMessages id="sidebar.expense.dialog.update.btn.update" />}
               </Button>
             )}{" "}
             <Button
@@ -1442,7 +1361,8 @@ class ExpenseForm extends Component {
               className="text-white btn-danger"
               onClick={() => this.onAddUpdateDataModalClose()}
             >
-              Cancel
+              {/* sidebar.expense.dialog.btn.cancel */}
+              {<IntlMessages id="sidebar.expense.dialog.btn.cancel" />}
             </Button>
           </ModalFooter>
         </Modal>
@@ -1455,8 +1375,14 @@ class ExpenseForm extends Component {
 
 // // map state to props
 const mapStateToProps = state => {
-  const { expenseReducer, masterReducer, authUser, vendorReducer } = state;
-  return { expenseReducer, masterReducer, authUser, vendorReducer };
+  const {
+    expenseReducer,
+    masterReducer,
+    authUser,
+    vendorReducer,
+    settings
+  } = state;
+  return { expenseReducer, masterReducer, authUser, vendorReducer, settings };
 };
 
 export default connect(mapStateToProps, {

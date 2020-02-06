@@ -17,7 +17,10 @@ import {
   SEND_ERROR_EXPENSE,
   VALIDATE_START_EXPENSE,
   VALIDATE_END_EXPENSE,
-  VALIDATE_ERROR_EXPENSE
+  VALIDATE_ERROR_EXPENSE,
+  ERROR_UNAUTHORIZED_EXPENSE,
+  ERROR_NETWORK_EXPENSE,
+  ERROR_OTHER_EXPENSE
 } from "Actions/types";
 import {
   RESPONSE_SUCCESS,
@@ -40,13 +43,13 @@ const catchError = (error, dispatch, type) => {
   }
 
   if (!error.response) {
-    NotificationManager.error(NOTIFY_NETWORKERROR);
+    dispatch({ type: ERROR_OTHER_EXPENSE, payload: true });
   }
   if (error.response.status === 400) {
-    NotificationManager.error(NOTIFY_NETWORKERROR);
+    dispatch({ type: ERROR_NETWORK_EXPENSE, payload: true });
   }
   if (error.response.status === 401) {
-    NotificationManager.error(UNAUTHORIZED_NETWORKERROR);
+    dispatch({ type: ERROR_UNAUTHORIZED_EXPENSE, payload: true });
   }
   return Promise.reject(error);
 };
@@ -111,11 +114,11 @@ export const deleteDataExpense = dataP => async dispatch => {
         dispatch({ type: DEL_ERROR_EXPENSE });
         NotificationManager.error(response.data.data);
       } else {
+        dispatch({ type: DEL_END_EXPENSE });
         NotificationManager.success(response.data.data);
       }
     })
     .catch(error => catchError(error, dispatch, DEL_ERROR_EXPENSE));
-  dispatch({ type: DEL_END_EXPENSE });
 };
 
 export const sendDataExpense = dataP => async dispatch => {
@@ -144,11 +147,11 @@ export const sendDataExpense = dataP => async dispatch => {
         dispatch({ type: SEND_ERROR_EXPENSE });
         NotificationManager.error(response.data.data);
       } else {
+        dispatch({ type: SEND_END_EXPENSE });
         NotificationManager.success(response.data.data);
       }
     })
     .catch(error => catchError(error, dispatch, SEND_ERROR_EXPENSE));
-  dispatch({ type: SEND_END_EXPENSE });
 };
 
 export const updateDataExpense = (dataP, branchP) => async dispatch => {
@@ -182,11 +185,11 @@ export const updateDataExpense = (dataP, branchP) => async dispatch => {
         dispatch({ type: UPDATE_ERROR_EXPENSE });
         NotificationManager.error(response.data.data);
       } else {
+        dispatch({ type: UPDATE_END_EXPENSE });
         NotificationManager.success(response.data.data);
       }
     })
     .catch(error => catchError(error, dispatch, UPDATE_ERROR_EXPENSE));
-  dispatch({ type: UPDATE_END_EXPENSE });
 };
 
 export const searchDateExpense = date => dispatch => {
@@ -224,11 +227,11 @@ export const addDataExpense = (dataP, branchP) => async dispatch => {
         dispatch({ type: ADD_ERROR_EXPENSE });
         NotificationManager.error(response.data.data);
       } else {
+        dispatch({ type: ADD_END_EXPENSE });
         NotificationManager.success(response.data.data);
       }
     })
     .catch(error => catchError(error, dispatch, ADD_ERROR_EXPENSE));
-  dispatch({ type: ADD_END_EXPENSE });
 };
 
 export const validateDataExpense = dataP => async dispatch => {

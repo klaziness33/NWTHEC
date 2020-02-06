@@ -90,6 +90,20 @@ class VendorForm extends Component {
     placeholderSearch: "Search..",
     placeholderName: "Enter Name",
     placeholderDescription: "Enter Description",
+    sessionTimeOutTitle: "Session Timeout",
+    sessionTimeOutContent:
+      "You are timed out due to inactivity you must push accept and login again.",
+    sessionInvalidOutTitle: "Invalid session",
+    sessionInvalidOutContent:
+      "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
+    tokenInvalidTitle: "Invalid Token",
+    tokenInvalidContent:
+      "Your Token is Invalid. you must push accept and login again.",
+    networkErrorTitle: "Network Error",
+    networkErrorContent:
+      "Cannot to connect with server, please contact customer service",
+    errorTitle: "Critical Error",
+    errorContent: "Found some error, please contact customer service",
     sessionTitle: "",
     sessionContent: "",
     sessionStatus: false,
@@ -154,16 +168,14 @@ class VendorForm extends Component {
       if (this.props.authUser.session.data === "Session timeout")
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Session Timeout",
-          sessionContent:
-            "You are timed out due to inactivity you must push accept and login again."
+          sessionTitle: this.state.sessionTimeOutTitle,
+          sessionContent: this.state.sessionTimeOutContent
         });
       if (this.props.authUser.session.data === "Invalid session")
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Invalid session",
-          sessionContent:
-            "Your session is Invalid. due to might have another person try to login with this account."
+          sessionTitle: this.state.sessionInvalidOutTitle,
+          sessionContent: this.state.sessionInvalidOutContent
         });
     }
   }
@@ -238,22 +250,36 @@ class VendorForm extends Component {
   }
 
   errorDialog() {
-    console.log(this.props.vendorReducer.error);
-
-    setTimeout(async () => {
-      if (this.props.vendorReducer.error) {
+    const { vendorReducer } = this.props;
+    if (vendorReducer.unauthorized) {
+      setTimeout(async () => {
         await this.setState({
           sessionDialog: true,
-          sessionTitle: "Invalid Token",
-          sessionContent:
-            "Your Token is Invalid. you must push accept and login again."
+          sessionTitle: this.state.tokenInvalidTitle,
+          sessionContent: this.state.tokenInvalidContent
         });
-      }
-    }, 1000);
+      }, 5000);
+    } else if (vendorReducer.network) {
+      setTimeout(async () => {
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: this.state.networkErrorTitle,
+          sessionContent: this.state.networkErrorContent
+        });
+      }, 5000);
+    } else if (vendorReducer.error) {
+      setTimeout(async () => {
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: this.state.errorTitle,
+          sessionContent: this.state.errorContent
+        });
+      }, 5000);
+    }
   }
 
   componentDidMount() {
-    // this.activeSession();
+    this.activeSession();
     this.loadData();
     this.tabArrange();
   }
@@ -279,8 +305,6 @@ class VendorForm extends Component {
   }
 
   async loadData() {
-    // this.errorDialog();
-
     this.setState({ loading: true });
     await this.props.fetchingDataVendor("0");
 
@@ -310,6 +334,7 @@ class VendorForm extends Component {
     });
 
     this.setDataExportCsv();
+    this.errorDialog();
   }
 
   async setDataExportCsv() {
@@ -845,14 +870,25 @@ class VendorForm extends Component {
         Locale: "th",
         placeholderSearch: "ค้นหา..",
         placeholderName: "ระบุชื่อ",
-        placeholderDescription: "ระบุรายละเอียด"
+        placeholderDescription: "ระบุรายละเอียด",
+        networkErrorTitle: "พบข้อผิดพลาดขณะเชื่อมต่อระหว่างเซิร์ฟเวอร์",
+        networkErrorContent:
+          "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้, กรุณาติดต่อฝ่ายบริการลูกค้า",
+        errorTitle: "พบข้อผิดพลาด",
+        errorContent:
+          "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า"
       });
     } else {
       this.setState({
         Locale: "en",
         placeholderSearch: "Search..",
         placeholderName: "Enter Name",
-        placeholderDescription: "Enter Description"
+        placeholderDescription: "Enter Description",
+        networkErrorTitle: "Network Error",
+        networkErrorContent:
+          "Cannot to connect with server, please contact customer service",
+        errorTitle: "Critical Error",
+        errorContent: "Found some error, please contact customer service"
       });
     }
   }

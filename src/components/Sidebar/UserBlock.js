@@ -97,7 +97,7 @@ class UserBlock extends Component {
                   <p className="text-white mb-0 fs-14">{userL.full_Name}</p>
                   <span className="text-white fs-14">{userL.user_Name}</span>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     to={{
                       pathname: "/app/users/user-profile-1",
@@ -107,7 +107,7 @@ class UserBlock extends Component {
                     <i className="zmdi zmdi-account text-primary mr-3"></i>
                     <IntlMessages id="widgets.profile" />
                   </Link>
-                </li>
+                </li> */}
                 <li className="border-top">
                   <a href="#" onClick={e => this.logoutUser(e)}>
                     <i className="zmdi zmdi-power text-danger mr-3"></i>

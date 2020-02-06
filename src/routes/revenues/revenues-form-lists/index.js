@@ -95,6 +95,11 @@ class RevenueListForm extends Component {
     tokenInvalidTitle: "Invalid Token",
     tokenInvalidContent:
       "Your Token is Invalid. you must push accept and login again.",
+    networkErrorTitle: "Network Error",
+    networkErrorContent:
+      "Cannot to connect with server, please contact customer service",
+    errorTitle: "Critical Error",
+    errorContent: "Found some error, please contact customer service",
     sessionTitle: "",
     sessionContent: "",
     sessionStatus: false,
@@ -225,7 +230,7 @@ class RevenueListForm extends Component {
     await this.props.activeSession(usermodelsL.user_Name, tokenL);
     if (this.props.authUser.session.description === "success") {
       if (this.props.authUser.session.data === "Valid session") return;
-      if (this.props.authUser.session.data === "Session timeout") {   
+      if (this.props.authUser.session.data === "Session timeout") {
         await this.setState({
           sessionDialog: true,
           sessionTitle: this.state.sessionTimeOutTitle,
@@ -281,17 +286,32 @@ class RevenueListForm extends Component {
   }
 
   errorDialog() {
-    console.log(this.props.revenueReducer.error);
-
-    setTimeout(async () => {
-      if (this.props.revenueReducer.error) {
+    const { revenueReducer } = this.props;
+    if (revenueReducer.unauthorized) {
+      setTimeout(async () => {
         await this.setState({
           sessionDialog: true,
           sessionTitle: this.state.tokenInvalidTitle,
           sessionContent: this.state.tokenInvalidContent
         });
-      }
-    }, 1000);
+      }, 5000);
+    } else if (revenueReducer.network) {
+      setTimeout(async () => {
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: this.state.networkErrorTitle,
+          sessionContent: this.state.networkErrorContent
+        });
+      }, 5000);
+    } else if (revenueReducer.error) {
+      setTimeout(async () => {
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: this.state.errorTitle,
+          sessionContent: this.state.errorContent
+        });
+      }, 5000);
+    }
   }
 
   componentDidMount() {
@@ -538,7 +558,6 @@ class RevenueListForm extends Component {
   }
 
   async loadData() {
-    // this.errorDialog();
     this.setState({ loading: true });
     await this.props.fetchingDataRevenue(this.state.selectedBranch);
     var dataL = this.props.revenueReducer.data;
@@ -569,6 +588,7 @@ class RevenueListForm extends Component {
     let roleL = this.filterRole(this.props.authUser.user.fk_Role);
     this.setRoleState(roleL);
     this.setDataExportCsv();
+    this.errorDialog();
   }
 
   async setRoleState(roleP) {
@@ -1282,7 +1302,13 @@ class RevenueListForm extends Component {
           "เซสชันของคุณไม่ถูกต้อง เนื่องจากอาจมีบุคคลอื่นพยายามลงชื่อเข้าใช้ด้วยบัญชีนี้คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
         tokenInvalidTitle: "โทเค็นไม่ถูกต้อง",
         tokenInvalidContent:
-          "โทเค็นของคุณไม่ถูกต้อง คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง"
+          "โทเค็นของคุณไม่ถูกต้อง คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
+        networkErrorTitle: "พบข้อผิดพลาดขณะเชื่อมต่อระหว่างเซิร์ฟเวอร์",
+        networkErrorContent:
+          "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้, กรุณาติดต่อฝ่ายบริการลูกค้า",
+        errorTitle: "พบข้อผิดพลาด",
+        errorContent:
+          "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า"
       });
     } else {
       this.setState({
@@ -1297,10 +1323,16 @@ class RevenueListForm extends Component {
         sessionTimeOutContent:
           "You are timed out due to inactivity you must push accept and login again.",
         sessionInvalidOutTitle: "Invalid session",
-        sessionInvalidOutContent: "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
+        sessionInvalidOutContent:
+          "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
         tokenInvalidTitle: "Invalid Token",
         tokenInvalidContent:
-          "Your Token is Invalid. you must push accept and login again."
+          "Your Token is Invalid. you must push accept and login again.",
+        networkErrorTitle: "Network Error",
+        networkErrorContent:
+          "Cannot to connect with server, please contact customer service",
+        errorTitle: "Critical Error",
+        errorContent: "Found some error, please contact customer service"
       });
     }
   }

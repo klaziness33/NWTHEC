@@ -109,6 +109,11 @@ class ExpenseForm extends Component {
     tokenInvalidTitle: "Invalid Token",
     tokenInvalidContent:
       "Your Token is Invalid. you must push accept and login again.",
+    networkErrorTitle: "Network Error",
+    networkErrorContent:
+      "Cannot to connect with server, please contact customer service",
+    errorTitle: "Critical Error",
+    errorContent: "Found some error, please contact customer service",
     validateBillNo: false,
     sessionTitle: "",
     sessionContent: "",
@@ -219,7 +224,7 @@ class ExpenseForm extends Component {
               variant="contained"
               className="btn-primary text-white mr-10"
             >
-              Accept
+              {<IntlMessages id="sidebar.dialog.session.btn.accept" />}
             </Button>
           </DialogActions>
         </Dialog>
@@ -227,16 +232,37 @@ class ExpenseForm extends Component {
     );
   }
 
+  // unauthorized: false,
+  // network: false,
+  // error: false
+
   errorDialog() {
-    setTimeout(async () => {
-      if (this.props.expenseReducer.error) {
+    const { expenseReducer } = this.props;
+    if (expenseReducer.unauthorized) {
+      setTimeout(async () => {
         await this.setState({
           sessionDialog: true,
           sessionTitle: this.state.tokenInvalidTitle,
           sessionContent: this.state.tokenInvalidContent
         });
-      }
-    }, 1000);
+      }, 5000);
+    } else if (expenseReducer.network) {
+      setTimeout(async () => {
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: this.state.networkErrorTitle,
+          sessionContent: this.state.networkErrorContent
+        });
+      }, 5000);
+    } else if (expenseReducer.error) {
+      setTimeout(async () => {
+        await this.setState({
+          sessionDialog: true,
+          sessionTitle: this.state.errorTitle,
+          sessionContent: this.state.errorContent
+        });
+      }, 5000);
+    }
   }
 
   componentDidMount() {
@@ -272,8 +298,6 @@ class ExpenseForm extends Component {
   }
 
   async loadData() {
-    // this.errorDialog();
-
     await this.props.fetchingDataVendor("0");
     await this.setState({ vendor: this.props.vendorReducer.data });
     await this.setState({ loading: true });
@@ -304,6 +328,7 @@ class ExpenseForm extends Component {
     });
 
     this.setDataExportCsv();
+    this.errorDialog();
   }
 
   async setDataExportCsv() {
@@ -996,7 +1021,12 @@ class ExpenseForm extends Component {
           "เซสชันของคุณไม่ถูกต้อง เนื่องจากอาจมีบุคคลอื่นพยายามลงชื่อเข้าใช้ด้วยบัญชีนี้คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
         tokenInvalidTitle: "โทเค็นไม่ถูกต้อง",
         tokenInvalidContent:
-          "โทเค็นของคุณไม่ถูกต้อง คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง"
+          "โทเค็นของคุณไม่ถูกต้อง คุณต้องกดยอมรับและลงชื่อเข้าใช้อีกครั้ง",
+        networkErrorTitle: "พบข้อผิดพลาดขณะเชื่อมต่อระหว่างเซิร์ฟเวอร์",
+        networkErrorContent:
+          "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้, กรุณาติดต่อฝ่ายบริการลูกค้า",
+        errorTitle: "พบข้อผิดพลาด",
+        errorContent: "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า"
       });
     } else {
       this.setState({
@@ -1012,7 +1042,12 @@ class ExpenseForm extends Component {
           "Your session is Invalid. due to might have another person try to login with this account, you must push accept and login again.",
         tokenInvalidTitle: "Invalid Token",
         tokenInvalidContent:
-          "Your Token is Invalid. you must push accept and login again."
+          "Your Token is Invalid. you must push accept and login again.",
+        networkErrorTitle: "Network Error",
+        networkErrorContent:
+          "Cannot to connect with server, please contact customer service",
+        errorTitle: "Critical Error",
+        errorContent: "Found some error, please contact customer service"
       });
     }
   }

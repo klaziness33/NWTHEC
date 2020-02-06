@@ -7,7 +7,10 @@ import {
   FETCH_ERROR_REVENUE,
   SEND_START_REVENUE,
   SEND_END_REVENUE,
-  SEND_ERROR_REVENUE
+  SEND_ERROR_REVENUE,
+  ERROR_UNAUTHORIZED_REVENUE,
+  ERROR_NETWORK_REVENUE,
+  ERROR_OTHER_REVENUE
 } from "Actions/types";
 
 /**
@@ -16,11 +19,22 @@ import {
 const INIT_STATE = {
   data: null,
   loading: false,
+  unauthorized: false,
+  network: false,
   error: false
 };
 
 export default (state = INIT_STATE, action) => {
   switch (action.type) {
+    case ERROR_OTHER_REVENUE:
+      return { ...state, error: true, loading: true };
+
+    case ERROR_UNAUTHORIZED_REVENUE:
+      return { ...state, unauthorized: true, loading: true };
+
+    case ERROR_NETWORK_REVENUE:
+      return { ...state, network: true, loading: true };
+
     case SEND_START_REVENUE:
       return { ...state, data: null, loading: true };
 

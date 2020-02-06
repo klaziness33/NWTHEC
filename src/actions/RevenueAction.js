@@ -20,7 +20,10 @@ import {
   APPROVE_ERROR_REVENUE,
   DISAPPROVE_START_REVENUE,
   DISAPPROVE_END_REVENUE,
-  DISAPPROVE_ERROR_REVENUE
+  DISAPPROVE_ERROR_REVENUE,
+  ERROR_UNAUTHORIZED_REVENUE,
+  ERROR_NETWORK_REVENUE,
+  ERROR_OTHER_REVENUE
 } from "Actions/types";
 import {
   RESPONSE_SUCCESS,
@@ -504,15 +507,14 @@ const catchError = (error, dispatch, type) => {
   if (dispatch !== null) {
     dispatch({ type: type });
   }
-
   if (!error.response) {
-    NotificationManager.error("NOTIFY_NETWORKERROR");
+    dispatch({ type: ERROR_OTHER_REVENUE, payload: true });
   }
   if (error.response.status === 400) {
-    NotificationManager.error(NOTIFY_NETWORKERROR);
+    dispatch({ type: ERROR_NETWORK_REVENUE, payload: true });
   }
   if (error.response.status === 401) {
-    NotificationManager.error(UNAUTHORIZED_NETWORKERROR);
+    dispatch({ type: ERROR_UNAUTHORIZED_REVENUE, payload: true });
   }
   return Promise.reject(error);
 };

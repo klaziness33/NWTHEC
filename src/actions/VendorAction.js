@@ -11,7 +11,10 @@ import {
   UPDATE_ERROR_VENDOR,
   ADD_START_VENDOR,
   ADD_END_VENDOR,
-  ADD_ERROR_VENDOR
+  ADD_ERROR_VENDOR,
+  ERROR_OTHER_VENDOR,
+  ERROR_UNAUTHORIZED_VENDOR,
+  ERROR_NETWORK_VENDOR
 } from "Actions/types";
 import {
   STORAGE_USERMODELS,
@@ -39,13 +42,13 @@ const catchError = (error, dispatch, type) => {
   }
 
   if (!error.response) {
-    NotificationManager.error(NOTIFY_NETWORKERROR);
+    dispatch({ type: ERROR_OTHER_VENDOR, payload: true });
   }
   if (error.response.status === 400) {
-    NotificationManager.error(NOTIFY_NETWORKERROR);
+    dispatch({ type: ERROR_NETWORK_VENDOR, payload: true });
   }
   if (error.response.status === 401) {
-    NotificationManager.error(UNAUTHORIZED_NETWORKERROR);
+    dispatch({ type: ERROR_UNAUTHORIZED_VENDOR, payload: true });
   }
   return Promise.reject(error);
 };

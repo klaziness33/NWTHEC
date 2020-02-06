@@ -778,6 +778,7 @@ module.exports = {
   "sidebar.expense.button.addexpenselist": "Add Expense List",
   "sidebar.expense.dialog.add.title": "Add Expense",
   "sidebar.expense.dialog.update.title": "Update Expense",
+  "sidebar.expense.dialog.preview.title": "Preview Expense",
   "sidebar.expense.dialog.add.description": "Description (Vendor)",
   "sidebar.expense.dialog.add.description.add": "Add",
   "sidebar.expense.dialog.add.billno": "Bill No.",
@@ -913,6 +914,7 @@ module.exports = {
   "sidebar.vendor.dialog.update.description": "Description",
   "sidebar.vendor.dialog.update.update": "Update",
   "sidebar.vendor.dialog.update.cancel": "Cancel",
+  "sidebar.vendor.dialog.preview.title": "Preview Vendor",
   "sidebar.vendor.alert": "This vendor has already been used.",
   // * vendor * //
 

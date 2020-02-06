@@ -769,6 +769,7 @@ module.exports = {
   "sidebar.reports": "reports",
   // start customize //
   // * expense * //
+  "sidebar.expense.dialog.preview.title": "ดูตัวอย่างค่าใช้จ่าย",
   "sidebar.expense": "ค่าใช้จ่าย",
   "sidebar.expenseManagement": "การจัดการค่าใช้จ่าย",
   "sidebar.expense.filter.branch": "เลือกสาขา",
@@ -910,6 +911,7 @@ module.exports = {
   "sidebar.vendor.dialog.update.description": "รายละเอียด",
   "sidebar.vendor.dialog.update.update": "อัพเดท",
   "sidebar.vendor.dialog.update.cancel": "ยกเลิก",
+  "sidebar.vendor.dialog.preview.title": "ดูตัวอย่างผู้ขาย",
   "sidebar.vendor.alert": "ชื่อผู้ขายนี้ถูกนำไปใช้แล้ว",
   // * vendor * //
 

@@ -111,6 +111,7 @@ class VendorForm extends Component {
     data: null,
     selectedData: null,
     loading: false,
+    previewDataModal: false,
     addNewDataModal: false,
     addNewDataDetail: {
       Id: 0,
@@ -788,7 +789,14 @@ class VendorForm extends Component {
                     />
                   </td>
                   <td>{item.No}</td>
-                  <td>{item.Name}</td>
+                  <td>
+                    {" "}
+                    <h5 className="mb-5 fw-bold">
+                      <a href="#" onClick={() => this.onPreviewData(item)}>
+                        {item.Name}
+                      </a>
+                    </h5>
+                  </td>
                   {!isMobile ? (
                     <td>{moment(item.CreateDate).format("DD/MM/YYYY")}</td>
                   ) : (
@@ -859,6 +867,71 @@ class VendorForm extends Component {
     const { originalData } = this.state;
     await this.setState({ q: event.target.value });
     await this.setDataAfterFilter(originalData, this.state.q);
+  }
+
+  onPreviewData(itemP) {
+    this.setState({ previewDataModal: true, editData: itemP });
+  }
+
+  previewDialog() {
+    const { editData } = this.state;
+    return (
+      <Modal
+        isOpen={this.state.previewDataModal}
+        toggle={() => this.setState({ previewDataModal: false })}
+      >
+        <ModalHeader toggle={() => this.setState({ previewDataModal: false })}>
+          <IntlMessages id="sidebar.vendor.dialog.preview.title" />
+        </ModalHeader>
+        <ModalBody>
+          {editData === null ? (
+            ""
+          ) : (
+            <Form>
+              <FormGroup>
+                <Label for="Name">
+                  <IntlMessages id="sidebar.vendor.dialog.add.name" />
+                </Label>
+                <Input
+                  disabled="true"
+                  max="250"
+                  style={{ borderColor: "#CBCBCB", height: 56 }}
+                  type="text"
+                  name="Name"
+                  id="Name"
+                  placeholder={this.state.placeholderName}
+                  value={editData.Name}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label for="Description">
+                  <IntlMessages id="sidebar.vendor.dialog.add.description" />
+                </Label>
+                <Input
+                  disabled="true"
+                  max="250"
+                  style={{ borderColor: "#CBCBCB", height: 56 }}
+                  type="text"
+                  name="Description"
+                  id="Description"
+                  placeholder={this.state.placeholderDescription}
+                  value={editData.Description}
+                />
+              </FormGroup>
+            </Form>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant="contained"
+            className="text-white btn-danger"
+            onClick={() => this.setState({ previewDataModal: false })}
+          >
+            <IntlMessages id="sidebar.vendor.dialog.button.cancel" />
+          </Button>
+        </ModalFooter>
+      </Modal>
+    );
   }
 
   componentDidUpdate() {
@@ -1118,8 +1191,8 @@ class VendorForm extends Component {
             </Button>
           </ModalFooter>
         </Modal>
-
         {this.sessionDialog()}
+        {this.previewDialog()}
       </div>
     );
   }

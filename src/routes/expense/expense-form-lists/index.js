@@ -874,6 +874,145 @@ class ExpenseForm extends Component {
     }
   }
 
+  onPreviewData(itemP) {
+    this.setState({ previewDataModal: true, previewData: itemP });
+  }
+
+  previewDialog() {
+    const { previewData } = this.state;
+    if (previewData) {
+      return (
+        <Modal
+          isOpen={this.state.previewDataModal}
+          toggle={() => this.setState({ previewDataModal: false })}
+        >
+          <ModalHeader
+            toggle={() => this.setState({ previewDataModal: false })}
+          >
+            <IntlMessages id="sidebar.expense.dialog.preview.title" />
+          </ModalHeader>
+          <ModalBody>
+            <Form>
+              <FormGroup>
+                <Label for="Description">
+                  {" "}
+                  {
+                    <IntlMessages id="sidebar.expense.dialog.update.description" />
+                  }
+                </Label>
+                <i
+                  onClick={() => this.redirectToVendor()}
+                  style={{ paddingLeft: 15 }}
+                  class="zmdi zmdi-plus-circle"
+                >
+                  {" "}
+                  <a href="#" onClick={() => this.redirectToVendor()}>
+                    {
+                      <IntlMessages id="sidebar.expense.dialog.update.description.add" />
+                    }
+                  </a>
+                </i>
+                <Input
+                  disabled={true}
+                  fullWidth
+                  value={previewData.Description}
+                  style={{
+                    height: 56,
+                    borderColor: "#CBCBCB"
+                  }}
+                  type="select"
+                  name="select"
+                  id="Select"
+                >
+                  {this.state.vendor &&
+                    this.state.vendor.map((value, key) => (
+                      <option key={key} value={value.Name}>
+                        {value.Name}
+                      </option>
+                    ))}
+                </Input>
+              </FormGroup>
+              <FormGroup>
+                <Label for="Invoice_No">
+                  {<IntlMessages id="sidebar.expense.dialog.update.billno" />}
+                </Label>
+                <Input
+                  disabled={true}
+                  max="50"
+                  style={{ borderColor: "#CBCBCB", height: 56 }}
+                  type="text"
+                  name="Invoice_No"
+                  id="Invoice_No"
+                  placeholder={this.state.placeholderBillNo}
+                  value={previewData.Invoice_No}
+                />
+                <Label
+                  style={{
+                    display: !this.state.validateBillNo ? "none " : "inline",
+                    color: "red",
+                    fontSize: 15
+                  }}
+                >
+                  {
+                    <IntlMessages id="sidebar.expense.dialog.update.billno.validate" />
+                  }
+                </Label>
+              </FormGroup>
+              <FormGroup>
+                <Label for="BillDate">
+                  {<IntlMessages id="sidebar.expense.dialog.update.billdate" />}
+                </Label>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <Grid container>
+                    <KeyboardDatePicker
+                      disabled={true}
+                      fullWidth
+                      inputVariant="outlined"
+                      margin="normal"
+                      id="date-picker-dialog"
+                      format="dd/MM/yyyy"
+                      value={parseDateInt(previewData.BillDate)}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date"
+                      }}
+                    />
+                  </Grid>
+                </MuiPickersUtilsProvider>
+              </FormGroup>
+              <FormGroup>
+                <Label for="Total">
+                  {<IntlMessages id="sidebar.expense.dialog.update.total" />}
+                </Label>
+                <Input
+                  disabled={true}
+                  min="0"
+                  required
+                  style={{ borderColor: "#CBCBCB", height: 56 }}
+                  type="number"
+                  name="Total"
+                  id="Total"
+                  placeholder={this.state.placeholderTotal}
+                  value={previewData.Total}
+                />
+              </FormGroup>
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="contained"
+              className="text-white btn-danger"
+              onClick={() => this.setState({ previewDataModal: false })}
+            >
+              {<IntlMessages id="sidebar.expense.dialog.btn.cancel" />}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      );
+    } else {
+      return "";
+    }
+  }
+
   tableLineArrange(data, currentPage) {
     // const { data, currentPage } = this.state;
     if (isMobile) {
@@ -902,7 +1041,12 @@ class ExpenseForm extends Component {
                   </td>
                   {!isMobile ? <td>{item.No}</td> : ""}
                   <td>
-                    <h5 className="mb-5 fw-bold">{item.Description}</h5>
+                    {" "}
+                    <h5 className="mb-5 fw-bold">
+                      <a href="#" onClick={() => this.onPreviewData(item)}>
+                        {item.Description}
+                      </a>
+                    </h5>
                   </td>
                   <td>{item.Invoice_No}</td>
                   {!isMobile ? (
@@ -1026,7 +1170,8 @@ class ExpenseForm extends Component {
         networkErrorContent:
           "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้, กรุณาติดต่อฝ่ายบริการลูกค้า",
         errorTitle: "พบข้อผิดพลาด",
-        errorContent: "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า"
+        errorContent:
+          "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า"
       });
     } else {
       this.setState({
@@ -1425,6 +1570,7 @@ class ExpenseForm extends Component {
         </Modal>
 
         {this.sessionDialog()}
+        {this.previewDialog()}
       </div>
     );
   }

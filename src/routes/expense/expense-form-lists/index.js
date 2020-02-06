@@ -701,9 +701,67 @@ class ExpenseForm extends Component {
     this.loadData();
   }
 
+  async onApprove() {
+    const { data } = this.state;
+    await this.setState({ selectedData: data });
+    this.refs.approveMutipleConfirmationDialog.open();
+  }
+
+  async onConfirmApproveMultiple() {
+    let breakL = false;
+    const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(
+          "cannot send this rows due to it has some rows as you selected already approved"
+        );
+        breakL = true;
+        break;
+      }
+    }
+    if (breakL) return;
+    //ToDo
+    let selectedL = this.returnSelectedKeys(selectedData);
+    // await this.props.approveRevenue(selectedL);
+    setTimeout(() => {
+      this.loadData();
+      this.refs.approveMutipleConfirmationDialog.close();
+    }, 500);
+  }
+
+  async onDisapprove() {
+    const { data } = this.state;
+    await this.setState({ selectedData: data });
+    this.refs.disapproveMutipleConfirmationDialog.open();
+  }
+
+  async onConfirmDisapproveMultiple() {
+    let breakL = false;
+    const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(
+          "cannot send this rows due to it has some rows as you selected already approved"
+        );
+        breakL = true;
+        break;
+      }
+    }
+    if (breakL) return;
+    //ToDo
+    let selectedL = this.returnSelectedKeys(selectedData);
+    // await this.props.disapproveRevenue(selectedL);
+    setTimeout(() => {
+      this.loadData();
+      this.refs.disapproveMutipleConfirmationDialog.close();
+    }, 500);
+  }
+
   // arrange for ui (web or mobile)
   tabArrange() {
-    const { selectedBranch, q, selectedDatas } = this.state;
+    const { selectedBranch, q, selectedDatas, permission } = this.state;
 
     if (isMobile) {
       return "";
@@ -720,14 +778,41 @@ class ExpenseForm extends Component {
                     color="primary"
                     className="mr-10 mb-10 text-white btn-icon"
                   >
-                    Delete <i className="zmdi zmdi-delete"></i>
+                    {<IntlMessages id="sidebar.expense.button.delete" />}{" "}
+                    <i className="zmdi zmdi-delete"></i>
                   </MatButton>
                   <MatButton
+                    style={{
+                      display: this.state.permission === 0 ? "inline" : "none"
+                    }}
                     onClick={() => this.onSend()}
                     variant="contained"
                     className="btn-secondary mr-10 mb-10 text-white btn-icon"
                   >
-                    Send <i className="zmdi zmdi-mail-send"></i>
+                    {<IntlMessages id="sidebar.expense.button.send" />}{" "}
+                    <i className="zmdi zmdi-mail-send"></i>
+                  </MatButton>
+                  <MatButton
+                    style={{
+                      visibility: permission !== 0 ? "visible" : "hidden"
+                    }}
+                    onClick={() => this.onApprove()}
+                    variant="contained"
+                    className="btn-success mr-10 mb-10 text-white btn-icon"
+                  >
+                    {<IntlMessages id="sidebar.expense.button.approve" />}{" "}
+                    <i className="zmdi zmdi-mail-send"></i>
+                  </MatButton>
+                  <MatButton
+                    style={{
+                      visibility: permission !== 0 ? "visible" : "hidden"
+                    }}
+                    onClick={() => this.onDisapprove()}
+                    variant="contained"
+                    className="btn-danger mr-10 mb-10 text-white btn-icon"
+                  >
+                    {<IntlMessages id="sidebar.expense.button.disapprove" />}{" "}
+                    <i className="zmdi zmdi-mail-send"></i>
                   </MatButton>
                 </div>
               ) : (
@@ -1284,6 +1369,24 @@ class ExpenseForm extends Component {
           title={<IntlMessages id="sidebar.expense.dialog.send.title" />}
           message={<IntlMessages id="sidebar.expense.dialog.send.message" />}
           onConfirm={() => this.onConfirmUpdateMultiple()}
+        />
+
+        <DeleteConfirmationDialog
+          ref="approveMutipleConfirmationDialog"
+          title={<IntlMessages id="sidebar.revenues.dialog.approve.title" />}
+          message={
+            <IntlMessages id="sidebar.revenues.dialog.approve.message" />
+          }
+          onConfirm={() => this.onConfirmApproveMultiple()}
+        />
+
+        <DeleteConfirmationDialog
+          ref="disapproveMutipleConfirmationDialog"
+          title={<IntlMessages id="sidebar.revenues.dialog.disapprove.title" />}
+          message={
+            <IntlMessages id="sidebar.revenues.dialog.disapprove.message" />
+          }
+          onConfirm={() => this.onConfirmDisapproveMultiple()}
         />
 
         <Modal

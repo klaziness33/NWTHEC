@@ -20,7 +20,13 @@ import {
   VALIDATE_ERROR_EXPENSE,
   ERROR_UNAUTHORIZED_EXPENSE,
   ERROR_NETWORK_EXPENSE,
-  ERROR_OTHER_EXPENSE
+  ERROR_OTHER_EXPENSE,
+  APPROVE_START_EXPENSE,
+  APPROVE_END_EXPENSE,
+  APPROVE_ERROR_EXPENSE,
+  DISAPPROVE_START_EXPENSE,
+  DISAPPROVE_END_EXPENSE,
+  DISAPPROVE_ERROR_EXPENSE
 } from "Actions/types";
 import {
   RESPONSE_SUCCESS,
@@ -257,4 +263,68 @@ export const validateDataExpense = dataP => async dispatch => {
       }
     })
     .catch(error => catchError(error, dispatch, VALIDATE_ERROR_EXPENSE));
+};
+
+export const approveExpense = dataP => async dispatch => {
+  const userL =
+    localStorage.getItem(STORAGE_USERMODELS) === null
+      ? null
+      : JSON.parse(decryptData(localStorage.getItem(STORAGE_USERMODELS)));
+  dispatch({ type: APPROVE_START_EXPENSE });
+  await axios
+    .post(
+      AppConfig.serviceUrl + "expense/approve",
+      {
+        KeyLists: dataP,
+        UpdateBy: userL.user_Name
+      },
+      {
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+        }
+      }
+    )
+    .then(response => {
+      if (response.data.description !== RESPONSE_SUCCESS) {
+        dispatch({ type: APPROVE_ERROR_EXPENSE });
+        NotificationManager.error(response.data.data);
+      } else {
+        dispatch({ type: APPROVE_END_EXPENSE });
+        NotificationManager.success(response.data.data);
+      }
+    })
+    .catch(error => catchError(error, dispatch, APPROVE_ERROR_EXPENSE));
+};
+
+export const disapproveExpense = dataP => async dispatch => {
+  const userL =
+    localStorage.getItem(STORAGE_USERMODELS) === null
+      ? null
+      : JSON.parse(decryptData(localStorage.getItem(STORAGE_USERMODELS)));
+  dispatch({ type: DISAPPROVE_START_EXPENSE });
+  await axios
+    .post(
+      AppConfig.serviceUrl + "expense/disapprove",
+      {
+        KeyLists: dataP,
+        UpdateBy: userL.user_Name
+      },
+      {
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          Authorization: "bearer " + localStorage.getItem(STORAGE_TOKEN)
+        }
+      }
+    )
+    .then(response => {
+      if (response.data.description !== RESPONSE_SUCCESS) {
+        dispatch({ type: DISAPPROVE_ERROR_EXPENSE });
+        NotificationManager.error(response.data.data);
+      } else {
+        dispatch({ type: DISAPPROVE_END_EXPENSE });
+        NotificationManager.success(response.data.data);
+      }
+    })
+    .catch(error => catchError(error, dispatch, DISAPPROVE_ERROR_EXPENSE));
 };

@@ -798,6 +798,7 @@ module.exports = {
   "sidebar.expense.table.billdate": "วันที่บิล",
   "sidebar.expense.table.total": "ยอดรวม",
   "sidebar.expense.table.status": "สถานะ",
+  "sidebar.expense.table.lastactionby": "แอ็คชั่นล่าสุดโดย",
   "sidebar.expense.table.action": "แอ็คชั่น",
 
   "sidebar.expense.dialog.update.description": "รายละเอียด (ผู้ขาย)",
@@ -827,6 +828,7 @@ module.exports = {
   "sidebar.revenues.table.no": "ลำดับ",
   "sidebar.revenues.table.discription": "รายละเอียด",
   "sidebar.revenues.table.createby": "แก้ไขล่าสุดโดย",
+  "sidebar.revenues.table.lastactionby": "แอ็คชั่นล่าสุดโดย",
   "sidebar.revenues.table.billdate": "วันที่บิล",
   "sidebar.revenues.table.status": "สถานะ",
   "sidebar.revenues.table.action": "แอ็คชั่น",
@@ -899,6 +901,7 @@ module.exports = {
   "sidebar.vendor.table.no": "ลำดับ",
   "sidebar.vendor.table.name": "ชื่อ",
   "sidebar.vendor.table.createdate": "วันที่สร้าง",
+  "sidebar.vendor.table.lastactionby": "แอ็คชั่นล่าสุดโดย",
   "sidebar.vendor.button.action": "แอ็คชั่น",
   "sidebar.vendor.filter.search": "ค้นหา..",
   "sidebar.vendor.filter.branch": "ค้นหาสาขา",

@@ -748,11 +748,14 @@ class VendorForm extends Component {
           <th style={{ width: "3%" }}>
             {<IntlMessages id="sidebar.vendor.table.no" />}
           </th>
-          <th style={{ width: "75%" }}>
+          <th style={{ width: "60%" }}>
             {<IntlMessages id="sidebar.vendor.table.name" />}
           </th>
           <th style={{ width: "10%" }}>
             {<IntlMessages id="sidebar.vendor.table.createdate" />}
+          </th>
+          <th style={{ width: "15%" }}>
+            {<IntlMessages id="sidebar.vendor.table.lastactionby" />}
           </th>
           <th style={{ width: "10%" }}>
             {<IntlMessages id="sidebar.vendor.button.action" />}
@@ -797,11 +800,8 @@ class VendorForm extends Component {
                       </a>
                     </h5>
                   </td>
-                  {!isMobile ? (
-                    <td>{moment(item.CreateDate).format("DD/MM/YYYY")}</td>
-                  ) : (
-                    ""
-                  )}
+                  <td>{moment(item.CreateDate).format("DD/MM/YYYY")}</td>
+                  <td>{item.UpdateBy}</td>
                   <td className="list-action">
                     <button
                       type="button"

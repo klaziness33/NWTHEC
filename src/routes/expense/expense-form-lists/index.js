@@ -63,7 +63,9 @@ import {
   deleteDataExpense,
   sendDataExpense,
   activeSession,
-  clearUser
+  clearUser,
+  approveExpense,
+  disapproveExpense
 } from "Actions";
 
 import { isMobile } from "react-device-detect";
@@ -114,6 +116,14 @@ class ExpenseForm extends Component {
       "Cannot to connect with server, please contact customer service",
     errorTitle: "Critical Error",
     errorContent: "Found some error, please contact customer service",
+    alertDeleteTitle:
+      "cannot to delete due to current status is approved, please check again",
+    alertSendTitle:
+      "cannot to send due to current status is approved, please check again",
+    alertApproveTitle:
+      "cannot to approve again due to status has been already approved, please check again",
+    alertDisApproveTitle:
+      "cannot to disapprove due to current status is approved, please check again",
     validateBillNo: false,
     sessionTitle: "",
     sessionContent: "",
@@ -147,7 +157,8 @@ class ExpenseForm extends Component {
     originalData: null,
     selectedDate: new Date(),
     csvData: [],
-    vendor: null
+    vendor: null,
+    permission: 0
   };
 
   // handleDateChange = this.handleDateChange.bind(this);
@@ -291,7 +302,8 @@ class ExpenseForm extends Component {
         Image: element.Image,
         Send: element.Send,
         Fk_Branch: element.Fk_Branch,
-        Time_Diff: element.Time_Diff
+        Time_Diff: element.Time_Diff,
+        Approve: element.Approve
       });
     }
     return arrangeL;
@@ -311,7 +323,8 @@ class ExpenseForm extends Component {
         originalData: null,
         pagesCount: 0,
         currentPage: 0,
-        selectedDatas: 0
+        selectedDatas: 0,
+        permission: 0
       });
       return;
     }
@@ -327,8 +340,26 @@ class ExpenseForm extends Component {
       filteredData: addPropsToObject(arrangeL, this.arrProps)
     });
 
+    let roleL = this.filterRole(this.props.authUser.user.fk_Role);
+    this.setRoleState(roleL);
     this.setDataExportCsv();
     this.errorDialog();
+  }
+
+  async setRoleState(roleP) {
+    await this.setState({ Fk_Role: this.props.authUser.user.fk_Role });
+    if (roleP.toLowerCase() === "leader") {
+      await this.setState({ permission: this.props.authUser.user.fk_Role });
+    }
+  }
+
+  filterRole(RoleIdP) {
+    let roleL = this.props.masterReducer.role;
+    for (let index = 0; index < roleL.length; index++) {
+      const element = roleL[index];
+      if (element.Id != RoleIdP) continue;
+      return element.Name;
+    }
   }
 
   async setDataExportCsv() {
@@ -356,7 +387,18 @@ class ExpenseForm extends Component {
   }
 
   async onConfirmDeleteMultiple() {
+    let breakL = false;
     const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(this.state.alertDeleteTitle);
+        breakL = true;
+        break;
+      }
+    }
+
+    if (breakL) return;
     let selectedL = this.returnSelectedKeys(selectedData);
     await this.props.deleteDataExpense(selectedL);
     this.loadData();
@@ -381,8 +423,19 @@ class ExpenseForm extends Component {
     return arrayIndex;
   }
 
-  async onConfirmUpdateMultiple() {
+  async onConfirmSendMultiple() {
+    let breakL = false;
     const { selectedData } = this.state;
+    for (let index = 0; index < selectedData.length; index++) {
+      const element = selectedData[index];
+      if (element.checked && element.Approve) {
+        alert(this.state.alertSendTitle);
+        breakL = true;
+        break;
+      }
+    }
+
+    if (breakL) return;
     let selectedL = this.returnSelectedKeys(selectedData);
     await this.props.sendDataExpense(selectedL);
     this.loadData();
@@ -408,6 +461,10 @@ class ExpenseForm extends Component {
    */
   deleteDataPermanently() {
     const { selectedData } = this.state;
+    if (selectedData.Approve) {
+      alert(this.state.alertDeleteTitle);
+      return;
+    }
 
     let data = this.state.data;
     let indexOfDeleteData = data.indexOf(selectedData);
@@ -713,9 +770,7 @@ class ExpenseForm extends Component {
     for (let index = 0; index < selectedData.length; index++) {
       const element = selectedData[index];
       if (element.checked && element.Approve) {
-        alert(
-          "cannot send this rows due to it has some rows as you selected already approved"
-        );
+        alert(this.state.alertApproveTitle);
         breakL = true;
         break;
       }
@@ -723,7 +778,7 @@ class ExpenseForm extends Component {
     if (breakL) return;
     //ToDo
     let selectedL = this.returnSelectedKeys(selectedData);
-    // await this.props.approveRevenue(selectedL);
+    await this.props.approveExpense(selectedL);
     setTimeout(() => {
       this.loadData();
       this.refs.approveMutipleConfirmationDialog.close();
@@ -742,9 +797,7 @@ class ExpenseForm extends Component {
     for (let index = 0; index < selectedData.length; index++) {
       const element = selectedData[index];
       if (element.checked && element.Approve) {
-        alert(
-          "cannot send this rows due to it has some rows as you selected already approved"
-        );
+        alert(this.state.alertDisApproveTitle);
         breakL = true;
         break;
       }
@@ -752,7 +805,7 @@ class ExpenseForm extends Component {
     if (breakL) return;
     //ToDo
     let selectedL = this.returnSelectedKeys(selectedData);
-    // await this.props.disapproveRevenue(selectedL);
+    await this.props.disapproveExpense(selectedL);
     setTimeout(() => {
       this.loadData();
       this.refs.disapproveMutipleConfirmationDialog.close();
@@ -936,17 +989,20 @@ class ExpenseForm extends Component {
           <th style={{ width: "3%" }}>
             {<IntlMessages id="sidebar.expense.table.no" />}
           </th>
-          <th style={{ width: "40%" }}>
+          <th style={{ width: "35%" }}>
             {<IntlMessages id="sidebar.expense.table.discription" />}
           </th>
-          <th style={{ width: "15%" }}>
+          <th style={{ width: "8%" }}>
             {<IntlMessages id="sidebar.expense.table.billno" />}
           </th>
-          <th style={{ width: "10%" }}>
+          <th style={{ width: "7%" }}>
             {<IntlMessages id="sidebar.expense.table.billdate" />}
           </th>
           <th style={{ width: "10%" }}>
             {<IntlMessages id="sidebar.expense.table.total" />}
+          </th>
+          <th style={{ width: "15%" }}>
+            {<IntlMessages id="sidebar.vendor.table.lastactionby" />}
           </th>
           <th style={{ width: "10%" }}>
             {<IntlMessages id="sidebar.expense.table.status" />}
@@ -1140,17 +1196,26 @@ class ExpenseForm extends Component {
                     ""
                   )}
                   <td>{roundN(item.Total, 2)}</td>
+                  <td>{item.UpdateBy}</td>
                   <td className="d-flex justify-content-start">
                     <span
                       className={`badge badge-xs ${
-                        item.Send ? "badge-success" : "badge-danger"
+                        item.Approve
+                          ? "badge-success"
+                          : item.Send
+                          ? "badge-secondary"
+                          : "badge-danger"
                       } mr-10 mt-10 position-relative`}
                     >
                       &nbsp;
                     </span>
                     <div className="status">
                       <span className="d-block">
-                        {item.Send ? "Submitted" : "Pending"}
+                        {item.Approve
+                          ? "Approved"
+                          : item.Send
+                          ? "Submitted"
+                          : "Pending"}
                       </span>
                       <span className="small">{item.Time_Diff}</span>
                     </div>
@@ -1256,7 +1321,15 @@ class ExpenseForm extends Component {
           "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้, กรุณาติดต่อฝ่ายบริการลูกค้า",
         errorTitle: "พบข้อผิดพลาด",
         errorContent:
-          "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า"
+          "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า",
+        alertDeleteTitle:
+          "ไม่สามารถลบได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง",
+        alertSendTitle:
+          "ไม่สามารถนำส่งได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง",
+        alertApproveTitle:
+          "ไม่สามารถอนุมัติอีกครั้งเนื่องจากสถานะได้รับการอนุมัติแล้ว, กรุณาตรวจสอบอีกครั้ง",
+        alertDisApproveTitle:
+          "ไม่สามารถเปลี่ยนสถานะเป็นไม่อนุมัติได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง"
       });
     } else {
       this.setState({
@@ -1277,7 +1350,15 @@ class ExpenseForm extends Component {
         networkErrorContent:
           "Cannot to connect with server, please contact customer service",
         errorTitle: "Critical Error",
-        errorContent: "Found some error, please contact customer service"
+        errorContent: "Found some error, please contact customer service",
+        alertDeleteTitle:
+          "cannot to delete due to current status is approved, please check again",
+        alertSendTitle:
+          "cannot to send due to current status is approved, please check again",
+        alertApproveTitle:
+          "cannot to approve again due to status has been already approved, please check again",
+        alertDisApproveTitle:
+          "cannot to disapprove due to current status is approved, please check again"
       });
     }
   }
@@ -1368,7 +1449,7 @@ class ExpenseForm extends Component {
           ref="sendMutipleConfirmationDialog"
           title={<IntlMessages id="sidebar.expense.dialog.send.title" />}
           message={<IntlMessages id="sidebar.expense.dialog.send.message" />}
-          onConfirm={() => this.onConfirmUpdateMultiple()}
+          onConfirm={() => this.onConfirmSendMultiple()}
         />
 
         <DeleteConfirmationDialog
@@ -1700,5 +1781,7 @@ export default connect(mapStateToProps, {
   deleteDataExpense,
   sendDataExpense,
   activeSession,
-  clearUser
+  clearUser,
+  approveExpense,
+  disapproveExpense
 })(ExpenseForm);

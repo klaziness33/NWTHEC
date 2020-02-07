@@ -100,6 +100,14 @@ class RevenueListForm extends Component {
       "Cannot to connect with server, please contact customer service",
     errorTitle: "Critical Error",
     errorContent: "Found some error, please contact customer service",
+    alertDeleteTitle:
+      "cannot to delete due to current status is approved, please check again",
+    alertSendTitle:
+      "cannot to send due to current status is approved, please check again",
+    alertApproveTitle:
+      "cannot to approve again due to status has been already approved, please check again",
+    alertDisApproveTitle:
+      "cannot to disapprove due to current status is approved, please check again",
     sessionTitle: "",
     sessionContent: "",
     sessionStatus: false,
@@ -333,9 +341,7 @@ class RevenueListForm extends Component {
     for (let index = 0; index < selectedData.length; index++) {
       const element = selectedData[index];
       if (element.checked && element.Approve) {
-        alert(
-          "cannot send this rows due to it has some rows as you selected already approved"
-        );
+        alert(this.state.alertApproveTitle);
         breakL = true;
         break;
       }
@@ -363,9 +369,7 @@ class RevenueListForm extends Component {
     for (let index = 0; index < selectedData.length; index++) {
       const element = selectedData[index];
       if (element.checked && element.Approve) {
-        alert(
-          "cannot send this rows due to it has some rows as you selected already approved"
-        );
+        alert(this.state.alertDisApproveTitle);
         breakL = true;
         break;
       }
@@ -649,9 +653,7 @@ class RevenueListForm extends Component {
     for (let index = 0; index < selectedData.length; index++) {
       const element = selectedData[index];
       if (element.checked && element.Approve) {
-        alert(
-          "cannot delete this rows due to it has some rows as you selected already approved"
-        );
+        alert(this.state.alertDeleteTitle);
         breakL = true;
         break;
       }
@@ -688,9 +690,7 @@ class RevenueListForm extends Component {
     for (let index = 0; index < selectedData.length; index++) {
       const element = selectedData[index];
       if (element.checked && element.Approve) {
-        alert(
-          "cannot send this rows due to it has some rows as you selected already approved"
-        );
+        alert(this.state.alertSendTitle);
         breakL = true;
         break;
       }
@@ -726,7 +726,7 @@ class RevenueListForm extends Component {
   deleteDataPermanently() {
     const { selectedData } = this.state;
     if (selectedData.Approve) {
-      alert("cannot delete this rows due to already approved");
+      alert(this.state.alertDeleteTitle);
       return;
     }
 
@@ -1308,7 +1308,15 @@ class RevenueListForm extends Component {
           "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้, กรุณาติดต่อฝ่ายบริการลูกค้า",
         errorTitle: "พบข้อผิดพลาด",
         errorContent:
-          "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า"
+          "เกิดข้อผิดพลาดขณะที่ระบบทำงาน, กรุณาติดต่อฝ่ายบริการลูกค้า",
+        alertDeleteTitle:
+          "ไม่สามารถลบได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง",
+        alertSendTitle:
+          "ไม่สามารถนำส่งได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง",
+        alertApproveTitle:
+          "ไม่สามารถอนุมัติอีกครั้งเนื่องจากสถานะได้รับการอนุมัติแล้ว, กรุณาตรวจสอบอีกครั้ง",
+        alertDisApproveTitle:
+          "ไม่สามารถเปลี่ยนสถานะเป็นไม่อนุมัติได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง"
       });
     } else {
       this.setState({
@@ -1332,7 +1340,15 @@ class RevenueListForm extends Component {
         networkErrorContent:
           "Cannot to connect with server, please contact customer service",
         errorTitle: "Critical Error",
-        errorContent: "Found some error, please contact customer service"
+        errorContent: "Found some error, please contact customer service",
+        alertDeleteTitle:
+          "cannot to delete due to current status is approved, please check again",
+        alertSendTitle:
+          "cannot to send due to current status is approved, please check again",
+        alertApproveTitle:
+          "cannot to approve again due to status has been already approved, please check again",
+        alertDisApproveTitle:
+          "cannot to disapprove due to current status is approved, please check again"
       });
     }
   }
@@ -1516,14 +1532,14 @@ class RevenueListForm extends Component {
           <th style={{ width: "3%" }}>
             {<IntlMessages id="sidebar.revenues.table.no" />}
           </th>
-          <th style={{ width: "55%" }}>
+          <th style={{ width: "50%" }}>
             {<IntlMessages id="sidebar.revenues.table.discription" />}
           </th>
           <th style={{ width: "10%" }}>
-            {<IntlMessages id="sidebar.revenues.table.createby" />}
-          </th>
-          <th style={{ width: "10%" }}>
             {<IntlMessages id="sidebar.revenues.table.billdate" />}
+          </th>
+          <th style={{ width: "15%" }}>
+            {<IntlMessages id="sidebar.revenues.table.lastactionby" />}
           </th>
           <th style={{ width: "10%" }}>
             {<IntlMessages id="sidebar.revenues.table.status" />}
@@ -1570,12 +1586,8 @@ class RevenueListForm extends Component {
                       </a>
                     </h5>
                   </td>
+                  <td>{moment(item.BillDate).format("DD/MM/YYYY")}</td>
                   <td>{item.CreateBy}</td>
-                  {!isMobile ? (
-                    <td>{moment(item.BillDate).format("DD/MM/YYYY")}</td>
-                  ) : (
-                    ""
-                  )}
                   <td className="d-flex justify-content-start">
                     <span
                       className={`badge badge-xs ${

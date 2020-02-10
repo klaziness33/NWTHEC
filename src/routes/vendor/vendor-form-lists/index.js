@@ -623,7 +623,7 @@ class VendorForm extends Component {
                     color="primary"
                     className="mr-10 mb-10 text-white btn-icon"
                   >
-                    {<IntlMessages id="sidebar.vendor.btn.delete" />}{" "}
+                    {<IntlMessages id="sidebar.vendor.button.delete" />}{" "}
                     <i className="zmdi zmdi-delete"></i>
                   </MatButton>
                 </div>

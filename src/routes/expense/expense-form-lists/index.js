@@ -340,6 +340,7 @@ class ExpenseForm extends Component {
       filteredData: addPropsToObject(arrangeL, this.arrProps)
     });
 
+    console.log(this.props.authUser);
     let roleL = this.filterRole(this.props.authUser.user.fk_Role);
     this.setRoleState(roleL);
     this.setDataExportCsv();
@@ -347,7 +348,6 @@ class ExpenseForm extends Component {
   }
 
   async setRoleState(roleP) {
-    await this.setState({ Fk_Role: this.props.authUser.user.fk_Role });
     if (roleP.toLowerCase() === "leader") {
       await this.setState({ permission: this.props.authUser.user.fk_Role });
     }
@@ -676,6 +676,12 @@ class ExpenseForm extends Component {
    */
   async updateData() {
     const { editData } = this.state;
+
+    if (editData.Approve) {
+      alert(this.state.alertUpdateTitle);
+      return;
+    }
+
     await this.onValidateBillNo(editData.Invoice_No, editData.Id);
     if (this.state.validateBillNo) return;
 
@@ -1329,7 +1335,9 @@ class ExpenseForm extends Component {
         alertApproveTitle:
           "ไม่สามารถอนุมัติอีกครั้งเนื่องจากสถานะได้รับการอนุมัติแล้ว, กรุณาตรวจสอบอีกครั้ง",
         alertDisApproveTitle:
-          "ไม่สามารถเปลี่ยนสถานะเป็นไม่อนุมัติได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง"
+          "ไม่สามารถเปลี่ยนสถานะเป็นไม่อนุมัติได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง",
+        alertUpdateTitle:
+          "ไม่สามารถนำส่งได้เนื่องจากสถานะปัจจุบัญคืออนุมัติ, กรุณาตรวจสอบอีกครั้ง"
       });
     } else {
       this.setState({
@@ -1358,7 +1366,9 @@ class ExpenseForm extends Component {
         alertApproveTitle:
           "cannot to approve again due to status has been already approved, please check again",
         alertDisApproveTitle:
-          "cannot to disapprove due to current status is approved, please check again"
+          "cannot to disapprove due to current status is approved, please check again",
+        alertUpdateTitle:
+          "cannot to update due to current status is approved, please check again"
       });
     }
   }

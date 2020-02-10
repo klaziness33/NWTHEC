@@ -156,7 +156,7 @@ export const signinUserInBC = (user, history) => async dispatch => {
         );
         dispatch({
           type: LOGIN_USER_SUCCESS,
-          payload: localStorage.getItem(STORAGE_USERMODELS)
+          payload: response.data.data
         });
       }
     })

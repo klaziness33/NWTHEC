@@ -389,7 +389,7 @@ class RevenueCardForm extends Component {
               variant="contained"
               className="btn-primary text-white mr-10"
             >
-              Close
+              <IntlMessages id="sidebar.revenues.dialog.btn.close" />
             </Button>
           </DialogActions>
         </Dialog>
@@ -579,6 +579,7 @@ class RevenueCardForm extends Component {
   }
 
   render() {
+    var closeModalL = this.props.closeModal;
     const { readOnly, branch, paymentType, addNewDataDetail } = this.state;
     return (
       <div>
@@ -2856,7 +2857,40 @@ class RevenueCardForm extends Component {
                 )}
               </div>
             </RctCollapsibleCard>
-            {this.dialogInfo(this.props.switchMode)}
+            <RctCollapsibleCard>
+              <div
+                style={{ display: "flex", justifyContent: "flex-end" }}
+                className="table-responsive"
+              >
+                {this.props.switchMode && this.props.switchMode === "Add" ? (
+                  <MatButton
+                    onClick={() => this.onAdd()}
+                    variant="contained"
+                    color="primary"
+                    className="mr-10 mb-10 text-white"
+                  >
+                    {<IntlMessages id="sidebar.revenues.dialog.btn.add" />}
+                  </MatButton>
+                ) : this.props.switchMode === "Update" ? (
+                  <MatButton
+                    onClick={() => this.onUpdateData()}
+                    variant="contained"
+                    className="btn-success mr-10 mb-10 text-white"
+                  >
+                    {<IntlMessages id="sidebar.revenues.dialog.btn.update" />}
+                  </MatButton>
+                ) : (
+                  ""
+                )}
+                <MatButton
+                  onClick={closeModalL}
+                  variant="contained"
+                  className="btn-danger mr-10 mb-10 text-white"
+                >
+                  {<IntlMessages id="sidebar.revenues.dialog.btn.close" />}
+                </MatButton>
+              </div>
+            </RctCollapsibleCard>
           </div>
         </div>
         {this.alertDialog()}

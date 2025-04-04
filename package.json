@@ -103,7 +103,7 @@
 		"react-device-detect": "^1.11.14",
 		"react-dnd": "^9.3.2",
 		"react-dnd-html5-backend": "^9.3.2",
-		"react-draft-wysiwyg": "^1.13.2",
+		"react-draft-wysiwyg": "^1.15.0",
 		"react-dragula": "1.1.17",
 		"react-dropzone-component": "^3.2.0",
 		"react-helmet": "^5.2.1",
